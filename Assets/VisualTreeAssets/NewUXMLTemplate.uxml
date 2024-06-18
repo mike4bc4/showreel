@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="DiamondLine" src="project://database/Assets/VisualTreeAssets/DiamondLine.uxml?fileID=9197481963319205126&amp;guid=569c040f322a500499127e41371cd5ad&amp;type=3#DiamondLine" />
+    <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
+    <ui:VisualElement style="flex-grow: 1; background-color: rgb(229, 229, 229);">
+        <CustomControls.Diamond />
+        <ui:Instance template="DiamondLine" name="DiamondLine" />
+    </ui:VisualElement>
+</ui:UXML>

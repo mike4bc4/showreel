@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
+    <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center;">
+        <CustomControls.DiamondLineHorizontal target-width="500" />
+    </ui:VisualElement>
+</ui:UXML>

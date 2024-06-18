@@ -1,0 +1,46 @@
+.diamond {
+    width: 42px;
+    height: 42px;
+}
+
+.diamond__half {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("project://database/Assets/Textures/DiamondHalf.png?fileID=2800000&guid=b67818afd2121a2408a9bd0881253a5f&type=3#DiamondHalf");
+    -unity-background-image-tint-color: rgb(51, 51, 51);
+}
+
+.diamond__half-left {
+    transition-property: scale;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out-sine;
+}
+
+.diamond-line-horizontal {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    transition-property: width;
+    transition-duration: 0.75s;
+}
+
+.diamond-line-horizontal__diamond-right {
+    scale: -1 1;
+}
+
+.diamond-line-horizontal__separator {
+    height: 2px;
+    background-color: rgb(51, 51, 51);
+    flex-grow: 1;
+}
+
+.full-screen {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+}
