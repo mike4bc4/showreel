@@ -13,7 +13,7 @@
     -unity-background-image-tint-color: rgb(51, 51, 51);
 }
 
-.diamond__half-left {
+.diamond__half--transition {
     transition-property: scale;
     transition-duration: 0.5s;
     transition-timing-function: ease-in-out-sine;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class AnimationManager : MonoBehaviour
 {
@@ -12,7 +13,17 @@ public class AnimationManager : MonoBehaviour
 
     public static AnimationManager Instance
     {
-        get => s_Instance;
+        get
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying && s_Instance == null)
+            {
+                s_Instance = GameObject.FindAnyObjectByType<AnimationManager>();
+                Assert.IsNotNull(s_Instance, "No Animation Manager on scene.");
+            }
+#endif
+            return s_Instance;
+        }
     }
 
     void Awake()

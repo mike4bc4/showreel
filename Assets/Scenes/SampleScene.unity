@@ -447,9 +447,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BackgroundVta: {fileID: 9197481963319205126, guid: b9ed20d45f0a3f14286418aeaa22c8ad, type: 3}
-  m_TextVta: {fileID: 0}
+  m_TextVta: {fileID: 9197481963319205126, guid: 25e860224e855c84e9dc9a6f4cb020db, type: 3}
   m_DiamondLineVta: {fileID: 9197481963319205126, guid: 569c040f322a500499127e41371cd5ad, type: 3}
-  m_DiamondLineFadeTime: 0
 --- !u!1 &1096446799
 GameObject:
   m_ObjectHideFlags: 0

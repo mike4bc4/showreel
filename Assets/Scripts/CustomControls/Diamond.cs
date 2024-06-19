@@ -9,7 +9,7 @@ namespace CustomControls
     {
         const string k_UssClassName = "diamond";
         const string k_HalfUssClassName = k_UssClassName + "__half";
-        const string k_HalfLeftUssClassName = k_HalfUssClassName + "-left";
+        const string k_HalfTransitionUssClassName = k_HalfUssClassName + "--transition";
 
         public new class UxmlFactory : UxmlFactory<Diamond, UxmlTraits> { }
 
@@ -25,7 +25,7 @@ namespace CustomControls
             m_HalfLeft = new VisualElement();
             m_HalfLeft.name = "half-left";
             m_HalfLeft.AddToClassList(k_HalfUssClassName);
-            m_HalfLeft.AddToClassList(k_HalfLeftUssClassName);
+            m_HalfLeft.AddToClassList(k_HalfTransitionUssClassName);
             Add(m_HalfLeft);
 
             m_HalfRight = new VisualElement();

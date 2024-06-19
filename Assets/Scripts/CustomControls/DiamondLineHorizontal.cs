@@ -16,12 +16,14 @@ namespace CustomControls
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
             UxmlFloatAttributeDescription m_TargetWidth = new UxmlFloatAttributeDescription() { name = "target-width" };
+            UxmlBoolAttributeDescription m_Unfolded = new UxmlBoolAttributeDescription() { name = "unfolded", defaultValue = false };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
                 base.Init(ve, bag, cc);
                 DiamondLineHorizontal diamondLineHorizontal = (DiamondLineHorizontal)ve;
                 diamondLineHorizontal.targetWidth = m_TargetWidth.GetValueFromBag(bag, cc);
+                diamondLineHorizontal.unfolded = m_Unfolded.GetValueFromBag(bag, cc);
             }
         }
 
@@ -30,8 +32,30 @@ namespace CustomControls
         VisualElement m_Separator;
         float m_DefaultWidth;
         Coroutine m_CoroutineHandle;
+        bool m_Unfolded;
 
         public float targetWidth { get; set; }
+
+        bool unfolded
+        {
+            get => m_Unfolded;
+            set
+            {
+                m_Unfolded = value;
+                if (m_Unfolded)
+                {
+                    style.width = targetWidth;
+                    m_DiamondLeft.Unfold();
+                    m_DiamondRight.Unfold();
+                }
+                else
+                {
+                    style.width = StyleKeyword.Auto;
+                    m_DiamondLeft.Fold();
+                    m_DiamondRight.Fold();
+                }
+            }
+        }
 
         public DiamondLineHorizontal()
         {
