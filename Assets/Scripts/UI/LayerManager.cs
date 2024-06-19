@@ -15,12 +15,18 @@ namespace UI
         [SerializeField] PanelSettings m_TemplatePanelSettings;
         [SerializeField] RenderTexture m_TemplateRenderTexture;
         [SerializeField] Material m_BlurMaterial;
+        [SerializeField] Material m_ShineMaterial;
 
         [SerializeField] VisualTreeAsset test;
 
         public static Material BlurMaterial
         {
             get => s_Instance.m_BlurMaterial;
+        }
+
+        public static Material ShineMaterial
+        {
+            get => s_Instance.m_ShineMaterial;
         }
 
         void Awake()
