@@ -17,6 +17,7 @@ namespace CustomControls
 
         VisualElement m_HalfLeft;
         VisualElement m_HalfRight;
+        Coroutine m_CoroutineHandle;
 
         public Diamond()
         {
@@ -25,7 +26,6 @@ namespace CustomControls
             m_HalfLeft = new VisualElement();
             m_HalfLeft.name = "half-left";
             m_HalfLeft.AddToClassList(k_HalfUssClassName);
-            m_HalfLeft.AddToClassList(k_HalfTransitionUssClassName);
             Add(m_HalfLeft);
 
             m_HalfRight = new VisualElement();
@@ -34,12 +34,21 @@ namespace CustomControls
             Add(m_HalfRight);
         }
 
-        Coroutine m_CoroutineHandle;
-
-        public Coroutine Unfold()
+        public Coroutine Unfold(bool immediate = false)
         {
+            if (immediate)
+            {
+                m_HalfLeft.RemoveFromClassList(k_HalfTransitionUssClassName);
+                m_HalfLeft.style.scale = new Vector2(-1f, 1f);
+                return null;
+            }
+
             IEnumerator Coroutine()
             {
+                m_HalfLeft.AddToClassList(k_HalfTransitionUssClassName);
+                // Have to wait one frame before starting transition in added class, otherwise it doesn't work.
+                yield return null;
+
                 m_HalfLeft.style.scale = new Vector2(-1f, 1f);
                 while (m_HalfLeft.resolvedStyle.scale != new Vector2(-1f, 1f))
                 {
@@ -56,10 +65,21 @@ namespace CustomControls
             return m_CoroutineHandle;
         }
 
-        public Coroutine Fold()
+        public Coroutine Fold(bool immediate = false)
         {
+            if (immediate)
+            {
+                m_HalfLeft.RemoveFromClassList(k_HalfTransitionUssClassName);
+                m_HalfLeft.style.scale = Vector2.one;
+                return null;
+            }
+
             IEnumerator Coroutine()
             {
+                m_HalfLeft.AddToClassList(k_HalfTransitionUssClassName);
+                // Have to wait one frame before starting transition in added class, otherwise it doesn't work.
+                yield return null;
+
                 m_HalfLeft.style.scale = Vector2.one;
                 while (m_HalfLeft.resolvedStyle.scale != Vector2.one)
                 {

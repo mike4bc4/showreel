@@ -8,6 +8,7 @@ namespace CustomControls
     public class DiamondLineHorizontal : VisualElement
     {
         const string k_UssClassName = "diamond-line-horizontal";
+        const string k_TransitionUssClassName = k_UssClassName + "--transition";
         const string k_DiamondRightUssClassName = k_UssClassName + "__diamond-right";
         const string k_SeparatorUssClassName = k_UssClassName + "__separator";
 
@@ -44,15 +45,11 @@ namespace CustomControls
                 m_Unfolded = value;
                 if (m_Unfolded)
                 {
-                    style.width = targetWidth;
-                    m_DiamondLeft.Unfold();
-                    m_DiamondRight.Unfold();
+                    Unfold(immediate: true);
                 }
                 else
                 {
-                    style.width = StyleKeyword.Auto;
-                    m_DiamondLeft.Fold();
-                    m_DiamondRight.Fold();
+                    Fold(immediate: true);
                 }
             }
         }
@@ -75,6 +72,7 @@ namespace CustomControls
             m_DiamondRight.AddToClassList(k_DiamondRightUssClassName);
             Add(m_DiamondRight);
 
+            m_DefaultWidth = float.NaN;
             if (Application.isPlaying)
             {
                 RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
@@ -83,17 +81,29 @@ namespace CustomControls
 
         void OnGeometryChanged(GeometryChangedEvent evt)
         {
-            m_DefaultWidth = resolvedStyle.width;
+            m_DefaultWidth = m_DiamondLeft.resolvedStyle.width + m_DiamondRight.resolvedStyle.width;
             style.width = m_DefaultWidth;
             UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
 
-        public Coroutine Unfold()
+        public Coroutine Unfold(bool immediate = false)
         {
+            if (immediate)
+            {
+                RemoveFromClassList(k_TransitionUssClassName);
+                m_DiamondLeft.Unfold(immediate: true);
+                m_DiamondRight.Unfold(immediate: true);
+                style.width = targetWidth;
+                return null;
+            }
+
             IEnumerator Coroutine()
             {
+                AddToClassList(k_TransitionUssClassName);
+                // No need of yielding here as we are waiting for diamond animation to finish anyway.
                 m_DiamondLeft.Unfold();
                 yield return m_DiamondRight.Unfold();
+
                 style.width = targetWidth;
                 while (resolvedStyle.width != targetWidth)
                 {
@@ -110,12 +120,23 @@ namespace CustomControls
             return m_CoroutineHandle;
         }
 
-        public Coroutine Fold()
+        public Coroutine Fold(bool immediate = false)
         {
-            IEnumerator Coroutine()
+            if (immediate)
             {
+                RemoveFromClassList(k_TransitionUssClassName);
+                m_DiamondLeft.Fold(immediate: true);
+                m_DiamondRight.Fold(immediate: true);
+                style.width = float.IsNaN(m_DefaultWidth) ? StyleKeyword.Auto : m_DefaultWidth;
+                return null;
+            }
+
+            IEnumerator Coroutine(bool immediate = false)
+            {
+                AddToClassList(k_TransitionUssClassName);
                 m_DiamondLeft.Fold();
                 yield return m_DiamondRight.Fold();
+
                 style.width = m_DefaultWidth;
                 while (resolvedStyle.width != m_DefaultWidth)
                 {

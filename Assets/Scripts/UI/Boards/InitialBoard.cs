@@ -58,6 +58,7 @@ namespace UI.Boards
                 yield return anim2.coroutine;
 
                 var diamondLine = m_DiamondLineLayer.rootVisualElement.Q<DiamondLineHorizontal>();
+                diamondLine.Fold(immediate: true);
                 diamondLine.Unfold();
 
                 yield return m_WaitOneSecond;
