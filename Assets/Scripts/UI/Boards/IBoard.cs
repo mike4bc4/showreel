@@ -6,8 +6,8 @@ namespace UI.Boards
 {
     public interface IBoard
     {
-        public void Show();
-        public void Hide();
+        public Coroutine Show();
+        public Coroutine Hide();
         public void Init();
     }
 }

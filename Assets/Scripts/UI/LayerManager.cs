@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using CustomControls;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +11,8 @@ namespace UI
 {
     public class LayerManager : MonoBehaviour
     {
+        const int k_LayerPoolSize = 10;
+
         static LayerManager s_Instance;
 
         [SerializeField] Canvas m_Canvas;
@@ -16,6 +20,8 @@ namespace UI
         [SerializeField] RenderTexture m_TemplateRenderTexture;
         [SerializeField] Material m_BlurMaterial;
         [SerializeField] Material m_ShineMaterial;
+
+        List<Layer> m_LayerPool;
 
         [SerializeField] VisualTreeAsset test;
 
@@ -38,60 +44,71 @@ namespace UI
             }
 
             s_Instance = this;
+            m_LayerPool = new List<Layer>();
         }
 
         void Start()
         {
-            // var layer = AddNewLayer("TestLayer");
-            // layer.visualTreeAsset = test;
-            // layer.filter = new BlurFilter();
-            // layer.alpha = 0f;
 
-            // IEnumerator Coroutine()
-            // {
-            //     var anim1 = AnimationManager.Animate(layer, nameof(layer.alpha), 1f);
-            //     anim1.time = 1f;
+        }
 
-            //     yield return new WaitForSeconds(0.5f);
+        public static void RemoveLayer(Layer layer)
+        {
+            if (layer == null)
+            {
+                throw new ArgumentNullException();
+            }
 
-            //     var anim2 = AnimationManager.Animate(layer.filter, nameof(BlurFilter.size), 0f);
-            //     anim2.time = 1f;
-
-            //     yield return anim2.coroutine;
-
-            //     Debug.Log(Time.time);
-
-            //     yield return layer.rootVisualElement.Q<DiamondLineHorizontal>().Unfold();
-
-            //     Debug.Log(Time.time);
-            // }
-
-            // StartCoroutine(Coroutine());
+            var layerPool = s_Instance.m_LayerPool;
+            if (layerPool.Count < k_LayerPoolSize)
+            {
+                layer.gameObject.SetActive(false);
+                layer.transform.SetAsFirstSibling();
+                layer.Reset();
+                layerPool.Add(layer);
+            }
+            else
+            {
+                Destroy(layer.gameObject);
+            }
         }
 
         public static Layer AddNewLayer(string name = "Layer")
         {
-            var gameObject = new GameObject(name, typeof(RectTransform));
-            gameObject.transform.SetParent(s_Instance.m_Canvas.transform);
+            var layerPool = s_Instance.m_LayerPool;
+            if (layerPool.Count > 0)
+            {
+                var layer = layerPool.Last();
+                layerPool.RemoveAt(layerPool.Count - 1);
+                layer.name = name;
+                layer.transform.SetAsLastSibling();
+                layer.gameObject.SetActive(true);
+                return layer;
+            }
+            else
+            {
+                var gameObject = new GameObject(name, typeof(RectTransform));
+                gameObject.transform.SetParent(s_Instance.m_Canvas.transform);
 
-            // Fill entire canvas.
-            var rectTransform = (RectTransform)gameObject.transform;
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.one;
-            rectTransform.offsetMin = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;
+                // Fill entire canvas.
+                var rectTransform = (RectTransform)gameObject.transform;
+                rectTransform.anchorMin = Vector2.zero;
+                rectTransform.anchorMax = Vector2.one;
+                rectTransform.offsetMin = Vector2.zero;
+                rectTransform.offsetMax = Vector2.zero;
 
-            var layer = gameObject.AddComponent<Layer>();
+                var layer = gameObject.AddComponent<Layer>();
 
-            var rawImage = gameObject.AddComponent<RawImage>();
-            rawImage.texture = new RenderTexture(s_Instance.m_TemplateRenderTexture);
+                var rawImage = gameObject.AddComponent<RawImage>();
+                rawImage.texture = new RenderTexture(s_Instance.m_TemplateRenderTexture);
 
-            var uiDocument = gameObject.AddComponent<UIDocument>();
-            uiDocument.panelSettings = Instantiate(s_Instance.m_TemplatePanelSettings);
-            uiDocument.panelSettings.targetTexture = (RenderTexture)rawImage.texture;
+                var uiDocument = gameObject.AddComponent<UIDocument>();
+                uiDocument.panelSettings = Instantiate(s_Instance.m_TemplatePanelSettings);
+                uiDocument.panelSettings.targetTexture = (RenderTexture)rawImage.texture;
 
-            layer.Init();
-            return layer;
+                layer.Init();
+                return layer;
+            }
         }
 
         public static Layer AddNewLayer(VisualTreeAsset vta)

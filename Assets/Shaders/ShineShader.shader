@@ -75,6 +75,7 @@ Shader "Custom/ShineShader"
                 _ShineWidth = 1.0 / clamp(_ShineWidth, 0.001, 1.0);
                 _ShineOffset = clamp(_ShineOffset, 0.0, 1.0);
                 fixed4 shine = tex2D(_ShineTexture, (i.uv + float2(1.0 - _ShineOffset, 0.0)) * float2(_ShineWidth, 1.0) - float2(_ShineWidth - 1.0 / 2.0, 0.0));
+                shine *= _ShineColor.a;
                 
                 color = fixed4(lerp(color.rgb, _ShineColor, shine.r), color.a);
                 return color;

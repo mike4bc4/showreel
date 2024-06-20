@@ -61,7 +61,15 @@ namespace UI
             m_RawImage = GetComponent<RawImage>();
             m_UIDocument = GetComponent<UIDocument>();
         }
-        
+
+        public void Reset()
+        {
+            filter = null;
+            color = Color.white;
+            alpha = 1f;
+            visualTreeAsset = null;
+        }
+
         public void MoveInFrontOf(Layer layer)
         {
             if (layer == this)

@@ -82,7 +82,7 @@ public class AnimationManager : MonoBehaviour
         var propertyInfo = obj.GetType().GetProperty(property, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         if (propertyInfo == null)
         {
-            Debug.LogErrorFormat("Cannot access property '{0}' in object of type '{1}'.", propertyInfo.Name, obj.GetType());
+            Debug.LogErrorFormat("Cannot access property '{0}' in object of type '{1}'.", property, obj.GetType());
             return null;
         }
 
@@ -105,6 +105,13 @@ public class AnimationManager : MonoBehaviour
         }
 
         return propertyInfo;
+    }
+
+    public static Animation Animate<T>(object obj, AnimationDescriptor<T> animationDescriptor)
+    {
+        var animation = Animate(obj, animationDescriptor.property, animationDescriptor.targetValue);
+        animation.time = animationDescriptor.time;
+        return animation;
     }
 
     public static Animation Animate<T>(object obj, string property, T targetValue)
