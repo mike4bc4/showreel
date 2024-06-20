@@ -53,7 +53,7 @@ namespace UI.Boards
 
                 AnimationManager.Animate(m_TextLayer.filter, m_BlurAnimDescriptor);
                 AnimationManager.Animate(m_DiamondLineLayer.filter, m_BlurAnimDescriptor);
-                m_SecondaryTextLayer.filter = new BlurFilter(0f);
+                m_SecondaryTextLayer.filter = new BlurFilter() { size = 0f };
                 AnimationManager.Animate(m_SecondaryTextLayer.filter, m_BlurAnimDescriptor);
 
                 yield return m_WaitHalfSecond;
@@ -97,11 +97,11 @@ namespace UI.Boards
 
             IEnumerator Coroutine()
             {
-                var anim = AnimationManager.Animate(m_DiamondLineLayer, m_AlphaOneAnimDescriptor);
+                AnimationManager.Animate(m_DiamondLineLayer, m_AlphaOneAnimDescriptor);
                 yield return m_WaitHalfSecond;
 
-                var anim2 = AnimationManager.Animate(m_DiamondLineLayer.filter, m_BlurZeroAnimDescriptor);
-                yield return anim2.coroutine;
+                var anim1 = AnimationManager.Animate(m_DiamondLineLayer.filter, m_BlurZeroAnimDescriptor);
+                yield return anim1.coroutine;
 
                 var diamondLine = m_DiamondLineLayer.rootVisualElement.Q<DiamondLineHorizontal>();
                 diamondLine.Fold(immediate: true);
@@ -111,26 +111,31 @@ namespace UI.Boards
                 AnimationManager.Animate(m_TextLayer, m_AlphaOneAnimDescriptor);
                 yield return m_WaitHalfSecond;
 
-                var anim4 = AnimationManager.Animate(m_TextLayer.filter, m_BlurZeroAnimDescriptor);
-                yield return anim4.coroutine;
+                var anim2 = AnimationManager.Animate(m_TextLayer.filter, m_BlurZeroAnimDescriptor);
+                yield return anim2.coroutine;
 
                 AnimationManager.Animate(m_SecondaryTextLayer, m_AlphaOneAnimDescriptor);
                 yield return m_WaitHalfSecond;
 
-                var anim6 = AnimationManager.Animate(m_SecondaryTextLayer.filter, m_BlurZeroAnimDescriptor);
-                yield return anim6.coroutine;
+                var anim3 = AnimationManager.Animate(m_SecondaryTextLayer.filter, m_BlurZeroAnimDescriptor);
+                yield return anim3.coroutine;
 
                 float normalizedLabelWidth = m_SecondaryTextLayer.rootVisualElement.Q<Label>().resolvedStyle.width / Screen.width;
                 float initialOffset = 0.5f - (normalizedLabelWidth / 2f) - (m_ShineWidth / 2f);
-                var shineFilter = new ShineFilter(initialOffset, m_ShineWidth, m_ShineColor);
-                m_SecondaryTextLayer.filter = shineFilter;
+                var shineFilter = new ShineFilter()
+                {
+                    offset = initialOffset,
+                    width = m_ShineWidth,
+                    color = m_ShineColor
+                };
 
+                m_SecondaryTextLayer.filter = shineFilter;
                 while (true)
                 {
                     shineFilter.offset = initialOffset;
-                    var anim7 = AnimationManager.Animate(shineFilter, nameof(shineFilter.offset), 0.5f + (normalizedLabelWidth / 2f) + (m_ShineWidth / 2f));
-                    anim7.time = 5f;
-                    yield return anim7.coroutine;
+                    var anim4 = AnimationManager.Animate(shineFilter, nameof(shineFilter.offset), 0.5f + (normalizedLabelWidth / 2f) + (m_ShineWidth / 2f));
+                    anim4.time = 5f;
+                    yield return anim4.coroutine;
                 }
             }
 

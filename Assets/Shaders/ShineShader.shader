@@ -5,7 +5,7 @@ Shader "Custom/ShineShader"
         _MainTex ("Texture", 2D) = "white" {}
         _ShineTexture("Shine Texture", 2D) = "white" {}
         _ShineOffset("Shine Offset", Range(0.0, 1.0)) = 0.5
-        _ShineWidth("Shine Width", Range(0.0, 1.0)) = 0.5
+        _ShineWidth("Shine Width", Range(0.0, 1.0)) = 0.25
         _ShineColor("Shine Color", Color) = (1.0, 1.0, 1.0, 1.0)
 
         // [Toggle(C1)] _C1 ("C1", Float) = 0

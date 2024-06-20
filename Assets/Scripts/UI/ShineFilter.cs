@@ -6,6 +6,10 @@ namespace UI
 {
     public class ShineFilter : IFilter
     {
+        public const float DefaultOffset = 0.5f;
+        public const float DefaultWidth = 0.25f;
+        public static readonly Color DefaultColor = Color.white;
+
         const string k_OffsetPropertyName = "_ShineOffset";
         const string k_WidthPropertyName = "_ShineWidth";
         const string k_ColorPropertyName = "_ShineColor";
@@ -38,13 +42,9 @@ namespace UI
         public ShineFilter()
         {
             m_Material = GameObject.Instantiate(LayerManager.ShineMaterial);
-        }
-
-        public ShineFilter(float offset, float width, Color color) : this()
-        {
-            this.offset = offset;
-            this.width = width;
-            this.color = color;
+            offset = DefaultOffset;
+            width = DefaultWidth;
+            color = DefaultColor;
         }
     }
 }

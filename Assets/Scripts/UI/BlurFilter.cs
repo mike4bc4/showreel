@@ -6,6 +6,7 @@ namespace UI
 {
     public class BlurFilter : IFilter
     {
+        public const float DefaultQuality = 0.5f;
         public const float DefaultSize = 8f;
 
         const string k_QualityPropertyName = "_Quality";
@@ -33,11 +34,8 @@ namespace UI
         public BlurFilter()
         {
             m_Material = GameObject.Instantiate(LayerManager.BlurMaterial);
-        }
-
-        public BlurFilter(float size) : this()
-        {
-            this.size = size;
+            size = DefaultSize;
+            quality = DefaultQuality;
         }
     }
 }
