@@ -25,7 +25,7 @@ namespace UI.Boards
         Coroutine m_Coroutine;
         WaitForSeconds m_WaitOneSecond;
         WaitForSeconds m_WaitHalfSecond;
-        AnimationDescriptor<float> m_BlurAnimDescriptor;
+        AnimationDescriptor<float> m_BlurDefaultAnimDescriptor;
         AnimationDescriptor<float> m_BlurZeroAnimDescriptor;
         AnimationDescriptor<float> m_AlphaZeroAnimDescriptor;
         AnimationDescriptor<float> m_AlphaOneAnimDescriptor;
@@ -51,10 +51,10 @@ namespace UI.Boards
                     yield return anim1.coroutine;
                 }
 
-                AnimationManager.Animate(m_TextLayer.filter, m_BlurAnimDescriptor);
-                AnimationManager.Animate(m_DiamondLineLayer.filter, m_BlurAnimDescriptor);
+                AnimationManager.Animate(m_TextLayer.filter, m_BlurDefaultAnimDescriptor);
+                AnimationManager.Animate(m_DiamondLineLayer.filter, m_BlurDefaultAnimDescriptor);
                 m_SecondaryTextLayer.filter = new BlurFilter() { size = 0f };
-                AnimationManager.Animate(m_SecondaryTextLayer.filter, m_BlurAnimDescriptor);
+                AnimationManager.Animate(m_SecondaryTextLayer.filter, m_BlurDefaultAnimDescriptor);
 
                 yield return m_WaitHalfSecond;
 
@@ -152,7 +152,7 @@ namespace UI.Boards
         {
             m_WaitOneSecond = new WaitForSeconds(1f);
             m_WaitHalfSecond = new WaitForSeconds(0.5f);
-            m_BlurAnimDescriptor = new AnimationDescriptor<float>()
+            m_BlurDefaultAnimDescriptor = new AnimationDescriptor<float>()
             {
                 property = nameof(BlurFilter.size),
                 targetValue = BlurFilter.DefaultSize,

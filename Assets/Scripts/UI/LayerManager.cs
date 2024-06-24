@@ -92,6 +92,7 @@ namespace UI
 
                 // Fill entire canvas.
                 var rectTransform = (RectTransform)gameObject.transform;
+                rectTransform.localScale = Vector3.one;
                 rectTransform.anchorMin = Vector2.zero;
                 rectTransform.anchorMax = Vector2.one;
                 rectTransform.offsetMin = Vector2.zero;

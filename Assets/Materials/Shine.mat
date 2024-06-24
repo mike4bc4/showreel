@@ -36,5 +36,5 @@ Material:
     - _ShineOffset: 0.5
     - _ShineWidth: 0.25
     m_Colors:
-    - _ShineColor: {r: 0.45475, g: 0.90099996, b: 0.6022065, a: 1}
+    - _ShineColor: {r: 0.44827443, g: 0.9019608, b: 0.59950334, a: 1}
   m_BuildTextureStacks: []

@@ -49,7 +49,7 @@ namespace UI.Boards
                 board.Init();
             }
 
-            m_StateMachine.SetState(InitialBoard.StateID);
+            // m_StateMachine.SetState(InitialBoard.StateID);
         }
     }
 }
