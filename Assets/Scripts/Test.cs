@@ -13,8 +13,6 @@ public class Test : MonoBehaviour
         var uiDocument = GetComponentInChildren<UIDocument>();
         m_DiamondFrame = uiDocument.rootVisualElement.Q<DiamondFrameVertical>();
         m_DiamondFrame.Fold(immediate: true);
-
-
     }
 
     [ContextMenu("Unfold")]
@@ -36,6 +34,48 @@ public class Test : MonoBehaviour
         {
             yield return new WaitForSeconds(0.1f);
             m_DiamondFrame.Fold();
+        }
+
+        StartCoroutine(Coroutine());
+    }
+
+    [ContextMenu("Test")]
+    void C()
+    {
+        IEnumerator Coroutine()
+        {
+            yield return new WaitForSeconds(0.5f);
+            var random = new System.Random();
+            var diamondBar = GetComponentInChildren<UIDocument>().rootVisualElement.Q<DiamondBar>();
+
+            int newIndex = random.Next(0, 3);
+            while (diamondBar.activeIndex == newIndex)
+            {
+                newIndex = random.Next(0, 3);
+            }
+
+            diamondBar.SetActiveIndex(newIndex);
+        }
+
+        StartCoroutine(Coroutine());
+    }
+
+    [ContextMenu("Test2")]
+    void D()
+    {
+        IEnumerator Coroutine()
+        {
+            yield return new WaitForSeconds(0.5f);
+            var random = new System.Random();
+            var diamondBar = GetComponentInChildren<UIDocument>().rootVisualElement.Q<DiamondBar>();
+
+            int newIndex = random.Next(0, 3);
+            while (diamondBar.activeIndex == newIndex)
+            {
+                newIndex = random.Next(0, 3);
+            }
+
+            diamondBar.SetActiveIndex(newIndex, immediate: true);
         }
 
         StartCoroutine(Coroutine());
