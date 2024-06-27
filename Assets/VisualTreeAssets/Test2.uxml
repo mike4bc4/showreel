@@ -10,9 +10,15 @@
         <CustomControls.RoundedFrame class="test" style="display: none;" />
     </ui:VisualElement>
     <ui:VisualElement style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center;">
-        <CustomControls.DiamondTiled />
-        <CustomControls.DiamondBar step-count="4" active-index="4" element-count="6" diamond-size="42" style="width: 810px; align-items: center;" />
-        <CustomControls.DiamondBarElement style="width: 173px;" />
+        <ui:VisualElement style="width: 80px; height: 80px; justify-content: center; align-items: center; rotate: -45deg;">
+            <ui:VisualElement style="width: 25%; height: 25%; position: absolute; background-color: rgb(51, 51, 51); top: 25%; left: 25%;" />
+            <ui:VisualElement style="width: 25%; height: 50%; position: absolute; background-color: rgb(51, 51, 51); top: 0; right: 0;" />
+            <ui:VisualElement style="width: 25%; height: 25%; position: absolute; background-color: rgb(51, 51, 51); right: 25%; bottom: 25%;" />
+            <ui:VisualElement style="width: 25%; height: 50%; position: absolute; background-color: rgb(51, 51, 51); bottom: 0; left: 0;" />
+        </ui:VisualElement>
+        <CustomControls.DiamondBar step-count="4" active-index="4" element-count="6" style="width: 810px; align-items: center;" />
+        <CustomControls.DiamondSpreading edge-width="0,3" style="width: 80px; height: 80px;" />
+        <CustomControls.DiamondBullet diamond-unfolded="false" style="width: 183px;" />
     </ui:VisualElement>
     <ui:VisualElement name="SecondaryText" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none;">
         <ui:VisualElement style="flex-grow: 1; justify-content: flex-end; align-items: center; padding-bottom: 128px;">

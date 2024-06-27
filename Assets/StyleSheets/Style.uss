@@ -297,3 +297,77 @@
 .diamond-bar-element--single-edge {
     flex-shrink: 1.2;
 }
+
+.diamond-spreading {
+    align-items: center;
+    justify-content: center;
+}
+
+.diamond-spreading__corner {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.diamond-spreading__corner-n {
+    left: 0;
+    top: 0;
+}
+
+.diamond-spreading__corner-s {
+    right: 0;
+    bottom: 0;
+    rotate: 180deg;
+}
+
+.diamond-spreading__corner-e {
+    right: 0;
+    top: 0;
+    rotate: 90deg;
+}
+
+.diamond-spreading__corner-w {
+    bottom: 0;
+    left: 0;
+    rotate: 270deg;
+}
+
+.diamond-spreading__corner-container {
+    width: 70.71%;
+    height: 70.71%;
+    rotate: 45deg;
+}
+
+.diamond-spreading__corner-body {
+    background-color: rgb(51, 51, 51);
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    transform-origin: left top;
+}
+
+.diamond-bullet {
+    overflow: hidden;
+    flex-direction: row;
+}
+
+.diamond-bullet__line {
+    height: 2px;
+    background-color: rgb(51, 51, 51);
+    width: 100%;
+}
+
+.diamond-bullet__diamond {
+    width: 42px;
+    height: 42px;
+}
+
+.diamond-bullet__spacer {
+    margin-right: -21px;
+    align-items: flex-end;
+    justify-content: center;
+    flex-grow: 1;
+}

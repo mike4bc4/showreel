@@ -22,6 +22,11 @@ public class Curve
         return x < 0.5f ? 4f * x * x * x : 1f - Mathf.Pow(-2f * x + 2f, 3f) / 2f;
     }
 
+    static float EaseInCubic(float x)
+    {
+        return x * x * x;
+    }
+
     public static float Evaluate(TimingFunction timingFunction, float x)
     {
         switch (timingFunction)
@@ -32,6 +37,8 @@ public class Curve
                 return EaseOutCubic(x);
             case TimingFunction.EaseInOutCubic:
                 return EaseInOutCubic(x);
+            case TimingFunction.EaseInCubic:
+                return EaseInCubic(x);
             default:
                 return float.NaN;
         }
