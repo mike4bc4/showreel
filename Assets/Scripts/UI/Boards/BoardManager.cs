@@ -50,6 +50,7 @@ namespace UI.Boards
             }
 
             // m_StateMachine.SetState(InitialBoard.StateID);
+            m_StateMachine.SetState(TestBoard.StateID);
         }
     }
 }

@@ -186,22 +186,22 @@ namespace CustomControls
                 // Hide main container and allow it to match it's content.
                 m_MainContainer.style.visibility = Visibility.Hidden;
                 m_MainContainer.style.position = Position.Absolute;
-                m_MainContainer.style.height = StyleKeyword.Null;
+                m_MainContainer.style.height = StyleKeyword.Initial;
 
                 // Wait until changes take effect.
                 yield return null;
 
                 // Measure main container and revert it's style changes.
                 float targetHeight = m_MainContainer.resolvedStyle.height;
-                m_MainContainer.style.visibility = StyleKeyword.Null;
-                m_MainContainer.style.position = StyleKeyword.Null;
+                m_MainContainer.style.visibility = StyleKeyword.Initial;
+                m_MainContainer.style.position = StyleKeyword.Initial;
 
                 // Set main container height in pixels, so transition can be started.
                 m_MainContainer.style.height = mainContainerHeight;
 
                 // Reset inline size to once again match main container.
-                style.width = StyleKeyword.Null;
-                style.height = StyleKeyword.Null;
+                style.width = StyleKeyword.Initial;
+                style.height = StyleKeyword.Initial;
                 m_MainContainer.AddToClassList(k_MainContainerTransitionUssClassName);
 
                 // Wait until changes take effect.

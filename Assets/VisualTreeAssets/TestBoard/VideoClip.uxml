@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
+    <ui:VisualElement style="flex-grow: 1; justify-content: center; align-items: center;">
+        <ui:VisualElement name="video-container" style="width: 360px; height: 640px; margin-top: 16px; margin-right: 16px; margin-bottom: 16px; margin-left: 16px; background-image: url(&quot;project://database/Assets/Textures/Screenshot1.png?fileID=2800000&amp;guid=8bfbb80d5cef58c4aa97f31946f3b230&amp;type=3#Screenshot1&quot;);" />
+    </ui:VisualElement>
+</ui:UXML>

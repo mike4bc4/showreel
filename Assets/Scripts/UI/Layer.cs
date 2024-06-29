@@ -12,6 +12,11 @@ namespace UI
         RawImage m_RawImage;
         IFilter m_Filter;
 
+        public Texture texture
+        {
+            get => m_RawImage.texture;
+        }
+
         public IFilter filter
         {
             get => m_Filter;

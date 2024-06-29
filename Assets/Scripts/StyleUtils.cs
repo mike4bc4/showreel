@@ -5,6 +5,15 @@ using UnityEngine.UIElements;
 
 public static class StyleUtils
 {
+    public static void SetPosition(this IStyle style, StylePosition stylePosition)
+    {
+        style.position = stylePosition.position;
+        style.top = stylePosition.top;
+        style.right = stylePosition.right;
+        style.left = stylePosition.left;
+        style.bottom = stylePosition.bottom;
+    }
+
     public static void AddTransition(this IStyle style, StylePropertyName property, float duration, EasingMode timingFunction = EasingMode.Ease, float delay = 0f)
     {
         var transitionProperties = style.transitionProperty.value ?? new List<StylePropertyName>();

@@ -69,6 +69,11 @@ namespace UI
             }
             else
             {
+                if (layer.texture is RenderTexture renderTexture)
+                {
+                    renderTexture.Release();
+                }
+
                 Destroy(layer.gameObject);
             }
         }
