@@ -1,3 +1,7 @@
+.unity-ui-document__root {
+    flex-grow: 1;
+}
+
 .diamond {
     width: 42px;
     height: 42px;
@@ -370,4 +374,59 @@
     align-items: flex-end;
     justify-content: center;
     flex-grow: 1;
+}
+
+.interface__arrow {
+    width: 80px;
+    height: 80px;
+    background-image: url("project://database/Assets/Textures/ArrowLeft.png?fileID=2800000&guid=b6fbc2484c7d69d468dabbdd596167d7&type=3#ArrowLeft");
+}
+
+.interface__arrow--right {
+    background-image: url("project://database/Assets/Textures/ArrowRight.png?fileID=2800000&guid=7510788fa4f108742b9b74983f849371&type=3#ArrowRight");
+}
+
+.interface__info {
+    background-image: url("project://database/Assets/Textures/Info.png?fileID=2800000&guid=8a0c2d3414aa5e045a5f3fc6cb81c786&type=3#Info");
+    height: 64px;
+    margin-right: 8px;
+    width: 64px;
+}
+
+.interface__exit {
+    background-image: url("project://database/Assets/Textures/Exit.png?fileID=2800000&guid=4eaf1236cad31d342988f912510af0be&type=3#Exit");
+    width: 64px;
+    height: 64px;
+}
+
+.interface__buttons {
+    -unity-background-image-tint-color: rgba(51, 51, 51, 0.5);
+    background-color: rgba(0, 0, 0, 0);
+    transition-property: background-color, scale, -unity-background-image-tint-color;
+    transition-duration: 0.2s, 0.1s, 0.2s;
+    scale: 1 1;
+}
+
+.interface__buttons:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+    -unity-background-image-tint-color: rgba(51, 51, 51, 1.0);
+}
+
+.interface__buttons:active {
+    scale: 0.9 0.9;
+}
+
+.interface__buttons:hover .interface__buttons-border {
+    border-bottom-color: rgba(51, 51, 51, 1.0);
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.interface__buttons-border {
+    border-bottom-width: 2px;
+    border-bottom-color: rgba(51, 51, 51, 0.5);
+    margin-left: 10%;
+    margin-right: 10%;
+    transition-property: margin, border-color;
+    transition-duration: 0.2s, 0.2s;
 }

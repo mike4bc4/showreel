@@ -8,9 +8,49 @@ namespace UI
 {
     public class Layer : MonoBehaviour
     {
+        public static readonly LayerComparer Comparer = new LayerComparer();
+
+        public class LayerComparer : IComparer<Layer>
+        {
+            public int Compare(Layer x, Layer y)
+            {
+                if (x.gameObject.activeSelf != y.gameObject.activeSelf)
+                {
+                    return x.gameObject.activeSelf.CompareTo(y.gameObject.activeSelf);
+                }
+
+                if (x.displayOrder == y.displayOrder)
+                {
+                    return x.transform.GetSiblingIndex().CompareTo(y.transform.GetSiblingIndex());
+                }
+                else
+                {
+                    return x.displayOrder.CompareTo(y.displayOrder);
+                }
+            }
+        }
+
+        [SerializeField] int m_DisplayOrder;
+
         UIDocument m_UIDocument;
         RawImage m_RawImage;
         IFilter m_Filter;
+
+        public int displayOrder
+        {
+            get => m_DisplayOrder;
+            set
+            {
+                m_DisplayOrder = value;
+                LayerManager.SortLayers();
+            }
+        }
+
+        public float panelSortingOrder
+        {
+            get => m_UIDocument.panelSettings.sortingOrder;
+            set => m_UIDocument.panelSettings.sortingOrder = value;
+        }
 
         public Texture texture
         {
@@ -67,7 +107,7 @@ namespace UI
             m_UIDocument = GetComponent<UIDocument>();
         }
 
-        public void Reset()
+        public void Clear()
         {
             filter = null;
             color = Color.white;

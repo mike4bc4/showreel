@@ -64,8 +64,9 @@ namespace UI
             {
                 layer.gameObject.SetActive(false);
                 layer.transform.SetAsFirstSibling();
-                layer.Reset();
+                layer.Clear();
                 layerPool.Add(layer);
+                SortLayers();
             }
             else
             {
@@ -80,15 +81,15 @@ namespace UI
 
         public static Layer AddNewLayer(string name = "Layer")
         {
+            Layer layer = null;
             var layerPool = s_Instance.m_LayerPool;
             if (layerPool.Count > 0)
             {
-                var layer = layerPool.Last();
+                layer = layerPool.Last();
                 layerPool.RemoveAt(layerPool.Count - 1);
                 layer.name = name;
                 layer.transform.SetAsLastSibling();
                 layer.gameObject.SetActive(true);
-                return layer;
             }
             else
             {
@@ -103,7 +104,7 @@ namespace UI
                 rectTransform.offsetMin = Vector2.zero;
                 rectTransform.offsetMax = Vector2.zero;
 
-                var layer = gameObject.AddComponent<Layer>();
+                layer = gameObject.AddComponent<Layer>();
 
                 var rawImage = gameObject.AddComponent<RawImage>();
                 rawImage.texture = new RenderTexture(s_Instance.m_TemplateRenderTexture);
@@ -113,15 +114,27 @@ namespace UI
                 uiDocument.panelSettings.targetTexture = (RenderTexture)rawImage.texture;
 
                 layer.Init();
-                return layer;
             }
+
+            SortLayers();
+            return layer;
         }
 
-        public static Layer AddNewLayer(VisualTreeAsset vta)
+        public static Layer AddNewLayer(VisualTreeAsset vta, string name = null)
         {
-            var layer = AddNewLayer(vta.name);
+            var layer = AddNewLayer(string.IsNullOrEmpty(name) ? vta.name : name);
             layer.visualTreeAsset = vta;
             return layer;
+        }
+
+        public static void SortLayers()
+        {
+            var layers = s_Instance.m_Canvas.GetComponentsInChildren<Layer>(includeInactive: true).ToList();
+            layers.Sort(Layer.Comparer);
+            for (int i = 0; i < layers.Count; i++)
+            {
+                layers[i].transform.SetSiblingIndex(i);
+            }
         }
     }
 }

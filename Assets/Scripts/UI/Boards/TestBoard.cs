@@ -93,6 +93,7 @@ namespace UI.Boards
                 // Wait for changes to apply and hide overlay layer.
                 yield return null;
                 m_VideoClipLayer.alpha = 0f;
+                LayerManager.RemoveLayer(m_VideoClipLayer);
             }
 
             if (m_Coroutine != null)

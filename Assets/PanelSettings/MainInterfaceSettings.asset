@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 19101, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: PanelSettings2
+  m_Name: MainInterfaceSettings
   m_EditorClassIdentifier: 
   themeUss: {fileID: -4733365628477956816, guid: 55989849251bdf04f84835e0197ea50d, type: 3}
-  m_TargetTexture: {fileID: 8400000, guid: 3037bfbc94122bf4989194655fbce48b, type: 2}
-  m_ScaleMode: 1
+  m_TargetTexture: {fileID: 0}
+  m_ScaleMode: 0
   m_ReferenceSpritePixelsPerUnit: 100
   m_Scale: 1
   m_ReferenceDpi: 96
@@ -22,10 +22,10 @@ MonoBehaviour:
   m_ReferenceResolution: {x: 1200, y: 800}
   m_ScreenMatchMode: 0
   m_Match: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
   m_ClearDepthStencil: 1
-  m_ClearColor: 1
+  m_ClearColor: 0
   m_ColorClearValue: {r: 0, g: 0, b: 0, a: 0}
   m_DynamicAtlasSettings:
     m_MinAtlasSize: 64
