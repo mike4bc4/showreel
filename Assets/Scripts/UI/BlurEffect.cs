@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace UI
 {
-    public class BlurFilter : IFilter
+    public class BlurEffect : IEffect
     {
         public const float DefaultQuality = 0.5f;
         public const float DefaultSize = 8f;
@@ -51,9 +50,9 @@ namespace UI
             }
         }
 
-        public BlurFilter()
+        public BlurEffect()
         {
-            m_Material = GameObject.Instantiate(LayerManager.BlurMaterial);
+            m_Material = GameObject.Instantiate(LayerManager.BlurEffectMaterial);
             size = DefaultSize;
             quality = DefaultQuality;
         }

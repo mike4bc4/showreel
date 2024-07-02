@@ -1,18 +1,18 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
     <ui:VisualElement style="flex-grow: 1;">
-        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="back-button" class="interface__arrow interface__buttons" style="position: absolute; left: 32px; bottom: 32px;">
-            <ui:VisualElement name="border" class="interface__buttons-border" style="flex-grow: 1;" />
+        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="back-button" class="interface__arrow interface__button" style="position: absolute; left: 32px; bottom: 32px;">
+            <ui:VisualElement name="border" style="flex-grow: 1;" />
         </ui:Button>
-        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="forward-button" class="interface__arrow interface__buttons interface__arrow--right" style="position: absolute; right: 32px; bottom: 32px;">
-            <ui:VisualElement name="border" class="interface__buttons-border" style="flex-grow: 1;" />
+        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="forward-button" class="interface__arrow interface__arrow--right interface__button" style="position: absolute; right: 32px; bottom: 32px;">
+            <ui:VisualElement name="border" style="flex-grow: 1;" />
         </ui:Button>
         <ui:VisualElement name="upper-buttons-container" style="flex-grow: 1; position: absolute; top: 32px; right: 32px; flex-direction: row;">
-            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="info-button" class="interface__info interface__buttons">
-                <ui:VisualElement name="border" class="interface__buttons-border" style="flex-grow: 1;" />
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="info-button" class="interface__info interface__button">
+                <ui:VisualElement name="border" style="flex-grow: 1;" />
             </ui:Button>
-            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="exit-button" class="interface__exit interface__buttons">
-                <ui:VisualElement name="border" class="interface__buttons-border" style="flex-grow: 1;" />
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="exit-button" class="interface__exit interface__button">
+                <ui:VisualElement name="border" style="flex-grow: 1;" />
             </ui:Button>
         </ui:VisualElement>
     </ui:VisualElement>

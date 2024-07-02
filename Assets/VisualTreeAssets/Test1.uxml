@@ -1,12 +1,17 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Template name="DiamondLine" src="project://database/Assets/VisualTreeAssets/InitialBoard/DiamondLine.uxml?fileID=9197481963319205126&amp;guid=569c040f322a500499127e41371cd5ad&amp;type=3#DiamondLine" />
+    <ui:Template name="Controls" src="project://database/Assets/VisualTreeAssets/InterfaceBoard/Controls.uxml?fileID=9197481963319205126&amp;guid=06ddbf63852d0a2498a1507c4af4e559&amp;type=3#Controls" />
     <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
-    <ui:VisualElement style="flex-grow: 1; background-color: rgb(229, 229, 229); display: flex;">
-        <ui:Instance template="DiamondLine" name="DiamondLine" style="flex-grow: 1;" />
+    <ui:VisualElement style="flex-grow: 1; background-color: rgb(229, 229, 229);" />
+    <ui:VisualElement style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; justify-content: center; align-self: auto; align-items: center;">
+        <CustomControls.DiamondFrameVertical unfolded="true" corner-radius="6" focusable="false" style="display: none;">
+            <ui:VisualElement style="flex-grow: 1; height: 678px; width: 381px; background-image: url(&quot;project://database/Assets/Textures/Screenshot1.png?fileID=2800000&amp;guid=8bfbb80d5cef58c4aa97f31946f3b230&amp;type=3#Screenshot1&quot;); -unity-background-scale-mode: scale-to-fit; margin-top: 8px; margin-right: 8px; margin-bottom: 8px; margin-left: 8px;" />
+        </CustomControls.DiamondFrameVertical>
     </ui:VisualElement>
-    <ui:VisualElement name="SecondaryText" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none;">
-        <ui:VisualElement style="flex-grow: 1; justify-content: flex-end; align-items: center; padding-bottom: 128px;">
-            <ui:Label tabindex="-1" text="Press any key to contiune" parse-escape-sequences="true" display-tooltip-when-elided="true" class="test" style="font-size: 32px; color: rgb(50, 50, 50); -unity-font-definition: url(&quot;project://database/Assets/Fonts/Walkway%20Bold%20SDF.asset?fileID=11400000&amp;guid=39f0461b9b3d4034aa2b3a5766e0aebd&amp;type=2#Walkway Bold SDF&quot;);" />
-        </ui:VisualElement>
+    <ui:VisualElement style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center;">
+        <CustomControls.DiamondBar step-count="4" active-index="4" element-count="6" style="width: 810px; align-items: center;" />
+        <CustomControls.DiamondBullet diamond-unfolded="false" style="width: 183px;" />
+    </ui:VisualElement>
+    <ui:VisualElement style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
+        <ui:Instance template="Controls" name="Controls" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
     </ui:VisualElement>
 </ui:UXML>

@@ -399,34 +399,58 @@
     height: 64px;
 }
 
-.interface__buttons {
-    -unity-background-image-tint-color: rgba(51, 51, 51, 0.5);
+.interface__button {
+    -unity-background-image-tint-color: rgba(51, 51, 51, 0.6);
     background-color: rgba(0, 0, 0, 0);
     transition-property: background-color, scale, -unity-background-image-tint-color;
     transition-duration: 0.2s, 0.1s, 0.2s;
     scale: 1 1;
 }
 
-.interface__buttons:hover {
-    background-color: rgba(0, 0, 0, 0.2);
-    -unity-background-image-tint-color: rgba(51, 51, 51, 1.0);
+.interface__button:hover {
+    background-color: rgba(51, 51, 51, 0.2);
+    -unity-background-image-tint-color: rgb(51, 51, 51);
 }
 
-.interface__buttons:active {
+.interface__button:active {
     scale: 0.9 0.9;
 }
 
-.interface__buttons:hover .interface__buttons-border {
-    border-bottom-color: rgba(51, 51, 51, 1.0);
+.interface__button:hover #border {
+    border-bottom-color: rgb(51, 51, 51);
     margin-left: 0;
     margin-right: 0;
 }
 
-.interface__buttons-border {
+.interface__button > #border {
     border-bottom-width: 2px;
-    border-bottom-color: rgba(51, 51, 51, 0.5);
-    margin-left: 10%;
-    margin-right: 10%;
+    border-bottom-color: rgba(51, 51, 51, 0.6);
+    margin-left: 8px;
+    margin-right: 8px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     transition-property: margin, border-color;
     transition-duration: 0.2s, 0.2s;
+}
+
+.interface__button > #text {
+    -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&guid=e902f648eb4a5e341813fb76a8cf3ba5&type=2#ModernSans-Light SDF");
+    color: rgba(51, 51, 51, 0.6);
+    font-size: 36px;
+    transition-property: color;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+    transition-delay: 0s;
+    -unity-font-style: normal;
+    margin-right: 24px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    margin-left: 24px;
+}
+
+.interface__button:hover > #text {
+    color: rgb(51, 51, 51);
 }

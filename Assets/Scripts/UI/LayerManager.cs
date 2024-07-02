@@ -20,10 +20,21 @@ namespace UI
         [SerializeField] RenderTexture m_TemplateRenderTexture;
         [SerializeField] Material m_BlurMaterial;
         [SerializeField] Material m_ShineMaterial;
+        [SerializeField] Material m_BlurEffectMaterial;
 
         List<Layer> m_LayerPool;
 
         [SerializeField] VisualTreeAsset test;
+
+        public static PanelSettings TemplatePanelSettings
+        {
+            get => s_Instance.m_TemplatePanelSettings;
+        }
+
+        public static RenderTexture TemplateRenderTexture
+        {
+            get => s_Instance.m_TemplateRenderTexture;
+        }
 
         public static Material BlurMaterial
         {
@@ -33,6 +44,11 @@ namespace UI
         public static Material ShineMaterial
         {
             get => s_Instance.m_ShineMaterial;
+        }
+
+        public static Material BlurEffectMaterial
+        {
+            get => s_Instance.m_BlurEffectMaterial;
         }
 
         void Awake()
@@ -52,7 +68,7 @@ namespace UI
 
         }
 
-        public static void RemoveLayer(Layer layer)
+        public static void RemoveLayer(LayerBase layer)
         {
             if (layer == null)
             {
@@ -60,12 +76,12 @@ namespace UI
             }
 
             var layerPool = s_Instance.m_LayerPool;
-            if (layerPool.Count < k_LayerPoolSize)
+            if (layerPool.Count < k_LayerPoolSize && layer is Layer)
             {
                 layer.gameObject.SetActive(false);
                 layer.transform.SetAsFirstSibling();
                 layer.Clear();
-                layerPool.Add(layer);
+                layerPool.Add((Layer)layer);
                 SortLayers();
             }
             else
@@ -77,6 +93,30 @@ namespace UI
 
                 Destroy(layer.gameObject);
             }
+        }
+
+        static GameObject CreateLayerGameObject(string name)
+        {
+            var gameObject = new GameObject(name, typeof(RectTransform));
+            gameObject.transform.SetParent(s_Instance.m_Canvas.transform);
+
+            // Fill entire canvas.
+            var rectTransform = (RectTransform)gameObject.transform;
+            rectTransform.localScale = Vector3.one;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            return gameObject;
+        }
+
+        public static EffectLayer AddNewEffectLayer(string name = "Effect Layer")
+        {
+            var gameObject = CreateLayerGameObject(name);
+            var layer = gameObject.AddComponent<EffectLayer>();
+            layer.Init();
+            SortLayers();
+            return layer;
         }
 
         public static Layer AddNewLayer(string name = "Layer")
@@ -93,26 +133,8 @@ namespace UI
             }
             else
             {
-                var gameObject = new GameObject(name, typeof(RectTransform));
-                gameObject.transform.SetParent(s_Instance.m_Canvas.transform);
-
-                // Fill entire canvas.
-                var rectTransform = (RectTransform)gameObject.transform;
-                rectTransform.localScale = Vector3.one;
-                rectTransform.anchorMin = Vector2.zero;
-                rectTransform.anchorMax = Vector2.one;
-                rectTransform.offsetMin = Vector2.zero;
-                rectTransform.offsetMax = Vector2.zero;
-
+                var gameObject = CreateLayerGameObject(name);
                 layer = gameObject.AddComponent<Layer>();
-
-                var rawImage = gameObject.AddComponent<RawImage>();
-                rawImage.texture = new RenderTexture(s_Instance.m_TemplateRenderTexture);
-
-                var uiDocument = gameObject.AddComponent<UIDocument>();
-                uiDocument.panelSettings = Instantiate(s_Instance.m_TemplatePanelSettings);
-                uiDocument.panelSettings.targetTexture = (RenderTexture)rawImage.texture;
-
                 layer.Init();
             }
 
@@ -129,7 +151,7 @@ namespace UI
 
         public static void SortLayers()
         {
-            var layers = s_Instance.m_Canvas.GetComponentsInChildren<Layer>(includeInactive: true).ToList();
+            var layers = s_Instance.m_Canvas.GetComponentsInChildren<LayerBase>(includeInactive: true).ToList();
             layers.Sort(Layer.Comparer);
             for (int i = 0; i < layers.Count; i++)
             {

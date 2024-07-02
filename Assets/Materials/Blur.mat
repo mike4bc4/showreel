@@ -11,7 +11,8 @@ Material:
   m_Shader: {fileID: 4800000, guid: bd2fbbb8bb780e847a3398f2e767fc9e, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - BLUR_ON
   m_InvalidKeywords:
   - _C1_A
   - _C1_C1
@@ -71,6 +72,7 @@ Material:
     - _Quality: 3
     - _Steps: 1
     m_Floats:
+    - _BlurEnabled: 1
     - _BoxSize: 12.54
     - _BoxSpread: 3.71
     - _BumpScale: 1
