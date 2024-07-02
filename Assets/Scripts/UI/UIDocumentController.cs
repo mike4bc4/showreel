@@ -9,7 +9,7 @@ namespace UI
     public class UIDocumentController : MonoBehaviour
     {
         UIDocument m_UIDocument;
-        DiamondLineHorizontal m_DiamondLineHorizontal;
+        DiamondTitle m_DiamondLineHorizontal;
 
         void OnEnable()
         {
@@ -20,7 +20,7 @@ namespace UI
                 return;
             }
 
-            m_DiamondLineHorizontal = m_UIDocument.rootVisualElement.Q<DiamondLineHorizontal>();
+            m_DiamondLineHorizontal = m_UIDocument.rootVisualElement.Q<DiamondTitle>();
 
         }
 

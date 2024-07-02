@@ -183,7 +183,7 @@ namespace CustomControls
                 // Cache current main container height.
                 float mainContainerHeight = m_MainContainer.resolvedStyle.height;
 
-                // Hide main container and allow it to match it's content.
+                // Hide main container and allow it to match its content.
                 m_MainContainer.style.visibility = Visibility.Hidden;
                 m_MainContainer.style.position = Position.Absolute;
                 m_MainContainer.style.height = StyleKeyword.Initial;
@@ -191,7 +191,7 @@ namespace CustomControls
                 // Wait until changes take effect.
                 yield return null;
 
-                // Measure main container and revert it's style changes.
+                // Measure main container and revert its style changes.
                 float targetHeight = m_MainContainer.resolvedStyle.height;
                 m_MainContainer.style.visibility = StyleKeyword.Initial;
                 m_MainContainer.style.position = StyleKeyword.Initial;

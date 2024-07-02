@@ -45,7 +45,7 @@ public class Test : MonoBehaviour
         IEnumerator Coroutine()
         {
             yield return new WaitForSeconds(0.5f);
-            var element = GetComponentInChildren<UIDocument>().rootVisualElement.Q<DiamondBullet>();
+            var element = GetComponentInChildren<UIDocument>().rootVisualElement.Q<DiamondTitle>();
             element.Unfold();
         }
 
@@ -58,7 +58,7 @@ public class Test : MonoBehaviour
         IEnumerator Coroutine()
         {
             yield return new WaitForSeconds(0.5f);
-            var element = GetComponentInChildren<UIDocument>().rootVisualElement.Q<DiamondBullet>();
+            var element = GetComponentInChildren<UIDocument>().rootVisualElement.Q<DiamondTitle>();
             element.Fold();
         }
 

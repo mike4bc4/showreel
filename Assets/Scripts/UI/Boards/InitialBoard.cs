@@ -103,7 +103,7 @@ namespace UI.Boards
                 var anim1 = AnimationManager.Animate(m_DiamondLineLayer.filter, m_BlurZeroAnimDescriptor);
                 yield return anim1.coroutine;
 
-                var diamondLine = m_DiamondLineLayer.rootVisualElement.Q<DiamondLineHorizontal>();
+                var diamondLine = m_DiamondLineLayer.rootVisualElement.Q<DiamondTitle>();
                 diamondLine.Fold(immediate: true);
                 diamondLine.Unfold();
                 yield return m_WaitOneSecond;
