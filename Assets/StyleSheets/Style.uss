@@ -1,3 +1,13 @@
+:root {
+    --font-size-header: 42px;
+    --font-size-button: 36px;
+    font-size: 24px;
+    --color-primary: rgb(51, 51, 51);
+    --color-secondary: rgb(128, 128, 128);
+    --color-background: rgb(229, 229, 229);
+    color: var(--color-primary);
+}
+
 .unity-ui-document__root {
     flex-grow: 1;
 }
@@ -14,27 +24,28 @@
     right: 0;
     bottom: 0;
     background-image: url("project://database/Assets/Textures/DiamondHalf.png?fileID=2800000&guid=b67818afd2121a2408a9bd0881253a5f&type=3#DiamondHalf");
-    -unity-background-image-tint-color: rgb(51, 51, 51);
+    -unity-background-image-tint-color: var(--color-primary);
 }
 
 .diamond-title {
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-between;
+    -unity-font-style: normal;
 }
 
 .diamond-title__label {
-    color: rgb(51, 51, 51);
+    color: var(--color-primary);
     -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&guid=e902f648eb4a5e341813fb76a8cf3ba5&type=2#ModernSans-Light SDF");
-    font-size: 48px;
-    margin-right: 24px;
-    margin-left: 24px;
+    font-size: var(--font-size-header);
+    margin-right: 32px;
+    margin-left: 32px;
     white-space: nowrap;
 }
 
 .diamond-title__diamond {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
 }
 
 .diamond-title__label-container {
@@ -46,9 +57,9 @@
 
 .diamond-title__separator {
     height: 2px;
-    background-color: rgb(51, 51, 51);
+    background-color: var(--color-primary);
     position: relative;
-    margin-bottom: 19px;
+    margin-bottom: 15px;
     margin-left: -2px;
     margin-right: -2px;
 }
@@ -76,7 +87,7 @@
 }
 
 .rounded-frame__top-border {
-    background-color: rgb(0, 0, 0);
+    background-color: var(--color-primary);
     height: 100%;
     width: 100%;
 }
@@ -96,10 +107,10 @@
     border-bottom-right-radius: 100%;
     border-bottom-left-radius: 100%;
     border-top-width: 2px;
-    border-left-color: rgba(0, 0, 0, 0);
-    border-right-color: rgba(0, 0, 0, 0);
-    border-top-color: rgb(0, 0, 0);
-    border-bottom-color: rgba(0, 0, 0, 0);
+    border-left-color: var(--color-primary);
+    border-right-color: var(--color-primary);
+    border-top-color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
     flex-grow: 1;
     border-right-width: 2px;
     border-bottom-width: 2px;
@@ -123,7 +134,7 @@
 }
 
 .rounded-frame__right-border {
-    background-color: rgb(0, 0, 0);
+    background-color: var(--color-primary);
     width: 100%;
     height: 100%;
 }
@@ -151,7 +162,7 @@
     border-right-width: 2px;
     border-bottom-width: 2px;
     border-left-width: 2px;
-    border-right-color: rgb(0, 0, 0);
+    border-right-color: var(--color-primary);
     rotate: 45deg;
 }
 
@@ -168,7 +179,7 @@
 .rounded-frame__bottom-border {
     width: 100%;
     height: 100%;
-    background-color: rgb(0, 0, 0);
+    background-color: var(--color-primary);
 }
 
 .diamond-frame-vertical__diamond-top {
@@ -234,7 +245,7 @@
 
 .diamond-tiled__tile {
     background-image: url("project://database/Assets/Textures/DiamondQuarter2.png?fileID=2800000&guid=4fc0bfb19d05b9444acf49c571fcd3c8&type=3#DiamondQuarter2");
-    -unity-background-image-tint-color: rgb(51, 51, 51);
+    -unity-background-image-tint-color: var(--color-primary);
     position: absolute;
     -unity-background-scale-mode: scale-to-fit;
     width: 100%;
@@ -276,7 +287,7 @@
 
 .diamond-bar__link {
     height: 2px;
-    background-color: rgb(51, 51, 51);
+    background-color: var(--color-primary);
     flex-grow: 1;
     margin-left: -2px;
     margin-right: -2px;
@@ -299,7 +310,7 @@
 .diamond-bar-element__edge {
     flex-grow: 1;
     height: 2px;
-    background-color: rgb(51, 51, 51);
+    background-color: var(--color-primary);
 }
 
 .diamond-bar-element__diamond {
@@ -354,7 +365,7 @@
 }
 
 .diamond-spreading__corner-body {
-    background-color: rgb(51, 51, 51);
+    background-color: var(--color-primary);
     height: 100%;
     position: absolute;
     top: 0;
@@ -369,7 +380,7 @@
 
 .diamond-bullet__line {
     height: 2px;
-    background-color: rgb(51, 51, 51);
+    background-color: var(--color-primary);
     width: 100%;
 }
 
@@ -409,16 +420,17 @@
 }
 
 .interface__button {
-    -unity-background-image-tint-color: rgba(51, 51, 51, 0.6);
-    background-color: rgba(0, 0, 0, 0);
+    -unity-background-image-tint-color: var(--color-secondary);
+    background-color: transparent;
     transition-property: background-color, scale, -unity-background-image-tint-color;
     transition-duration: 0.2s, 0.1s, 0.2s;
     scale: 1 1;
+    overflow: hidden;
 }
 
 .interface__button:hover {
     background-color: rgba(51, 51, 51, 0.2);
-    -unity-background-image-tint-color: rgb(51, 51, 51);
+    -unity-background-image-tint-color: var(--color-primary);
 }
 
 .interface__button:active {
@@ -426,14 +438,14 @@
 }
 
 .interface__button:hover #border {
-    border-bottom-color: rgb(51, 51, 51);
+    border-bottom-color: var(--color-primary);
     margin-left: 0;
     margin-right: 0;
 }
 
 .interface__button > #border {
     border-bottom-width: 2px;
-    border-bottom-color: rgba(51, 51, 51, 0.6);
+    border-bottom-color: var(--color-secondary);
     margin-left: 8px;
     margin-right: 8px;
     position: absolute;
@@ -447,8 +459,8 @@
 
 .interface__button > #text {
     -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&guid=e902f648eb4a5e341813fb76a8cf3ba5&type=2#ModernSans-Light SDF");
-    color: rgba(51, 51, 51, 0.6);
-    font-size: 36px;
+    color: var(--color-secondary);
+    font-size: var(--font-size-button);
     transition-property: color;
     transition-duration: 0.2s;
     transition-timing-function: ease;
@@ -461,5 +473,128 @@
 }
 
 .interface__button:hover > #text {
-    color: rgb(51, 51, 51);
+    color: var(--color-primary);
+}
+
+.dialog__background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.dialog__shadow {
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    background-image: url("project://database/Assets/Textures/Shadow.png?fileID=2800000&guid=e531b988d4f50f64faddbe8662b6731f&type=3#Shadow");
+    -unity-slice-left: 10;
+    -unity-slice-top: 10;
+    -unity-slice-right: 10;
+    -unity-slice-bottom: 10;
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
+}
+
+.dialog__box {
+    background-color: var(--color-background);
+    align-items: center;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-left-color: var(--color-secondary);
+    border-right-color: var(--color-secondary);
+    border-top-color: var(--color-secondary);
+    border-bottom-color: var(--color-secondary);
+    width: 768px;
+    max-height: 768px;
+    min-height: 384px;
+}
+
+.scroll-box {
+}
+
+.scroll-box__viewport-container {
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+.scroll-box__viewport {
+    overflow: hidden;
+    flex: auto;
+    flex-direction: column;
+}
+
+.scroll-box__content-container {
+    overflow: scroll;
+    flex-shrink: 0;
+}
+
+.scroll-bar {
+    width: 24px;
+    opacity: 1;
+}
+
+.scroll-bar__dragger {
+    min-height: 25%;
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.2s;
+}
+
+.scroll-bar__line {
+    position: absolute;
+    bottom: 0;
+    background-color: var(--color-secondary);
+    width: 2px;
+    top: 0;
+    align-self: center;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.scroll-bar__diamond {
+    background-image: url("project://database/Assets/Textures/DiamondFill.png?fileID=2800000&guid=f164d7cb61904fa4b9f722e671a217b9&type=3#DiamondFill");
+    -unity-background-image-tint-color: var(--color-primary);
+    width: 16px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.scroll-bar__diamond--top {
+    background-position-y: top;
+    align-self: center;
+}
+
+.scroll-bar__diamond--bottom {
+    background-position-y: bottom;
+    align-self: center;
+}
+
+.scroll-bar__dragger-container {
+    flex-grow: 1;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.scroll-bar__dragger__background {
+    flex-grow: 1;
+    align-self: center;
+    background-image: url("project://database/Assets/Textures/DiamondFill.png?fileID=2800000&guid=f164d7cb61904fa4b9f722e671a217b9&type=3#DiamondFill");
+    -unity-background-image-tint-color: var(--color-secondary);
+    -unity-slice-top: 60;
+    -unity-slice-bottom: 60;
+    width: 10px;
+    -unity-slice-scale: 0.08333px;
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.2s;
+}
+
+.scroll-bar__dragger__background--active {
+    -unity-background-image-tint-color: var(--color-primary);
 }
