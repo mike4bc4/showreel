@@ -14,6 +14,34 @@ namespace UI.Boards
         List<Board> m_Boards;
         StateMachine m_StateMachine;
         State m_InitialState;
+        InterfaceBoard m_InterfaceBoard;
+        DialogBoard m_DialogBoard;
+
+        public static InterfaceBoard InterfaceBoard
+        {
+            get
+            {
+                if (s_Instance.m_InterfaceBoard == null)
+                {
+                    s_Instance.m_InterfaceBoard = GetBoard<InterfaceBoard>();
+                }
+
+                return s_Instance.m_InterfaceBoard;
+            }
+        }
+
+        public static DialogBoard DialogBoard
+        {
+            get
+            {
+                if (s_Instance.m_DialogBoard == null)
+                {
+                    s_Instance.m_DialogBoard = GetBoard<DialogBoard>();
+                }
+
+                return s_Instance.m_DialogBoard;
+            }
+        }
 
         public static StateMachine StateMachine
         {
@@ -51,6 +79,19 @@ namespace UI.Boards
 
             // m_StateMachine.SetState(InitialBoard.StateID);
             // m_StateMachine.SetState(TestBoard.StateID);
+        }
+
+        public static T GetBoard<T>()
+        {
+            foreach (IBoard board in s_Instance.m_Boards)
+            {
+                if (board is T b)
+                {
+                    return b;
+                }
+            }
+
+            return default(T);
         }
     }
 }

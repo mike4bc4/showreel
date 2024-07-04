@@ -51,7 +51,16 @@ public class AnimationManager : MonoBehaviour
         return null;
     }
 
-    static void StopAnimation(Animation animation)
+    public static void StopAnimation(object obj, string property)
+    {
+        var animation = GetAnimation(obj, property);
+        if (animation != null)
+        {
+            StopAnimation(animation);
+        }
+    }
+
+    public static void StopAnimation(Animation animation)
     {
         s_Instance.StopCoroutine(animation.coroutine);
         s_Instance.m_Animations.Remove(animation);
@@ -148,16 +157,16 @@ public class AnimationManager : MonoBehaviour
                     break;
                 }
 
+                float curveValue = Curve.Evaluate(animation.timingFunction, Mathf.Min(elapsedTime / animation.time, 1f));
+                T value = LerpUnclamped(initialValue, targetValue, curveValue);
+                propertyInfo.SetValue(obj, value);
+
                 if (elapsedTime > animation.time)
                 {
                     StopAnimation(animation);
                     animation.InvokeFinished();
                     break;
                 }
-
-                float curveValue = Curve.Evaluate(animation.timingFunction, Mathf.Min(elapsedTime / animation.time, 1f));
-                T value = LerpUnclamped(initialValue, targetValue, curveValue);
-                propertyInfo.SetValue(obj, value);
 
                 elapsedTime += Time.deltaTime;
                 animation.elapsedTime = elapsedTime;

@@ -476,7 +476,7 @@
     color: var(--color-primary);
 }
 
-.dialog__background {
+.dialog__box-container {
     position: absolute;
     left: 0;
     top: 0;
@@ -486,7 +486,7 @@
     align-items: center;
 }
 
-.dialog__shadow {
+.dialog__box-shadow {
     padding-top: 10px;
     padding-right: 10px;
     padding-bottom: 10px;
@@ -497,6 +497,7 @@
     -unity-slice-right: 10;
     -unity-slice-bottom: 10;
     -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
+    align-self: center;
 }
 
 .dialog__box {
@@ -513,6 +514,24 @@
     width: 768px;
     max-height: 768px;
     min-height: 384px;
+}
+
+.dialog__box__button-container {
+    flex-shrink: 0;
+    flex-direction: row;
+    margin-bottom: 24px;
+    margin-right: 32px;
+    margin-left: 32px;
+    justify-content: space-between;
+    align-self: stretch;
+}
+
+.dialog__box__button-container--single-button {
+    justify-content: center;
+}
+
+.dialog__box__button-container--single-button > #right-button {
+    display: none;
 }
 
 .scroll-box {

@@ -11,6 +11,12 @@ namespace UI
         UIDocument m_UIDocument;
         IFilter m_Filter;
 
+        public bool receivesInput
+        {
+            get => rootVisualElement.enabledSelf;
+            set => rootVisualElement.SetEnabled(value);
+        }
+
         public float panelSortingOrder
         {
             get => m_UIDocument.panelSettings.sortingOrder;

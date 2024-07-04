@@ -7,10 +7,8 @@ namespace UI.Boards
 {
     public class InterfaceBoard : Board, IBoard
     {
-        const int k_SortingOrder = 1000;    // Sorting order affects UI element picking.
-        const int k_DisplayOrder = 1000;
-
-        static InterfaceBoard s_Instance;
+        public const int SortingOrder = 1000;    // Sorting order affects UI element picking.
+        public const int DisplayOrder = 1000;
 
         [SerializeField] VisualTreeAsset m_ControlsVta;
 
@@ -21,10 +19,10 @@ namespace UI.Boards
         public void Init()
         {
             m_ControlsLayer = LayerManager.AddNewLayer(m_ControlsVta, "InterfaceControls");
-            m_ControlsLayer.displayOrder = k_DisplayOrder;
+            m_ControlsLayer.displayOrder = DisplayOrder;
             m_ControlsLayer.alpha = 0f;
             m_ControlsLayer.filter = new BlurFilter();
-            m_ControlsLayer.panelSortingOrder = k_SortingOrder;
+            m_ControlsLayer.panelSortingOrder = SortingOrder;
         }
 
         public Coroutine Show()
@@ -67,13 +65,6 @@ namespace UI.Boards
 
         void Awake()
         {
-            if (s_Instance != null)
-            {
-                Destroy(this);
-                return;
-            }
-
-            s_Instance = this;
             m_WaitHalfSecond = new WaitForSeconds(0.5f);
         }
 

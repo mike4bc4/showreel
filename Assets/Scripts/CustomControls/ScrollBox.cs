@@ -25,7 +25,8 @@ namespace CustomControls
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            UxmlIntAttributeDescription m_LineHeight = new UxmlIntAttributeDescription() { name = "line-height", defaultValue = 18 };
+            UxmlIntAttributeDescription m_ScrolledLines = new UxmlIntAttributeDescription() { name = "scrolled-lines", defaultValue = 3 };
+            UxmlIntAttributeDescription m_LineHeight = new UxmlIntAttributeDescription() { name = "line-height", defaultValue = 24 };
             UxmlFloatAttributeDescription m_Deceleration = new UxmlFloatAttributeDescription() { name = "deceleration", defaultValue = 8f };
             UxmlEnumAttributeDescription<ScrollMode> m_ScrollMode = new UxmlEnumAttributeDescription<ScrollMode>() { name = "scroll-mode", defaultValue = ScrollMode.Immediate };
 
@@ -33,6 +34,7 @@ namespace CustomControls
             {
                 base.Init(ve, bag, cc);
                 ScrollBox scrollBox = (ScrollBox)ve;
+                scrollBox.scrolledLines = m_ScrolledLines.GetValueFromBag(bag, cc);
                 scrollBox.lineHeight = m_LineHeight.GetValueFromBag(bag, cc);
                 scrollBox.deceleration = m_Deceleration.GetValueFromBag(bag, cc);
                 scrollBox.scrollMode = m_ScrollMode.GetValueFromBag(bag, cc);
@@ -49,6 +51,13 @@ namespace CustomControls
         float m_TargetOffset;
         ScrollMode m_ScrollMode;
         float m_Deceleration;
+        int m_ScrolledLines;
+
+        public int scrolledLines
+        {
+            get => m_ScrolledLines;
+            set => m_ScrolledLines = Mathf.Max(1, value);
+        }
 
         public ScrollMode scrollMode
         {
@@ -133,7 +142,7 @@ namespace CustomControls
                     m_ScrollBarAnimation.Pause();
                 }
 
-                var offsetFactor = (evt.delta.y * m_LineHeight) / maxOffset;
+                var offsetFactor = (Mathf.Sign(evt.delta.y) * m_ScrolledLines * m_LineHeight) / maxOffset;
                 switch (scrollMode)
                 {
                     case ScrollMode.Immediate:
@@ -152,10 +161,7 @@ namespace CustomControls
         void AnimateScrollBar(TimerState timerState)
         {
             m_ScrollBar.normalizedOffset = Mathf.Lerp(m_ScrollBar.normalizedOffset, m_TargetOffset, timerState.deltaTime / 1000f * deceleration);
-            if (Mathf.Abs(m_ScrollBar.normalizedOffset - m_TargetOffset) < k_ScrollStopEpsilon ||
-                    m_ScrollBar.normalizedOffset == 0 ||
-                    m_ScrollBar.normalizedOffset == 1 ||
-                    m_ScrollBar.pointerCaptured)
+            if (Mathf.Abs(m_ScrollBar.normalizedOffset - m_TargetOffset) < k_ScrollStopEpsilon || m_ScrollBar.pointerCaptured)
             {
                 m_ScrollBarAnimation.Pause();
                 m_ScrollBarAnimation = null;
@@ -165,6 +171,10 @@ namespace CustomControls
         void OnScrollBarOffsetChanged()
         {
             normalizedOffset = m_ScrollBar.normalizedOffset;
+            if (m_ScrollBar.pointerCaptured)
+            {
+                m_TargetOffset = normalizedOffset;
+            }
         }
 
         void OnGeometryChangedEvent(GeometryChangedEvent evt)

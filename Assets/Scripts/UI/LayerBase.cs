@@ -48,8 +48,18 @@ namespace UI
 
         public Color color
         {
-            get => m_RawImage.color;
-            set => m_RawImage.color = value;
+            get
+            {
+                var color = m_RawImage.color;
+                color.a = 1f;
+                return color;
+            }
+            set
+            {
+                var color = value;
+                color.a = m_RawImage.color.a;
+                m_RawImage.color = color;
+            }
         }
 
         public float alpha
