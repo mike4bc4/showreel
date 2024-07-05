@@ -184,16 +184,20 @@
 
 .diamond-frame-vertical__diamond-top {
     rotate: 90deg;
+    width: 32px;
+    height: 32px;
 }
 
 .diamond-frame-vertical__diamond-bottom {
     rotate: -90deg;
+    width: 32px;
+    height: 32px;
 }
 
 .diamond-frame-vertical__frame-container {
     position: absolute;
-    bottom: 20px;
-    top: 20px;
+    bottom: 15px;
+    top: 15px;
     width: 100%;
 }
 
@@ -207,7 +211,7 @@
     top: 0;
     right: 0;
     left: 50%;
-    margin-left: 20px;
+    margin-left: 14px;
     height: auto;
     width: auto;
 }
@@ -219,7 +223,7 @@
     bottom: 0;
     right: 50%;
     rotate: 180deg;
-    margin-right: 20px;
+    margin-right: 14px;
     height: auto;
     width: auto;
 }
@@ -389,12 +393,12 @@
 }
 
 .diamond-bullet__diamond {
-    width: 42px;
-    height: 42px;
+    width: 32px;
+    height: 32px;
 }
 
 .diamond-bullet__spacer {
-    margin-right: -21px;
+    margin-right: -15px;
     align-items: flex-end;
     justify-content: center;
     flex-grow: 1;
@@ -620,4 +624,63 @@
 
 .scroll-bar__dragger__background--active {
     -unity-background-image-tint-color: var(--color-primary);
+}
+
+.list-element {
+    margin-bottom: 8px;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.list-element__bullet {
+    width: 100px;
+    margin-right: 16px;
+    margin-top: 4px;
+}
+
+.list-element__header {
+    font-size: var(--font-size-button);
+    margin-bottom: 4px;
+}
+
+.list-element__text {
+    margin-left: 1px;
+}
+
+.list-element__border {
+    height: 2px;
+    background-color: rgb(51, 51, 51);
+    margin-top: 4px;
+    scale: 0 1;
+    transition-property: scale;
+    transition-duration: 0.2s;
+    transform-origin: left;
+}
+
+.list-element__button {
+    background-color: rgba(128, 128, 128, 0);
+    scale: 1 1;
+    transition-property: background-color, scale;
+    transition-duration: 0.2s, 0.1s;
+    flex-grow: 1;
+}
+
+.list-element__button:hover {
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+.list-element__button:active {
+    scale: 0.95 0.95;
+}
+
+.list-element__button:hover .list-element__border {
+    scale: 1 1;
+}
+
+.list-element__text-container {
+    margin-top: 4px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    margin-left: 4px;
+    -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&guid=e902f648eb4a5e341813fb76a8cf3ba5&type=2#ModernSans-Light SDF");
 }

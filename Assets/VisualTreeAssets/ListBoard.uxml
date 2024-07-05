@@ -1,8 +1,30 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
-    <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; background-color: rgba(230, 230, 230, 0); padding-bottom: 88px;">
-        <CustomControls.DiamondFrameVertical unfolded="true">
-            <ui:VisualElement style="flex-grow: 1; width: 340px; height: 620px;" />
-        </CustomControls.DiamondFrameVertical>
+    <ui:VisualElement name="background" style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(229, 229, 229); display: none;" />
+    <ui:VisualElement name="frame-viewport" style="align-items: center; justify-content: center; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <ui:VisualElement name="frame-container" style="flex-direction: row; width: 1280px;">
+            <ui:VisualElement name="spacer-left" style="flex-grow: 1;" />
+            <CustomControls.DiamondFrameVertical color="#333333FF" corner-radius="4" name="frame" unfolded="true">
+                <ui:VisualElement style="flex-grow: 1; width: 360px; height: 640px; display: flex;" />
+            </CustomControls.DiamondFrameVertical>
+            <ui:VisualElement name="spacer-right" style="flex-grow: 0;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="title-viewport" style="flex-grow: 1; align-items: center; justify-content: flex-start; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <CustomControls.DiamondTitle name="title" unfolded="true" style="margin-top: 48px;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="list-viewport" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center;">
+        <ui:VisualElement name="list-container" style="width: 1280px; height: 670px; padding-right: 400px;">
+            <CustomControls.ScrollBox scroll-mode="Smooth" style="margin-right: 64px; margin-left: -68px;">
+                <ui:VisualElement name="list" style="flex-grow: 1;">
+                    <CustomControls.ListElement text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac volutpat nibh, non tempus magna. Sed nec neque vitae dolor semper iaculis eu vel tortor." />
+                    <CustomControls.ListElement text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac volutpat nibh, non tempus magna. Sed nec neque vitae dolor semper iaculis eu vel tortor." />
+                    <CustomControls.ListElement text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac volutpat nibh, non tempus magna. Sed nec neque vitae dolor semper iaculis eu vel tortor." />
+                    <CustomControls.ListElement text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac volutpat nibh, non tempus magna. Sed nec neque vitae dolor semper iaculis eu vel tortor." />
+                    <CustomControls.ListElement text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac volutpat nibh, non tempus magna. Sed nec neque vitae dolor semper iaculis eu vel tortor." />
+                    <CustomControls.ListElement text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac volutpat nibh, non tempus magna. Sed nec neque vitae dolor semper iaculis eu vel tortor." />
+                </ui:VisualElement>
+            </CustomControls.ScrollBox>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

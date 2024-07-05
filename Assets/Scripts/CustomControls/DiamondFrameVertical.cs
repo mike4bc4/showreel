@@ -25,7 +25,7 @@ namespace CustomControls
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            UxmlBoolAttributeDescription m_Unfolded = new UxmlBoolAttributeDescription() { name = "unfolded" };
+            UxmlBoolAttributeDescription m_Unfolded = new UxmlBoolAttributeDescription() { name = "unfolded", defaultValue = true };
             UxmlColorAttributeDescription m_Color = new UxmlColorAttributeDescription() { name = "color", defaultValue = s_DefaultColor };
             UxmlFloatAttributeDescription m_Fill = new UxmlFloatAttributeDescription() { name = "fill", defaultValue = k_DefaultFill };
             UxmlIntAttributeDescription m_CornerRadius = new UxmlIntAttributeDescription() { name = "corner-radius", defaultValue = k_DefaultCornerRadius };
@@ -52,7 +52,6 @@ namespace CustomControls
         float m_Fill;
         int m_CornerRadius;
         Coroutine m_Coroutine;
-        float m_DefaultHeight;
 
         public override VisualElement contentContainer
         {
@@ -140,18 +139,6 @@ namespace CustomControls
             color = s_DefaultColor;
             fill = k_DefaultFill;
             cornerRadius = k_DefaultCornerRadius;
-
-            if (Application.isPlaying)
-            {
-                RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-            }
-        }
-
-        void OnGeometryChanged(GeometryChangedEvent evt)
-        {
-            m_DefaultHeight = m_DiamondTop.resolvedStyle.height + m_DiamondBottom.resolvedStyle.height;
-            style.height = m_DefaultHeight;
-            UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
 
         public Coroutine Unfold(bool immediate = false)

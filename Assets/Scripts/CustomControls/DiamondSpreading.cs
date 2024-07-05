@@ -18,7 +18,7 @@ namespace CustomControls
         const string k_CornerBodyUssClassName = k_UssClassName + "__corner-body";
 
         // Defines amount of overlapping which allows to avoid gaps between elements.
-        const float k_SpreadEpsilon = 0.02f;
+        const float k_SpreadEpsilon = 0.05f;
         const float k_AnimationTime = 0.5f;
 
         public new class UxmlFactory : UxmlFactory<DiamondSpreading, UxmlTraits> { }

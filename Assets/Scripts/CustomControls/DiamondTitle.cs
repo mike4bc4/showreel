@@ -103,7 +103,7 @@ namespace CustomControls
             m_DiamondLeft.Unfold(immediate: true);
             m_DiamondRight.Unfold(immediate: true);
             m_LabelContainer.style.width = StyleKeyword.Auto;
-            m_Label.style.visibility = Visibility.Visible;
+            m_Label.style.visibility = StyleKeyword.Null;
         }
 
         public Coroutine Unfold(bool immediate = false)
@@ -138,7 +138,7 @@ namespace CustomControls
                 }
 
                 m_LabelContainer.style.width = StyleKeyword.Auto;
-                m_Label.style.visibility = Visibility.Visible;
+                m_Label.style.visibility = StyleKeyword.Null;
             }
 
             m_CoroutineHandle = AnimationManager.Instance.StartCoroutine(Coroutine());

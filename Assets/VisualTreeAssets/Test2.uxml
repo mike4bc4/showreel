@@ -15,6 +15,6 @@
     </ui:VisualElement>
     <ui:VisualElement style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: none;" />
     <ui:Instance template="ListBoard" name="ListBoard" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
-    <ui:Instance template="Controls" name="InterfaceBoard" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex;" />
+    <ui:Instance template="Controls" name="InterfaceBoard" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex;" />
     <ui:Instance template="DialogBox" name="DialogBoard" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none;" />
 </ui:UXML>
