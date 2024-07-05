@@ -1,4 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="ListBoard" src="project://database/Assets/VisualTreeAssets/ListBoard.uxml?fileID=9197481963319205126&amp;guid=10fd8ecd21465ba41b4256116e87551f&amp;type=3#ListBoard" />
     <ui:Template name="Controls" src="project://database/Assets/VisualTreeAssets/InterfaceBoard/Controls.uxml?fileID=9197481963319205126&amp;guid=06ddbf63852d0a2498a1507c4af4e559&amp;type=3#Controls" />
     <ui:Template name="DialogBox" src="project://database/Assets/VisualTreeAssets/DialogBox.uxml?fileID=9197481963319205126&amp;guid=0dfd5e92595ef1243b7aef18e0ac443e&amp;type=3#DialogBox" />
     <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
@@ -12,8 +13,8 @@
         <CustomControls.DiamondBar step-count="4" active-index="4" element-count="6" style="width: 810px; align-items: center;" />
         <CustomControls.DiamondBullet diamond-unfolded="false" style="width: 183px;" />
     </ui:VisualElement>
-    <ui:VisualElement style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: none;">
-        <ui:Instance template="Controls" name="Controls" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
-    </ui:VisualElement>
-    <ui:Instance template="DialogBox" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;" />
+    <ui:VisualElement style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: none;" />
+    <ui:Instance template="ListBoard" name="ListBoard" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
+    <ui:Instance template="Controls" name="InterfaceBoard" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex;" />
+    <ui:Instance template="DialogBox" name="DialogBoard" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none;" />
 </ui:UXML>

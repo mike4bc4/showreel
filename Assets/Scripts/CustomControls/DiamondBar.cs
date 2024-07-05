@@ -12,6 +12,7 @@ namespace CustomControls
         const string k_ElementUssClassName = k_UssClassName + "__element";
         const string k_DiamondUssClassName = k_UssClassName + "__diamond";
         const string k_DiamondTransitionUssClassName = k_DiamondUssClassName + "--transition";
+        const string k_EndVariantElementUssClassName = k_ElementUssClassName + "--end";
 
         public new class UxmlFactory : UxmlFactory<DiamondBar, UxmlTraits> { }
 
@@ -170,8 +171,13 @@ namespace CustomControls
                 Add(element);
             }
 
-            m_Elements.First().edge = BarElementEdge.Right;
-            m_Elements.Last().edge = BarElementEdge.Left;
+            var firstElement = m_Elements.First();
+            firstElement.edge = BarElementEdge.Right;
+            firstElement.AddToClassList(k_EndVariantElementUssClassName);
+
+            var lastElement = m_Elements.Last();
+            lastElement.edge = BarElementEdge.Left;
+            lastElement.AddToClassList(k_EndVariantElementUssClassName);
             OnGeometryChanged(null);
         }
     }

@@ -297,6 +297,10 @@
     flex-grow: 1;
 }
 
+.diamond-bar__element--end {
+    flex-grow: 0;
+}
+
 .diamond-bar__diamond--transition {
     transition-property: width, height;
     transition-duration: 0.5s, 0.5s;

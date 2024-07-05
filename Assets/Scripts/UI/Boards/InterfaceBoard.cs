@@ -119,29 +119,5 @@ namespace UI.Boards
         {
             Show();
         }
-
-        [ContextMenu("A")]
-        void A()
-        {
-            IEnumerator Coroutine()
-            {
-                yield return new WaitForSeconds(0.5f);
-                Show();
-            }
-
-            StartCoroutine(Coroutine());
-        }
-
-        [ContextMenu("B")]
-        void B()
-        {
-            IEnumerator Coroutine()
-            {
-                yield return new WaitForSeconds(0.5f);
-                Hide();
-            }
-
-            StartCoroutine(Coroutine());
-        }
     }
 }

@@ -715,7 +715,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1407372920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -729,6 +729,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ControlsVta: {fileID: 9197481963319205126, guid: 06ddbf63852d0a2498a1507c4af4e559, type: 3}
+  m_FadeTime: 0.5
 --- !u!4 &1407372921
 Transform:
   m_ObjectHideFlags: 0
@@ -1015,7 +1016,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2037146882
 RectTransform:
   m_ObjectHideFlags: 0
