@@ -98,7 +98,7 @@ namespace UI.Boards
             m_DialogBoxLayer.panelSortingOrder = -1;
             m_DialogBoxLayer.receivesInput = false;
 
-            m_EffectLayer = LayerManager.AddNewEffectLayer();
+            m_EffectLayer = LayerManager.AddNewEffectLayer("DialogBackgroundBlur");
             m_EffectLayer.effect = new BlurEffect() { size = 0f };
             m_EffectLayer.color = Color.white;
             m_EffectLayer.alpha = 0f;
