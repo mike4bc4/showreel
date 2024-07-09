@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using CustomControls;
+using UnityEditor.AssetImporters;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,6 +12,8 @@ namespace UI.Boards
     {
         public static readonly string StateID = Guid.NewGuid().ToString();
 
+        [SerializeField] VisualTreeAsset m_InitialBoardVta;
+        [SerializeField] VisualTreeAsset m_EmptyVta;
         [SerializeField] VisualTreeAsset m_BackgroundVta;
         [SerializeField] VisualTreeAsset m_TextVta;
         [SerializeField] VisualTreeAsset m_DiamondLineVta;
@@ -18,6 +21,7 @@ namespace UI.Boards
         [SerializeField] float m_ShineWidth;
         [SerializeField] Color m_ShineColor;
 
+        Layer m_InitialLayer;
         Layer m_BackgroundLayer;
         Layer m_TextLayer;
         Layer m_DiamondLineLayer;
@@ -79,64 +83,77 @@ namespace UI.Boards
             return m_Coroutine;
         }
 
+        DiamondTitle m_Title;
+        Subtitle m_Subtitle;
+        Layer m_SnapshotLayer;
+
         public Coroutine Show()
         {
-            m_BackgroundLayer = LayerManager.AddNewLayer(m_BackgroundVta);
-
-            m_TextLayer = LayerManager.AddNewLayer(m_TextVta);
-            m_TextLayer.filter = new BlurFilter();
-            m_TextLayer.alpha = 0f;
-
-            m_DiamondLineLayer = LayerManager.AddNewLayer(m_DiamondLineVta);
-            m_DiamondLineLayer.filter = new BlurFilter();
-            m_DiamondLineLayer.alpha = 0f;
-
-            m_SecondaryTextLayer = LayerManager.AddNewLayer(m_SecondaryTextVta);
-            m_SecondaryTextLayer.filter = new BlurFilter();
-            m_SecondaryTextLayer.alpha = 0f;
-
             IEnumerator Coroutine()
             {
-                AnimationManager.Animate(m_DiamondLineLayer, m_AlphaOneAnimDescriptor);
+                bool createLayer = LayerManager.IsRemoved(m_InitialLayer);
+                bool createSnapshotLayer = LayerManager.IsRemoved(this.m_SnapshotLayer);
+
+                if (createLayer)
+                {
+                    m_InitialLayer = LayerManager.AddNewLayer(m_InitialBoardVta);
+                    m_InitialLayer.filter = new MaskFilter();
+
+                    m_Title = m_InitialLayer.rootVisualElement.Q<DiamondTitle>("title");
+                    m_Subtitle = m_InitialLayer.rootVisualElement.Q<Subtitle>("subtitle");
+
+                    m_Title.Fold(immediate: true);
+                    yield return null;
+                }
+
+                var dynamicMask = new DynamicMask(m_InitialLayer.rootVisualElement.layout.size, invert: true);
+                dynamicMask.dirtied += () => ((MaskFilter)m_InitialLayer.filter).alphaTexture = dynamicMask.texture;
+                dynamicMask.AddElements(m_Title, m_Subtitle);
+
+                if (createSnapshotLayer)
+                {
+                    m_SnapshotLayer = LayerManager.AddNewLayer(m_EmptyVta, "SnapshotLayer");
+                    m_SnapshotLayer.filter = new BlurFilter();
+                    m_SnapshotLayer.alpha = 0f;
+                }
+
+                // yield return null;  // Wait until title is folded.
+
+
+
+                var titleSnapshot = m_InitialLayer.MakeSnapshot(m_Title);
+                m_SnapshotLayer.rootVisualElement.Add(titleSnapshot);
+
+                AnimationManager.Animate(m_SnapshotLayer, AnimationDescriptor.AlphaOne);
                 yield return m_WaitHalfSecond;
 
-                var anim1 = AnimationManager.Animate(m_DiamondLineLayer.filter, m_BlurZeroAnimDescriptor);
+                var anim1 = AnimationManager.Animate(m_SnapshotLayer.filter, AnimationDescriptor.BlurZero);
                 yield return anim1.coroutine;
 
-                var diamondLine = m_DiamondLineLayer.rootVisualElement.Q<DiamondTitle>();
-                diamondLine.Fold(immediate: true);
-                diamondLine.Unfold();
-                yield return m_WaitOneSecond;
+                dynamicMask.RemoveElements(m_Title);
+                m_SnapshotLayer.rootVisualElement.Clear();
 
-                AnimationManager.Animate(m_TextLayer, m_AlphaOneAnimDescriptor);
+                m_Title.label.style.visibility = Visibility.Hidden;
+                yield return m_Title.Unfold();
+
+                dynamicMask.AddElements(m_Subtitle, m_Title.label);
+
+                m_Title.label.style.visibility = StyleKeyword.Null;
+                yield return null; // Wait until title label is visible;
+
+                var titleLabelSnapshot = m_InitialLayer.MakeSnapshot(m_Title.label);
+                m_SnapshotLayer.rootVisualElement.Add(titleLabelSnapshot);
+                ((BlurFilter)m_SnapshotLayer.filter).size = BlurFilter.DefaultSize;
+                m_SnapshotLayer.alpha = 0f;
+
+                AnimationManager.Animate(m_SnapshotLayer, AnimationDescriptor.AlphaOne);
                 yield return m_WaitHalfSecond;
 
-                var anim2 = AnimationManager.Animate(m_TextLayer.filter, m_BlurZeroAnimDescriptor);
+                var anim2 = AnimationManager.Animate(m_SnapshotLayer.filter, AnimationDescriptor.BlurZero);
                 yield return anim2.coroutine;
 
-                AnimationManager.Animate(m_SecondaryTextLayer, m_AlphaOneAnimDescriptor);
-                yield return m_WaitHalfSecond;
-
-                var anim3 = AnimationManager.Animate(m_SecondaryTextLayer.filter, m_BlurZeroAnimDescriptor);
-                yield return anim3.coroutine;
-
-                float normalizedLabelWidth = m_SecondaryTextLayer.rootVisualElement.Q<Label>().resolvedStyle.width / Screen.width;
-                float initialOffset = 0.5f - (normalizedLabelWidth / 2f) - (m_ShineWidth / 2f);
-                var shineFilter = new ShineFilter()
-                {
-                    offset = initialOffset,
-                    width = m_ShineWidth,
-                    color = m_ShineColor
-                };
-
-                m_SecondaryTextLayer.filter = shineFilter;
-                while (true)
-                {
-                    shineFilter.offset = initialOffset;
-                    var anim4 = AnimationManager.Animate(shineFilter, nameof(shineFilter.offset), 0.5f + (normalizedLabelWidth / 2f) + (m_ShineWidth / 2f));
-                    anim4.time = 5f;
-                    yield return anim4.coroutine;
-                }
+                dynamicMask.RemoveElements(m_Title.label);
+                m_SnapshotLayer.rootVisualElement.Clear();
             }
 
             if (m_Coroutine != null)
@@ -146,6 +163,11 @@ namespace UI.Boards
 
             m_Coroutine = StartCoroutine(Coroutine());
             return m_Coroutine;
+        }
+
+        void Start()
+        {
+            Show();
         }
 
         void Awake()

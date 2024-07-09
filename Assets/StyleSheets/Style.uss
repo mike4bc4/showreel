@@ -6,6 +6,11 @@
     --color-secondary: rgb(128, 128, 128);
     --color-background: rgb(229, 229, 229);
     color: var(--color-primary);
+    -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&guid=e902f648eb4a5e341813fb76a8cf3ba5&type=2#ModernSans-Light SDF");
+}
+
+.font-size-button {
+    font-size: 32px;
 }
 
 .unity-ui-document__root {
@@ -683,4 +688,23 @@
     margin-bottom: 4px;
     margin-left: 4px;
     -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&guid=e902f648eb4a5e341813fb76a8cf3ba5&type=2#ModernSans-Light SDF");
+}
+
+.subtitle {
+    overflow: hidden;
+}
+
+.subtitle__label {
+    margin: 4px;
+    font-size: 32px;
+}
+
+.subtitle__border {
+    background-color: var(--color-secondary);
+    height: 2px;
+}
+
+.subtitle__border--transition {
+    transition-property: translate, transform-origin;
+    transition-duration: 2s, 2s;
 }

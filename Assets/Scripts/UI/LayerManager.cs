@@ -20,6 +20,7 @@ namespace UI
         [SerializeField] RenderTexture m_TemplateRenderTexture;
         [SerializeField] Material m_BlurMaterial;
         [SerializeField] Material m_ShineMaterial;
+        [SerializeField] Material m_MaskMaterial;
         [SerializeField] Material m_BlurEffectMaterial;
 
         List<Layer> m_LayerPool;
@@ -46,6 +47,11 @@ namespace UI
             get => s_Instance.m_ShineMaterial;
         }
 
+        public static Material MaskMaterial
+        {
+            get => s_Instance.m_MaskMaterial;
+        }
+
         public static Material BlurEffectMaterial
         {
             get => s_Instance.m_BlurEffectMaterial;
@@ -68,6 +74,11 @@ namespace UI
 
         }
 
+        public static bool IsRemoved(LayerBase layer)
+        {
+            return layer == null || s_Instance.m_LayerPool.Contains(layer);
+        }
+
         public static void RemoveLayer(LayerBase layer)
         {
             if (layer == null)
@@ -76,7 +87,7 @@ namespace UI
             }
 
             var layerPool = s_Instance.m_LayerPool;
-            if (layerPool.Count < k_LayerPoolSize && layer is Layer)
+            if (layerPool.Count < k_LayerPoolSize && layer is Layer && !IsRemoved(layer))
             {
                 layer.gameObject.SetActive(false);
                 layer.transform.SetAsFirstSibling();

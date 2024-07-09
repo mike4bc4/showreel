@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,7 +17,7 @@ public static class StyleUtils
 
     public static void AddTransition(this IStyle style, StylePropertyName property, float duration, EasingMode timingFunction = EasingMode.Ease, float delay = 0f)
     {
-        var transitionProperties = style.transitionProperty.value ?? new List<StylePropertyName>();
+        var transitionProperties = style.transitionProperty.ToList();
         int index = transitionProperties.IndexOf(property);
         if (index < 0)
         {
@@ -25,32 +26,52 @@ public static class StyleUtils
             style.transitionProperty = transitionProperties;
         }
 
-        var transitionDurations = style.transitionDuration.value ?? new List<TimeValue>(new TimeValue[1]);
+        var transitionDurations = style.transitionDuration.ToList();
         if (transitionDurations.Count > index)
         {
             transitionDurations[index] = duration;
-            style.transitionDuration = transitionDurations;
+        }
+        else
+        {
+            transitionDurations.Add(duration);
         }
 
-        var transitionTimingFunctions = style.transitionTimingFunction.value ?? new List<EasingFunction>(new EasingFunction[1]);
+        style.transitionDuration = transitionDurations;
+
+        var transitionTimingFunctions = style.transitionTimingFunction.ToList();
         if (transitionTimingFunctions.Count > index)
         {
             transitionTimingFunctions[index] = timingFunction;
-            style.transitionTimingFunction = transitionTimingFunctions;
+        }
+        else
+        {
+            transitionTimingFunctions.Add(timingFunction);
         }
 
-        var transitionDelays = style.transitionDelay.value ?? new List<TimeValue>(new TimeValue[1]);
+        style.transitionTimingFunction = transitionTimingFunctions;
+
+        var transitionDelays = style.transitionDelay.ToList();
         if (transitionDelays.Count > index)
         {
             transitionDelays[index] = delay;
-            style.transitionDelay = transitionDelays;
         }
+        else
+        {
+            transitionDelays.Add(delay);
+        }
+
+        style.transitionDelay = transitionDelays;
+    }
+
+    public static List<T> ToList<T>(this StyleList<T> styleList)
+    {
+        return styleList.value != null ? new List<T>(styleList.value) : new List<T>();
     }
 
     public static void RemoveTransition(this IStyle style, StylePropertyName property)
     {
-        var transitionProperties = style.transitionProperty.value;
-        if (transitionProperties == null)
+        var transitionProperties = style.transitionProperty.ToList();
+        if (!transitionProperties.Any())
         {
             return;
         }
@@ -62,27 +83,27 @@ public static class StyleUtils
         }
 
         transitionProperties.RemoveAt(index);
-        style.transitionProperty = transitionProperties.Count > 0 ? transitionProperties : new StyleList<StylePropertyName>();
+        style.transitionProperty = transitionProperties.Count > 0 ? transitionProperties : StyleKeyword.Null;
 
-        var transitionDurations = style.transitionDuration.value ?? new List<TimeValue>(new TimeValue[1]);
+        var transitionDurations = style.transitionDuration.ToList();
         if (transitionDurations.Count > index)
         {
             transitionDurations.RemoveAt(index);
-            style.transitionDuration = transitionDurations.Count > 0 ? transitionDurations : new StyleList<TimeValue>();
+            style.transitionDuration = transitionDurations.Count > 0 ? transitionDurations : StyleKeyword.Null;
         }
 
-        var transitionTimingFunctions = style.transitionTimingFunction.value ?? new List<EasingFunction>(new EasingFunction[1]);
+        var transitionTimingFunctions = style.transitionTimingFunction.ToList();
         if (transitionTimingFunctions.Count > index)
         {
             transitionTimingFunctions.RemoveAt(index);
-            style.transitionTimingFunction = transitionTimingFunctions.Count > 0 ? transitionTimingFunctions : new StyleList<EasingFunction>();
+            style.transitionTimingFunction = transitionTimingFunctions.Count > 0 ? transitionTimingFunctions : StyleKeyword.Null;
         }
 
-        var transitionDelays = style.transitionDelay.value ?? new List<TimeValue>(new TimeValue[1]);
+        var transitionDelays = style.transitionDelay.ToList();
         if (transitionDelays.Count > index)
         {
             transitionDelays.RemoveAt(index);
-            style.transitionDelay = transitionDelays.Count > 0 ? transitionDelays : new StyleList<TimeValue>();
+            style.transitionDelay = transitionDelays.Count > 0 ? transitionDelays : StyleKeyword.Null;
         }
     }
 }

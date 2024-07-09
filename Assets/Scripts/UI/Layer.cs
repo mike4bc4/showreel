@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -54,8 +55,13 @@ namespace UI
                 m_UIDocument.panelSettings = Instantiate(LayerManager.TemplatePanelSettings);
             }
 
-            var renderTexture = new RenderTexture(LayerManager.TemplateRenderTexture);
-            m_UIDocument.panelSettings.targetTexture = renderTexture;
+            var renderTexture = m_UIDocument.panelSettings.targetTexture;
+            if (renderTexture == null)
+            {
+                renderTexture = new RenderTexture(LayerManager.TemplateRenderTexture);
+                m_UIDocument.panelSettings.targetTexture = renderTexture;
+            }
+
             m_RawImage.texture = renderTexture;
         }
 
@@ -64,6 +70,25 @@ namespace UI
             base.Clear();
             filter = null;
             visualTreeAsset = null;
+        }
+
+        public VisualElement MakeSnapshot(VisualElement ve)
+        {
+            if (ve == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            var rect = ve.worldBound;
+            var snapshotVe = new VisualElement();
+            snapshotVe.name = (string.IsNullOrEmpty(ve.name) ? ve.GetType().Name.ToLower() : ve.name) + "-snapshot";
+            snapshotVe.style.width = rect.width;
+            snapshotVe.style.height = rect.height;
+            snapshotVe.style.SetPosition(new StylePosition() { position = Position.Absolute, left = rect.x, top = rect.y });
+
+            var texture = TextureEditor.Crop(this.texture, rect);
+            snapshotVe.style.backgroundImage = texture;
+            return snapshotVe;
         }
     }
 }
