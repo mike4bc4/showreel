@@ -236,8 +236,8 @@
 }
 
 .diamond-frame-vertical__main-container {
-    padding-left: 21px;
-    padding-right: 21px;
+    padding-left: 16px;
+    padding-right: 16px;
 }
 
 .diamond-frame-vertical__main-container--transition {

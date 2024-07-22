@@ -21,7 +21,8 @@ namespace CustomControls
         const string k_CornerBodyUssClassName = k_UssClassName + "__corner-body";
 
         // Defines amount of overlapping which allows to avoid gaps between elements.
-        const float k_SpreadEpsilon = 0.05f;
+        const float k_SpreadEpsilon = 0.02f;
+        const float k_FillEpsilon = 0.05f;
 
         public new class UxmlFactory : UxmlFactory<DiamondSpreading, UxmlTraits> { }
 
@@ -82,6 +83,7 @@ namespace CustomControls
             {
                 m_Fill = Mathf.Clamp01(value);
                 float scaleFactor = m_Fill * (1f - 2f * edgeWidth) / edgeWidth;
+                scaleFactor += k_FillEpsilon * m_Fill;
                 foreach (var cornerBody in m_CornerBodies)
                 {
                     cornerBody.style.scale = new Vector2(1 + scaleFactor, 1);
@@ -95,7 +97,8 @@ namespace CustomControls
             set
             {
                 m_Spread = Mathf.Clamp01(value);
-                var offset = (edgeWidth / 2f + m_Spread * (0.5f - edgeWidth)) * (1 - k_SpreadEpsilon);
+                var offset = (edgeWidth / 2f + m_Spread * (0.5f - edgeWidth));
+                offset -= k_SpreadEpsilon * (1f - m_Spread);
                 m_CornerN.style.translate = new Translate(Length.Percent(-offset * 100f), Length.Percent(-offset * 100f));
                 m_CornerW.style.translate = new Translate(Length.Percent(-offset * 100f), Length.Percent(offset * 100f));
                 m_CornerS.style.translate = new Translate(Length.Percent(offset * 100f), Length.Percent(offset * 100f));
@@ -182,8 +185,8 @@ namespace CustomControls
             cornerBody.AddToClassList(k_CornerBodyUssClassName);
             m_CornerE.Add(cornerBody);
 
-            initialEdgeWidth = 0.15f;
             targetEdgeWidth = 0.3f;
+            initialEdgeWidth = targetEdgeWidth / 2f;
 
             m_UnfoldTaskPool.Add(async () =>
             {
