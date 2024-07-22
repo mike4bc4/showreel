@@ -349,22 +349,22 @@ namespace UI.Boards
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                Show(default(CancellationToken));
-            }
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-                Hide(default(CancellationToken));
-            }
-            else if (Input.GetKeyDown(KeyCode.Q))
-            {
-                ShowImmediate();
-            }
-            else if (Input.GetKeyDown(KeyCode.E))
-            {
-                HideImmediate();
-            }
+            // if (Input.GetKeyDown(KeyCode.A))
+            // {
+            //     Show(default(CancellationToken));
+            // }
+            // else if (Input.GetKeyDown(KeyCode.D))
+            // {
+            //     Hide(default(CancellationToken));
+            // }
+            // else if (Input.GetKeyDown(KeyCode.Q))
+            // {
+            //     ShowImmediate();
+            // }
+            // else if (Input.GetKeyDown(KeyCode.E))
+            // {
+            //     HideImmediate();
+            // }
         }
     }
 }

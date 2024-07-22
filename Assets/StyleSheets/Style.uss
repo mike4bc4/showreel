@@ -48,7 +48,7 @@
     white-space: nowrap;
 }
 
-.diamond-title__label--measurement{
+.diamond-title__label--measurement {
     position: absolute;
     visibility: hidden;
 }
@@ -117,10 +117,7 @@
     border-bottom-right-radius: 100%;
     border-bottom-left-radius: 100%;
     border-top-width: 2px;
-    border-left-color: var(--color-primary);
-    border-right-color: var(--color-primary);
     border-top-color: var(--color-primary);
-    border-bottom-color: var(--color-primary);
     flex-grow: 1;
     border-right-width: 2px;
     border-bottom-width: 2px;
@@ -532,14 +529,15 @@
     width: 768px;
     max-height: 768px;
     min-height: 384px;
+    padding-top: 48px;
+    padding-right: 48px;
+    padding-bottom: 48px;
+    padding-left: 48px;
 }
 
 .dialog__box__button-container {
     flex-shrink: 0;
     flex-direction: row;
-    margin-bottom: 24px;
-    margin-right: 32px;
-    margin-left: 32px;
     justify-content: space-between;
     align-self: stretch;
 }

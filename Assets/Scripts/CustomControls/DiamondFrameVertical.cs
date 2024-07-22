@@ -1,7 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Utils;
 
 namespace CustomControls
 {
@@ -27,8 +31,9 @@ namespace CustomControls
         {
             UxmlBoolAttributeDescription m_Unfolded = new UxmlBoolAttributeDescription() { name = "unfolded", defaultValue = true };
             UxmlColorAttributeDescription m_Color = new UxmlColorAttributeDescription() { name = "color", defaultValue = s_DefaultColor };
-            UxmlFloatAttributeDescription m_Fill = new UxmlFloatAttributeDescription() { name = "fill", defaultValue = k_DefaultFill };
             UxmlIntAttributeDescription m_CornerRadius = new UxmlIntAttributeDescription() { name = "corner-radius", defaultValue = k_DefaultCornerRadius };
+            UxmlFloatAttributeDescription m_FillAnimationDuration = new UxmlFloatAttributeDescription() { name = "fill-animation-duration", defaultValue = 0.75f };
+            UxmlFloatAttributeDescription m_ResizeAnimationDuration = new UxmlFloatAttributeDescription() { name = "resize-animation-duration", defaultValue = 0.75f };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
@@ -36,8 +41,9 @@ namespace CustomControls
                 DiamondFrameVertical diamondFrameVertical = (DiamondFrameVertical)ve;
                 diamondFrameVertical.unfolded = m_Unfolded.GetValueFromBag(bag, cc);
                 diamondFrameVertical.color = m_Color.GetValueFromBag(bag, cc);
-                diamondFrameVertical.fill = m_Fill.GetValueFromBag(bag, cc);
                 diamondFrameVertical.cornerRadius = m_CornerRadius.GetValueFromBag(bag, cc);
+                diamondFrameVertical.fillAnimationDuration = m_FillAnimationDuration.GetValueFromBag(bag, cc);
+                diamondFrameVertical.resizeAnimationDuration = m_ResizeAnimationDuration.GetValueFromBag(bag, cc);
             }
         }
 
@@ -51,7 +57,35 @@ namespace CustomControls
         Color m_Color;
         float m_Fill;
         int m_CornerRadius;
-        Coroutine m_Coroutine;
+        int m_StateIndex;
+        TaskStatus m_Status;
+        CancellationTokenSource m_Cts;
+        TaskPool m_FoldTaskPool;
+        TaskPool m_UnfoldTaskPool;
+        float m_FillAnimationDuration;
+        float m_ResizeAnimationDuration;
+
+        public float fillAnimationDuration
+        {
+            get => m_FillAnimationDuration;
+            set => m_FillAnimationDuration = Mathf.Max(0f, value);
+        }
+
+        public float resizeAnimationDuration
+        {
+            get => m_ResizeAnimationDuration;
+            set => m_ResizeAnimationDuration = Mathf.Max(0f, value);
+        }
+
+        CancellationToken token
+        {
+            get => m_Cts.Token;
+        }
+
+        public VisualElement mainContainer
+        {
+            get => m_MainContainer;
+        }
 
         public override VisualElement contentContainer
         {
@@ -66,11 +100,11 @@ namespace CustomControls
                 m_Unfolded = value;
                 if (m_Unfolded)
                 {
-                    Unfold(immediate: true);
+                    UnfoldImmediate();
                 }
                 else
                 {
-                    Fold(immediate: true);
+                    FoldImmediate();
                 }
             }
         }
@@ -110,6 +144,9 @@ namespace CustomControls
 
         public DiamondFrameVertical()
         {
+            m_FoldTaskPool = new TaskPool();
+            m_UnfoldTaskPool = new TaskPool();
+
             AddToClassList(k_UssClassName);
 
             m_DiamondTop = new Diamond() { name = "diamond-top" };
@@ -139,131 +176,335 @@ namespace CustomControls
             color = s_DefaultColor;
             fill = k_DefaultFill;
             cornerRadius = k_DefaultCornerRadius;
+
+            m_UnfoldTaskPool.Add(async () =>
+            {
+                var t1 = m_DiamondTop.Unfold(token);
+                var t2 = m_DiamondBottom.Unfold(token);
+                await (t1, t2);
+                m_StateIndex++;
+            });
+
+            m_FoldTaskPool.Add(async () =>
+            {
+                var t1 = m_DiamondTop.Fold(token);
+                var t2 = m_DiamondBottom.Fold(token);
+                await (t1, t2);
+            });
+
+            m_UnfoldTaskPool.Add(async () =>
+            {
+                var animation = AnimationManager.Animate(this, nameof(fill), 1f);
+                animation.time = fillAnimationDuration;
+                animation.timingFunction = TimingFunction.EaseOutSine;
+                await animation.AsTask(token);
+                m_StateIndex++;
+            });
+
+            m_FoldTaskPool.Add(async () =>
+            {
+                var animation = AnimationManager.Animate(this, nameof(fill), 0f);
+                animation.time = fillAnimationDuration;
+                animation.timingFunction = TimingFunction.EaseOutSine;
+                await animation.AsTask(token);
+                m_StateIndex--;
+            });
+
+            m_UnfoldTaskPool.Add(async () =>
+            {
+                // Make current size inline to avoid resizing when container positioning changes.
+                style.SetSize(resolvedStyle.GetSize());
+
+                // Allow main container to match its content.
+                m_MainContainer.style.position = Position.Absolute;
+                m_MainContainer.style.height = StyleKeyword.Null;
+
+                try
+                {
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                    m_StateIndex++;
+                }
+                catch (OperationCanceledException)
+                {
+                    style.SetSize(StyleKeyword.Null);
+                    m_MainContainer.style.position = StyleKeyword.Null;
+                    m_MainContainer.style.height = 0f;
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                    throw;
+                }
+            });
+
+            m_FoldTaskPool.Add(async () =>
+            {
+                var previousSize = resolvedStyle.GetSize();
+                style.SetSize(StyleKeyword.Null);
+                m_MainContainer.style.position = StyleKeyword.Null;
+                m_MainContainer.style.height = 0f;
+
+                try
+                {
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                    m_StateIndex--;
+                }
+                catch (OperationCanceledException)
+                {
+                    style.SetSize(previousSize);
+                    m_MainContainer.style.position = Position.Absolute;
+                    m_MainContainer.style.height = StyleKeyword.Null;
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                    throw;
+                }
+            });
+
+            float targetHeight = 0f;
+            Vector2 previousSize = new Vector2();
+
+            m_UnfoldTaskPool.Add(async () =>
+            {
+                targetHeight = m_MainContainer.resolvedStyle.height;
+                previousSize = resolvedStyle.GetSize();
+
+                style.SetSize(StyleKeyword.Null);
+                m_MainContainer.style.position = StyleKeyword.Null;
+                m_MainContainer.style.height = 0f;
+
+                try
+                {
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                    m_StateIndex++;
+                }
+                catch (OperationCanceledException)
+                {
+                    style.SetSize(previousSize);
+                    m_MainContainer.style.position = Position.Absolute;
+                    m_MainContainer.style.height = StyleKeyword.Null;
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                    throw;
+                }
+            });
+
+            m_FoldTaskPool.Add(async () =>
+            {
+                style.SetSize(previousSize);
+                m_MainContainer.style.position = Position.Absolute;
+                m_MainContainer.style.height = StyleKeyword.Null;
+
+                try
+                {
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                    m_StateIndex--;
+                }
+                catch (OperationCanceledException)
+                {
+                    style.SetSize(StyleKeyword.Null);
+                    m_MainContainer.style.position = StyleKeyword.Null;
+                    m_MainContainer.style.height = 0f;
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                    throw;
+                }
+            });
+
+            m_UnfoldTaskPool.Add(async () =>
+            {
+                m_MainContainer.style.AddTransition("height", m_ResizeAnimationDuration, EasingMode.EaseOutCubic);
+                m_MainContainer.style.height = targetHeight;
+
+                try
+                {
+                    await UniTask.WaitUntil(() => m_MainContainer.resolvedStyle.height == targetHeight, cancellationToken: token);
+                    m_StateIndex++;
+                }
+                catch (OperationCanceledException)
+                {
+                    m_MainContainer.style.RemoveTransition("height");
+                    m_MainContainer.style.height = m_MainContainer.resolvedStyle.height;
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                    throw;
+                }
+            });
+
+            m_FoldTaskPool.Add(async () =>
+            {
+                m_MainContainer.style.AddTransition("height", m_ResizeAnimationDuration, EasingMode.EaseOutCubic);
+                m_MainContainer.style.height = 0f;
+
+                try
+                {
+                    await UniTask.WaitUntil(() => m_MainContainer.resolvedStyle.height == 0f, cancellationToken: token);
+                    m_StateIndex--;
+                }
+                catch (OperationCanceledException)
+                {
+                    m_MainContainer.style.RemoveTransition("height");
+                    m_MainContainer.style.height = m_MainContainer.resolvedStyle.height;
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                    throw;
+                }
+            });
+
+            m_UnfoldTaskPool.Add(async () =>
+            {
+                m_MainContainer.style.height = StyleKeyword.Null;
+
+                try
+                {
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                }
+                catch (OperationCanceledException)
+                {
+                    m_MainContainer.style.height = m_MainContainer.resolvedStyle.height;
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                    throw;
+                }
+            });
+
+            m_FoldTaskPool.Add(async () =>
+            {
+                m_MainContainer.style.height = m_MainContainer.resolvedStyle.height;
+
+                try
+                {
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                    m_StateIndex--;
+                }
+                catch (OperationCanceledException)
+                {
+                    m_MainContainer.style.height = StyleKeyword.Null;
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                    throw;
+                }
+            });
         }
 
-        public Coroutine Unfold(bool immediate = false)
+        void Stop()
         {
-            return null;
-            // if (immediate)
-            // {
-            //     m_MainContainer.RemoveFromClassList(k_MainContainerTransitionUssClassName);
-            //     m_DiamondTop.Unfold(immediate: true);
-            //     m_DiamondBottom.Unfold(immediate: true);
-            //     m_MainContainer.style.height = StyleKeyword.Auto;
-            //     fill = 1f;
-            //     return null;
-            // }
-
-            // IEnumerator Coroutine()
-            // {
-            //     m_DiamondTop.Unfold(false);
-            //     yield return m_DiamondBottom.Unfold(false);
-
-            //     var anim = CoroutineAnimationManager.Animate(this, nameof(fill), 1f);
-            //     anim.time = 1.25f;
-            //     anim.timingFunction = TimingFunction.EaseInOutCubic;
-            //     yield return anim.coroutine;
-
-            //     // Set inline size to prevent changes when main container position changes.
-            //     style.width = resolvedStyle.width;
-            //     style.height = resolvedStyle.height;
-
-            //     // Cache current main container height.
-            //     float mainContainerHeight = m_MainContainer.resolvedStyle.height;
-
-            //     // Hide main container and allow it to match its content.
-            //     m_MainContainer.style.visibility = Visibility.Hidden;
-            //     m_MainContainer.style.position = Position.Absolute;
-            //     m_MainContainer.style.height = StyleKeyword.Initial;
-
-            //     // Wait until changes take effect.
-            //     yield return null;
-
-            //     // Measure main container and revert its style changes.
-            //     float targetHeight = m_MainContainer.resolvedStyle.height;
-            //     m_MainContainer.style.visibility = StyleKeyword.Initial;
-            //     m_MainContainer.style.position = StyleKeyword.Initial;
-
-            //     // Set main container height in pixels, so transition can be started.
-            //     m_MainContainer.style.height = mainContainerHeight;
-
-            //     // Reset inline size to once again match main container.
-            //     style.width = StyleKeyword.Initial;
-            //     style.height = StyleKeyword.Initial;
-            //     m_MainContainer.AddToClassList(k_MainContainerTransitionUssClassName);
-
-            //     // Wait until changes take effect.
-            //     yield return null;
-
-            //     // Fire transition.
-            //     m_MainContainer.style.height = targetHeight;
-            //     while (m_MainContainer.resolvedStyle.height != targetHeight)
-            //     {
-            //         yield return null;
-            //     }
-
-            //     // Reset main container inline height.
-            //     m_MainContainer.style.height = StyleKeyword.Null;
-            // }
-
-            // if (m_Coroutine != null)
-            // {
-            //     CoroutineAnimationManager.Instance.StopCoroutine(m_Coroutine);
-            // }
-
-            // m_Coroutine = CoroutineAnimationManager.Instance.StartCoroutine(Coroutine());
-            // return m_Coroutine;
+            if (m_Cts != null)
+            {
+                m_Cts.Cancel();
+                m_Cts.Dispose();
+                m_Cts = null;
+            }
         }
 
-        public Coroutine Fold(bool immediate = false)
+        public void UnfoldImmediate()
         {
-            return null;
-            // if (immediate)
-            // {
-            //     m_MainContainer.RemoveFromClassList(k_MainContainerTransitionUssClassName);
-            //     m_DiamondTop.Fold(immediate: true);
-            //     m_DiamondBottom.Fold(immediate: true);
-            //     m_MainContainer.style.height = 0f;
-            //     fill = 0f;
-            //     return null;
-            // }
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Create(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
 
-            // IEnumerator Coroutine()
-            // {
-            //     // Reset inline styles that could be possibly changed by unfold coroutine.
-            //     m_MainContainer.style.visibility = StyleKeyword.Null;
-            //     m_MainContainer.style.position = StyleKeyword.Null;
-            //     style.width = StyleKeyword.Null;
-            //     style.height = StyleKeyword.Null;
+                m_Status.SetPending();
+                m_StateIndex = m_FoldTaskPool.length - 1;
 
-            //     // Set inline height, so transition can be started.
-            //     m_MainContainer.style.height = m_MainContainer.resolvedStyle.height;
-            //     m_MainContainer.AddToClassList(k_MainContainerTransitionUssClassName);
-            //     yield return null;
+                m_DiamondBottom.UnfoldImmediate();
+                m_DiamondTop.UnfoldImmediate();
 
-            //     m_MainContainer.style.height = 0f;
-            //     while (m_MainContainer.resolvedStyle.height != 0f)
-            //     {
-            //         yield return null;
-            //     }
+                AnimationManager.StopAnimation(this, nameof(fill));
+                fill = 1f;
 
-            //     var anim = CoroutineAnimationManager.Animate(this, nameof(fill), 0f);
-            //     anim.time = 1.25f;
-            //     anim.timingFunction = TimingFunction.EaseInOutCubic;
-            //     yield return anim.coroutine;
+                m_MainContainer.style.RemoveTransition("height");
+                m_MainContainer.style.height = StyleKeyword.Null;
 
-            //     m_DiamondTop.Fold(false);
-            //     yield return m_DiamondBottom.Fold(false);
-            // }
+                style.SetSize(StyleKeyword.Null);
 
-            // if (m_Coroutine != null)
-            // {
-            //     CoroutineAnimationManager.Instance.StopCoroutine(m_Coroutine);
-            // }
+                var t1 = UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                var t2 = UniTask.WaitUntil(() => m_DiamondBottom.ready && m_DiamondTop.ready);
 
-            // m_Coroutine = CoroutineAnimationManager.Instance.StartCoroutine(Coroutine());
-            // return m_Coroutine;
-            // return null;
+                await (t1, t2);
+                m_Status.SetCompleted();
+            });
+        }
+
+        public void FoldImmediate()
+        {
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Create(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                m_Status.SetPending();
+                m_StateIndex = 0;
+
+                m_DiamondBottom.FoldImmediate();
+                m_DiamondTop.FoldImmediate();
+
+                AnimationManager.StopAnimation(this, nameof(fill));
+                fill = 0f;
+
+                m_MainContainer.style.RemoveTransition("height");
+                m_MainContainer.style.height = 0f;
+
+                style.SetSize(StyleKeyword.Null);
+
+                var t1 = UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                var t2 = UniTask.WaitUntil(() => m_DiamondBottom.ready && m_DiamondTop.ready);
+
+                await (t1, t2);
+                m_Status.SetCompleted();
+            });
+        }
+
+        public UniTask Unfold(CancellationToken cancellationToken = default)
+        {
+            Stop();
+            m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
+            var task = UniTask.Create(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                m_Status.SetPending();
+
+                try
+                {
+
+                    await UniTask.NextFrame(token).Chain(m_UnfoldTaskPool.GetRange(m_StateIndex, m_UnfoldTaskPool.length - m_StateIndex));
+                }
+                finally
+                {
+                    m_Status.SetCompleted();
+                }
+            });
+
+            return task;
+        }
+
+        public UniTask Fold(CancellationToken cancellationToken = default)
+        {
+            Stop();
+            m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
+            var task = UniTask.Create(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                m_Status.SetPending();
+                var functions = m_FoldTaskPool.GetRange(0, m_StateIndex + 1);
+                functions.Reverse();
+
+                try
+                {
+                    await UniTask.NextFrame(token).Chain(functions);
+                }
+                finally
+                {
+                    m_Status.SetCompleted();
+                }
+            });
+
+            return task;
         }
     }
 }

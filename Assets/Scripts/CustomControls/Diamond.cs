@@ -70,7 +70,7 @@ namespace CustomControls
         async UniTask UnfoldImmediateTask()
         {
             m_Status.SetPending();
-            m_HalfLeft.style.RemoveTransition("width");
+            m_HalfLeft.style.RemoveTransition("scale");
             m_HalfLeft.style.scale = new Vector2(-1f, 1f);
             await UniTask.NextFrame(PlayerLoopTiming.Initialization);
             m_Status.SetCompleted();
@@ -94,7 +94,7 @@ namespace CustomControls
         async UniTask FoldImmediateTask()
         {
             m_Status.SetPending();
-            m_HalfLeft.style.RemoveTransition("width");
+            m_HalfLeft.style.RemoveTransition("scale");
             m_HalfLeft.style.scale = Vector2.one;
             await UniTask.NextFrame(PlayerLoopTiming.Initialization);
             m_Status.SetCompleted();

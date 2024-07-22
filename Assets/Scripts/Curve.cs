@@ -27,6 +27,11 @@ public class Curve
         return x * x * x;
     }
 
+    static float EaseOutSine(float x)
+    {
+        return Mathf.Sin((x * Mathf.PI) / 2);
+    }
+
     public static float Evaluate(TimingFunction timingFunction, float x)
     {
         switch (timingFunction)
@@ -39,6 +44,8 @@ public class Curve
                 return EaseInOutCubic(x);
             case TimingFunction.EaseInCubic:
                 return EaseInCubic(x);
+            case TimingFunction.EaseOutSine:
+                return EaseOutSine(x);
             default:
                 return float.NaN;
         }

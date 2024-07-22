@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -105,14 +106,14 @@ namespace CustomControls
                 // until geometry is updated.
                 if (float.IsNaN(frameLength))
                 {
-                    EventCallback<GeometryChangedEvent> onGeometryChanged = null;
-                    onGeometryChanged = evt =>
+                    void OnGeometryChanged(GeometryChangedEvent evt)
                     {
                         fill = value;
-                        UnregisterCallback<GeometryChangedEvent>(onGeometryChanged);
-                    };
+                        UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                    }
 
-                    RegisterCallback<GeometryChangedEvent>(onGeometryChanged);
+                    UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                    RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
                     return;
                 }
 

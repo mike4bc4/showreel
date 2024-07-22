@@ -9,4 +9,5 @@ public enum TimingFunction
     EaseOutCubic,
     EaseInOutCubic,
     EaseInCubic,
+    EaseOutSine,
 }

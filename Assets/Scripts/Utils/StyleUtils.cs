@@ -21,6 +21,24 @@ namespace Utils
 
     public static class StyleUtils
     {
+        public static void SetSize(this IStyle style, StyleLength width, StyleLength height)
+        {
+            style.width = width;
+            style.height = height;
+        }
+
+        public static void SetSize(this IStyle style, Vector2 size)
+        {
+            style.width = size.x;
+            style.height = size.y;
+        }
+
+        public static void SetSize(this IStyle style, StyleKeyword keyword)
+        {
+            style.width = keyword;
+            style.height = keyword;
+        }
+
         public static async UniTask SetPropertyAsync<T>(this IStyle style, string propertyName, T value, CancellationToken ct = default)
         {
             var property = typeof(IStyle).GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
@@ -28,6 +46,7 @@ namespace Utils
             {
                 throw new ArgumentException($"'{typeof(T)}' is not assignable from '{property.PropertyType}'.");
             }
+
 
             style.visibility = Visibility.Visible;
             var previousValue = property.GetValue(style);
