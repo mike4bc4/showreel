@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Utils;
 
 namespace CustomControls
 {
@@ -19,7 +22,6 @@ namespace CustomControls
 
         // Defines amount of overlapping which allows to avoid gaps between elements.
         const float k_SpreadEpsilon = 0.05f;
-        const float k_AnimationTime = 0.5f;
 
         public new class UxmlFactory : UxmlFactory<DiamondSpreading, UxmlTraits> { }
 
@@ -28,6 +30,7 @@ namespace CustomControls
             UxmlFloatAttributeDescription m_EdgeWidth = new UxmlFloatAttributeDescription() { name = "edge-width", defaultValue = 0.3f };
             UxmlFloatAttributeDescription m_Spread = new UxmlFloatAttributeDescription() { name = "spread", defaultValue = 1f };
             UxmlFloatAttributeDescription m_Fill = new UxmlFloatAttributeDescription() { name = "fill", defaultValue = 1f };
+            UxmlFloatAttributeDescription m_AnimationDuration = new UxmlFloatAttributeDescription() { name = "animation-duration", defaultValue = 0.5f };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
@@ -36,6 +39,7 @@ namespace CustomControls
                 diamondFolded.edgeWidth = m_EdgeWidth.GetValueFromBag(bag, cc);
                 diamondFolded.spread = m_Spread.GetValueFromBag(bag, cc);
                 diamondFolded.fill = m_Fill.GetValueFromBag(bag, cc);
+                diamondFolded.animationDuration = m_AnimationDuration.GetValueFromBag(bag, cc);
             }
         }
 
@@ -45,11 +49,31 @@ namespace CustomControls
         VisualElement m_CornerE;
         VisualElement m_CornerS;
         List<VisualElement> m_CornerBodies;
-
-        Coroutine m_Coroutine;
         float m_EdgeWidth;
         float m_Spread;
         float m_Fill;
+        float m_AnimationDuration;
+        CancellationTokenSource m_Cts;
+        TaskStatus m_Status;
+        TaskPool m_UnfoldTaskPool;
+        TaskPool m_FoldTaskPool;
+        int m_StateIndex;
+
+        public bool ready
+        {
+            get => m_Status.IsCompleted();
+        }
+
+        CancellationToken token
+        {
+            get => m_Cts.Token;
+        }
+
+        public float animationDuration
+        {
+            get => m_AnimationDuration;
+            set => m_AnimationDuration = Mathf.Max(0f, value);
+        }
 
         public float fill
         {
@@ -107,6 +131,8 @@ namespace CustomControls
 
         public DiamondSpreading()
         {
+            m_FoldTaskPool = new TaskPool();
+            m_UnfoldTaskPool = new TaskPool();
             m_CornerBodies = new List<VisualElement>();
 
             AddToClassList(k_UssClassName);
@@ -158,89 +184,166 @@ namespace CustomControls
 
             initialEdgeWidth = 0.15f;
             targetEdgeWidth = 0.3f;
+
+            m_UnfoldTaskPool.Add(async () =>
+            {
+                var animation1 = AnimationManager.Animate(this, nameof(spread), 1f);
+                animation1.time = animationDuration * 0.4f;
+                animation1.timingFunction = TimingFunction.EaseOutCubic;
+
+                var animation2 = AnimationManager.Animate(this, nameof(edgeWidth), targetEdgeWidth);
+                animation2.time = animationDuration * 0.4f;
+                animation2.timingFunction = TimingFunction.EaseOutCubic;
+
+                await (animation1.AsTask(token), animation2.AsTask(token));
+                m_StateIndex++;
+            });
+
+            m_FoldTaskPool.Add(async () =>
+            {
+                var animation1 = AnimationManager.Animate(this, nameof(spread), 0f);
+                animation1.time = animationDuration * 0.4f;
+                animation1.timingFunction = TimingFunction.EaseOutCubic;
+
+                var animation2 = AnimationManager.Animate(this, nameof(edgeWidth), initialEdgeWidth);
+                animation2.time = animationDuration * 0.4f;
+                animation2.timingFunction = TimingFunction.EaseOutCubic;
+
+                await (animation1.AsTask(token), animation2.AsTask(token));
+            });
+
+            m_UnfoldTaskPool.Add(async () =>
+            {
+                var animation = AnimationManager.Animate(this, nameof(fill), 1f);
+                animation.time = animationDuration * 0.6f;
+                animation.timingFunction = TimingFunction.EaseOutCubic;
+
+                await animation.AsTask(token);
+            });
+
+            m_FoldTaskPool.Add(async () =>
+           {
+               var animation = AnimationManager.Animate(this, nameof(fill), 0f);
+               animation.time = animationDuration * 0.6f;
+               animation.timingFunction = TimingFunction.EaseOutCubic;
+
+               await animation.AsTask(token);
+               m_StateIndex--;
+           });
         }
 
-        public Coroutine Fold(bool immediate = false)
+        void Stop()
         {
-            if (immediate)
+            if (m_Cts != null)
             {
-                spread = 0f;
-                edgeWidth = initialEdgeWidth;
-                fill = 0f;
-                return null;
+                m_Cts.Cancel();
+                m_Cts.Dispose();
+                m_Cts = null;
             }
-
-            IEnumerator Coroutine()
-            {
-                spread = 1f;
-                edgeWidth = targetEdgeWidth;
-                fill = 1f;
-
-                var anim1 = CoroutineAnimationManager.Animate(this, nameof(fill), 0f);
-                anim1.time = k_AnimationTime;
-                anim1.timingFunction = TimingFunction.EaseInCubic;
-
-                yield return anim1.coroutine;
-
-                var anim2 = CoroutineAnimationManager.Animate(this, nameof(spread), 0f);
-                anim2.time = k_AnimationTime;
-                anim2.timingFunction = TimingFunction.EaseInCubic;
-                var anim3 = CoroutineAnimationManager.Animate(this, nameof(edgeWidth), initialEdgeWidth);
-                anim3.time = k_AnimationTime;
-                anim3.timingFunction = TimingFunction.EaseInCubic;
-
-                yield return anim3.coroutine;
-            }
-
-            if (m_Coroutine != null)
-            {
-                CoroutineAnimationManager.Instance.StopCoroutine(m_Coroutine);
-            }
-
-            m_Coroutine = CoroutineAnimationManager.Instance.StartCoroutine(Coroutine());
-            return m_Coroutine;
         }
 
-        public Coroutine Unfold(bool immediate = false)
+        public void FoldImmediate()
         {
-            if (immediate)
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Create(async () =>
             {
-                spread = 1f;
-                edgeWidth = targetEdgeWidth;
-                fill = 1f;
-                return null;
-            }
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
 
-            IEnumerator Coroutine()
-            {
-                spread = 0f;
+                m_Status.SetPending();
+                m_StateIndex = 0;
+
+                AnimationManager.StopAnimation(this, nameof(edgeWidth));
+                AnimationManager.StopAnimation(this, nameof(spread));
+                AnimationManager.StopAnimation(this, nameof(fill));
+
                 edgeWidth = initialEdgeWidth;
+                spread = 0f;
                 fill = 0f;
 
-                var anim1 = CoroutineAnimationManager.Animate(this, nameof(spread), 1f);
-                anim1.time = k_AnimationTime;
-                anim1.timingFunction = TimingFunction.EaseOutCubic;
-                var anim2 = CoroutineAnimationManager.Animate(this, nameof(edgeWidth), targetEdgeWidth);
-                anim2.time = k_AnimationTime;
-                anim2.timingFunction = TimingFunction.EaseOutCubic;
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                m_Status.SetCompleted();
+            });
+        }
 
-                yield return anim2.coroutine;
-
-                var anim3 = CoroutineAnimationManager.Animate(this, nameof(fill), 1f);
-                anim3.time = k_AnimationTime;
-                anim3.timingFunction = TimingFunction.EaseOutCubic;
-
-                yield return anim3.coroutine;
-            }
-
-
-            if (m_Coroutine != null)
+        public void UnfoldImmediate()
+        {
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Create(async () =>
             {
-                CoroutineAnimationManager.Instance.StopCoroutine(m_Coroutine);
-            }
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
 
-            m_Coroutine = CoroutineAnimationManager.Instance.StartCoroutine(Coroutine());
-            return m_Coroutine;
+                m_Status.SetPending();
+                m_StateIndex = m_UnfoldTaskPool.length - 1;
+
+                AnimationManager.StopAnimation(this, nameof(edgeWidth));
+                AnimationManager.StopAnimation(this, nameof(spread));
+                AnimationManager.StopAnimation(this, nameof(fill));
+
+                edgeWidth = targetEdgeWidth;
+                spread = 1f;
+                fill = 1f;
+
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                m_Status.SetCompleted();
+            });
+        }
+
+        public UniTask Fold(CancellationToken cancellationToken = default)
+        {
+            Stop();
+            m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
+            return UniTask.Create(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                m_Status.SetPending();
+                var functions = m_FoldTaskPool.GetRange(0, m_StateIndex + 1);
+                functions.Reverse();
+
+                try
+                {
+                    await UniTask.NextFrame(token).Chain(functions);
+                }
+                finally
+                {
+                    m_Status.SetCompleted();
+                }
+            });
+        }
+
+        public UniTask Unfold(CancellationToken cancellationToken = default)
+        {
+            Stop();
+            m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
+            return UniTask.Create(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                m_Status.SetPending();
+
+                try
+                {
+                    await UniTask.NextFrame(token).Chain(m_UnfoldTaskPool.GetRange(m_StateIndex, m_UnfoldTaskPool.length - m_StateIndex));
+                }
+                finally
+                {
+                    m_Status.SetCompleted();
+                }
+            });
         }
     }
 }

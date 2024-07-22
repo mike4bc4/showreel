@@ -49,26 +49,26 @@ namespace UI.Boards
             if (Input.GetKeyDown(KeyCode.A))
             {
                 var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
-                var diamondFrameVertical = layer.rootVisualElement.Q<DiamondFrameVertical>();
-                diamondFrameVertical.Unfold();
+                var element = layer.rootVisualElement.Q<DiamondBullet>();
+                element.Unfold();
             }
             else if (Input.GetKeyDown(KeyCode.D))
             {
                 var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
-                var diamondFrameVertical = layer.rootVisualElement.Q<DiamondFrameVertical>();
-                diamondFrameVertical.Fold();
+                var element = layer.rootVisualElement.Q<DiamondBullet>();
+                element.Fold();
             }
             else if (Input.GetKeyDown(KeyCode.Q))
             {
                 var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
-                var diamondFrameVertical = layer.rootVisualElement.Q<DiamondFrameVertical>();
-                diamondFrameVertical.UnfoldImmediate();
+                var element = layer.rootVisualElement.Q<DiamondBullet>();
+                element.UnfoldImmediate();
             }
             else if (Input.GetKeyDown(KeyCode.E))
             {
                 var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
-                var diamondFrameVertical = layer.rootVisualElement.Q<DiamondFrameVertical>();
-                diamondFrameVertical.FoldImmediate();
+                var element = layer.rootVisualElement.Q<DiamondBullet>();
+                element.FoldImmediate();
             }
         }
     }

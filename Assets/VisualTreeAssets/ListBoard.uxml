@@ -7,7 +7,7 @@
             <CustomControls.DiamondFrameVertical color="#333333FF" corner-radius="4" name="frame" unfolded="true">
                 <ui:VisualElement style="flex-grow: 1; width: 360px; height: 640px; display: flex;" />
             </CustomControls.DiamondFrameVertical>
-            <ui:VisualElement name="spacer-right" style="flex-grow: 0;" />
+            <ui:VisualElement name="spacer-right" />
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="title-viewport" style="flex-grow: 1; align-items: center; justify-content: flex-start; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
