@@ -1,123 +1,210 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Utils;
 
 namespace UI.Boards
 {
     public class InterfaceBoard : Board, IBoard
     {
-        public const int SortingOrder = 1000;    // Sorting order affects UI element picking.
-        public const int DisplayOrder = 1000;
+        public const int SortingOrder = 1000;   // Sorting order affects UI element picking.
+        public const int DisplayOrder = 1000;   // Display order affects Layer sorting
 
         [SerializeField] VisualTreeAsset m_ControlsVta;
         [SerializeField] float m_FadeTime;
 
         Layer m_ControlsLayer;
-        Coroutine m_Coroutine;
-        WaitForSeconds m_WaitHalfSecond;
+        CancellationTokenSource m_Cts;
+        TaskStatus m_Status;
+        int m_StateIndex;
+        TaskPool m_ShowTaskPool;
+        TaskPool m_HideTaskPool;
+
+        CancellationToken token
+        {
+            get => m_Cts.Token;
+        }
 
         public void Init()
         {
-            m_ControlsLayer = LayerManager.AddNewLayer(m_ControlsVta, "InterfaceControls");
+            m_ShowTaskPool = new TaskPool();
+            m_HideTaskPool = new TaskPool();
+
+            m_ControlsLayer = LayerManager.CreateLayer(m_ControlsVta, "InterfaceControls");
             m_ControlsLayer.displayOrder = DisplayOrder;
+            m_ControlsLayer.interactable = false;
             m_ControlsLayer.alpha = 0f;
-            m_ControlsLayer.filter = new BlurFilter();
+            m_ControlsLayer.blurSize = Layer.DefaultBlurSize;
             m_ControlsLayer.panelSortingOrder = SortingOrder;
-        }
 
-        void StopAnimations()
-        {
-            AnimationManager.StopAnimation(m_ControlsLayer, nameof(Layer.alpha));
-            AnimationManager.StopAnimation(m_ControlsLayer.filter, nameof(BlurFilter.size));
-        }
-
-        public Coroutine Show()
-        {
-            StopAnimations();
-            IEnumerator Coroutine()
+            m_ShowTaskPool.Add(async () =>
             {
-                var show = m_ControlsLayer.alpha != 1f;
-                var focus = ((BlurFilter)m_ControlsLayer.filter).size != 0f;
-                var coroutines = new List<Coroutine>();
+                var animation = AnimationManager.Animate(m_ControlsLayer, AnimationDescriptor.AlphaOne);
+                animation.time = m_FadeTime;
+                animation.SetTaskCancellationToken(token);
+                await UniTask.WaitForSeconds(m_FadeTime / 2f, cancellationToken: token);
+                m_StateIndex++;
+            });
 
-                if (show)
-                {
-                    var animation = AnimationManager.Animate(m_ControlsLayer, AnimationDescriptor.AlphaOne);
-                    animation.time = m_FadeTime;
-                    coroutines.Add(animation.coroutine);
-                    yield return new WaitForSeconds(m_FadeTime * 0.5f);
-                }
-
-                if (focus)
-                {
-                    var animation = AnimationManager.Animate(m_ControlsLayer.filter, AnimationDescriptor.BlurZero);
-                    animation.time = m_FadeTime;
-                    coroutines.Add(animation.coroutine);
-                }
-
-                foreach (var coroutine in coroutines)
-                {
-                    yield return coroutine;
-                }
-            }
-
-            if (m_Coroutine != null)
+            m_HideTaskPool.Add(async () =>
             {
-                StopCoroutine(m_Coroutine);
-            }
+                var animation = AnimationManager.Animate(m_ControlsLayer, AnimationDescriptor.AlphaZero);
+                animation.time = m_FadeTime;
+                await animation.AsTask(token);
+            });
 
-            m_Coroutine = StartCoroutine(Coroutine());
-            return m_Coroutine;
-        }
-
-        public Coroutine Hide()
-        {
-            StopAnimations();
-            IEnumerator Coroutine()
+            m_ShowTaskPool.Add(async () =>
             {
-                var blur = ((BlurFilter)m_ControlsLayer.filter).size != BlurFilter.DefaultSize;
-                var hide = m_ControlsLayer.alpha != 0f;
-                var coroutines = new List<Coroutine>();
+                var animation = AnimationManager.Animate(m_ControlsLayer, AnimationDescriptor.BlurZero);
+                animation.time = m_FadeTime;
+                await animation.AsTask(token);
+                m_StateIndex++;
+            });
 
-                if (blur)
-                {
-                    var animation = AnimationManager.Animate(m_ControlsLayer.filter, AnimationDescriptor.BlurDefault);
-                    animation.time = m_FadeTime;
-                    coroutines.Add(animation.coroutine);
-                    yield return new WaitForSeconds(m_FadeTime * 0.5f);
-                }
-
-                if (hide)
-                {
-                    var animation = AnimationManager.Animate(m_ControlsLayer, AnimationDescriptor.AlphaZero);
-                    animation.time = m_FadeTime;
-                    coroutines.Add(animation.coroutine);
-                }
-
-                foreach (var coroutine in coroutines)
-                {
-                    yield return coroutine;
-                }
-            }
-
-            if (m_Coroutine != null)
+            m_HideTaskPool.Add(async () =>
             {
-                StopCoroutine(m_Coroutine);
+                var animation = AnimationManager.Animate(m_ControlsLayer, AnimationDescriptor.BlurDefault);
+                animation.time = m_FadeTime;
+                animation.SetTaskCancellationToken(token);
+                await UniTask.WaitForSeconds(m_FadeTime / 2f, cancellationToken: token);
+                m_StateIndex--;
+            });
+
+            m_ShowTaskPool.Add(() =>
+            {
+                m_ControlsLayer.interactable = true;
+            });
+
+            m_HideTaskPool.Add(() =>
+            {
+                m_ControlsLayer.interactable = false;
+                m_StateIndex--;
+            });
+        }
+
+        void Stop()
+        {
+            if (m_Cts != null)
+            {
+                m_Cts.Cancel();
+                m_Cts.Dispose();
+                m_Cts = null;
             }
-
-            m_Coroutine = StartCoroutine(Coroutine());
-            return m_Coroutine;
         }
 
-        void Awake()
+        public void ShowImmediate()
         {
-            m_WaitHalfSecond = new WaitForSeconds(0.5f);
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Action(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                m_Status.SetPending();
+                m_StateIndex = m_ShowTaskPool.length - 1;
+                m_ControlsLayer.interactable = true;
+                m_ControlsLayer.alpha = 1f;
+                m_ControlsLayer.blurSize = 0f;
+                m_Status.SetCompleted();
+            })();
         }
 
-        void Start()
+        public void HideImmediate()
         {
-            Show();
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Action(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                m_Status.SetPending();
+                m_StateIndex = 0;
+                m_ControlsLayer.interactable = false;
+                m_ControlsLayer.alpha = 0f;
+                m_ControlsLayer.blurSize = 1f;
+                m_Status.SetCompleted();
+            })();
         }
+
+        public UniTask Show(CancellationToken cancellationToken = default)
+        {
+            Stop();
+            m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
+            var task = UniTask.Create(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                m_Status.SetPending();
+
+                try
+                {
+                    await UniTask.NextFrame(token).Chain(m_ShowTaskPool.GetRange(m_StateIndex, m_ShowTaskPool.length - m_StateIndex));
+                }
+                finally
+                {
+                    m_Status.SetCompleted();
+                }
+            });
+
+            return task;
+        }
+
+        public UniTask Hide(CancellationToken cancellationToken = default)
+        {
+            Stop();
+            m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
+            var task = UniTask.Create(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                m_Status.SetPending();
+                var functions = m_HideTaskPool.GetRange(0, m_StateIndex + 1);
+                functions.Reverse();
+
+                try
+                {
+                    await UniTask.NextFrame(token).Chain(functions);
+                }
+                finally
+                {
+                    m_Status.SetCompleted();
+                }
+            });
+
+            return task;
+        }
+
+        IEnumerator Start()
+        {
+            yield return new WaitForSeconds(0.5f);
+            Show(default(CancellationToken));
+        }
+
+        // void Update()
+        // {
+        //     if (Input.GetKeyDown(KeyCode.Z))
+        //     {
+        //         Show(default(CancellationToken));
+        //     }
+        //     else if (Input.GetKeyDown(KeyCode.C))
+        //     {
+        //         Hide(default(CancellationToken));
+        //     }
+        // }
     }
 }

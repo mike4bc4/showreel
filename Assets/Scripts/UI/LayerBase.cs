@@ -82,10 +82,19 @@ namespace UI
             }
         }
 
-        public virtual void Clear()
+        public void Clear()
+        {
+            RenderTexture rt = RenderTexture.active;
+            RenderTexture.active = (RenderTexture)texture;
+            GL.Clear(true, true, Color.clear);
+            RenderTexture.active = rt;
+        }
+
+        public virtual void ResetLayer()
         {
             color = Color.white;
             alpha = 1f;
+            Clear();
         }
     }
 }

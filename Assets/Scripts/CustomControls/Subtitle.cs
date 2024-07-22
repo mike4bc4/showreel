@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Utils;
 
 namespace CustomControls
 {
@@ -39,12 +42,19 @@ namespace CustomControls
 
         Label m_Label;
         VisualElement m_Border;
-        VisualElementCoroutine m_Coroutine;
         bool m_Animated;
         bool m_PreviewMode;
         float m_BorderScale;
         float m_AnimationDuration;
         float m_AnimationDelay;
+        CancellationTokenSource m_Cts;
+        bool m_RunningAnimation;
+        TaskStatus m_Status;
+
+        public bool ready
+        {
+            get => m_Status.IsCompleted() || m_RunningAnimation;
+        }
 
         public string text
         {
@@ -52,13 +62,13 @@ namespace CustomControls
             set => m_Label.text = value;
         }
 
-        public bool animated
+        bool animated
         {
             get => m_Animated;
             set
             {
                 m_Animated = value;
-                if (m_Animated && m_Coroutine == null && (Application.isPlaying || m_PreviewMode))
+                if (m_Animated)
                 {
                     StartAnimation();
                 }
@@ -72,7 +82,11 @@ namespace CustomControls
         public float borderScale
         {
             get => m_BorderScale;
-            set => m_BorderScale = Mathf.Clamp01(value);
+            set
+            {
+                m_BorderScale = Mathf.Clamp01(value);
+                m_Border.style.scale = new Vector2(m_BorderScale, 1f);
+            }
         }
 
         public float animationDuration
@@ -98,81 +112,117 @@ namespace CustomControls
             m_Border = new VisualElement() { name = "border" };
             m_Border.AddToClassList(borderUssClassName);
             Add(m_Border);
+        }
 
-            if (!Application.isPlaying)
+        void Stop()
+        {
+            if (m_Cts != null)
             {
-                RegisterCallback<AttachToPanelEvent>(evt => this.RegisterPreviewModeChangedCallback(OnPreviewModeChanged));
-                RegisterCallback<DetachFromPanelEvent>(evt => this.UnregisterPreviewModeChangedCallback(OnPreviewModeChanged));
+                m_Cts.Cancel();
+                m_Cts.Dispose();
+                m_Cts = null;
             }
         }
 
-        void OnPreviewModeChanged(ChangeEvent<bool> evt)
+        public void StopAnimation(bool reset = false)
         {
-            m_PreviewMode = evt.newValue;
-            if (evt.newValue)
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Action(async () =>
             {
-                StartAnimation();
-            }
-            else
-            {
-                StopAnimation();
-            }
-        }
-
-        void StartAnimation()
-        {
-            if (panel == null)
-            {
-                EventCallback<GeometryChangedEvent> callback = null;
-                callback = (evt) =>
+                if (!m_Status.IsCompleted())
                 {
-                    m_Coroutine = this.StartCoroutine(Coroutine());
-                    m_Border.UnregisterCallback(callback);
-                };
-
-                m_Border.RegisterCallback(callback);
-            }
-            else
-            {
-                m_Coroutine = this.StartCoroutine(Coroutine());
-            }
-        }
-
-        void StopAnimation()
-        {
-            m_Coroutine?.Stop();
-            m_Coroutine = null;
-            m_Border.style.scale = new Vector2(0f, 1f);
-            m_Border.style.RemoveTransition("translate");
-            m_Border.style.RemoveTransition("transform-origin");
-            m_Border.style.translate = StyleKeyword.Null;
-            m_Border.style.transformOrigin = StyleKeyword.Null;
-        }
-
-        IEnumerator Coroutine()
-        {
-            float width = m_Border.resolvedStyle.width;
-            while (true)
-            {
-                m_Border.style.scale = new Vector2(borderScale, 1f);
-                m_Border.style.RemoveTransition("translate");
-                m_Border.style.RemoveTransition("transform-origin");
-                m_Border.style.translate = new Translate(-width, 0f);
-                m_Border.style.transformOrigin = new TransformOrigin(Length.Percent(100f), Length.Percent(50f));
-
-                yield return null;
-
-                m_Border.style.AddTransition("translate", animationDuration, EasingMode.EaseOutSine);
-                m_Border.style.AddTransition("transform-origin", animationDuration, EasingMode.EaseOutSine);
-                m_Border.style.translate = new Translate(width, 0f);
-                m_Border.style.transformOrigin = new TransformOrigin(Length.Percent(0f), Length.Percent(50f));
-
-                while (m_Border.resolvedStyle.translate != new Vector3(width, 0f, 0f))
-                {
-                    yield return null;
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: m_Cts.Token);
                 }
 
-                yield return new WaitForTime(animationDelay);
+                StopAnimationTask(reset).Forget();
+            })();
+        }
+
+        async UniTask StopAnimationTask(bool reset)
+        {
+            m_Status.SetPending();
+            m_Border.style.RemoveTransition("translate");
+            m_Border.style.RemoveTransition("transform-origin");
+
+            if (reset)
+            {
+                m_Border.style.translate = new Translate(Length.Percent(-100f), Length.Percent(0f));
+                m_Border.style.transformOrigin = new TransformOrigin(Length.Percent(100f), Length.Percent(0f));
+            }
+            else
+            {
+                await UniTask.WaitWhile(() => float.IsNaN(m_Border.resolvedStyle.width));
+                var width = m_Border.resolvedStyle.width;
+                m_Border.style.translate = new Translate(Length.Percent(m_Border.resolvedStyle.translate.x / width * 100f), Length.Percent(0f));
+                m_Border.style.transformOrigin = new TransformOrigin(Length.Percent(m_Border.resolvedStyle.transformOrigin.x / width * 100f), Length.Percent(0f));
+            }
+
+            await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+            m_Status.SetCompleted();
+        }
+
+        public void StartAnimation(bool reset = false, CancellationToken ct = default)
+        {
+            Stop();
+            m_Cts = ct != default ? CancellationTokenSource.CreateLinkedTokenSource(ct) : new CancellationTokenSource();
+            UniTask.Action(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: m_Cts.Token);
+                }
+
+                // As StartAnimationTask awaits multiple times, it's easier to create single execution
+                // handler here rather that multiple inside try-catch-finally blocks inside mentioned method.
+                // This works only here because task can only end with exception because of infinite loop,
+                // Otherwise we wouldn't be able to notice successful completion.
+                StartAnimationTask(reset).Forget((e) =>
+                {
+                    m_Status.SetCompleted();
+                    m_RunningAnimation = false;
+                });
+            })();
+        }
+
+        async UniTask StartAnimationTask(bool reset)
+        {
+            m_Status.SetPending();
+            m_RunningAnimation = true;
+            await UniTask.WaitWhile(() => float.IsNaN(m_Border.resolvedStyle.width), cancellationToken: m_Cts.Token);
+            var width = m_Border.resolvedStyle.width;
+
+            // Set initial style values as percentage, otherwise transition to percentage will not start.
+            m_Border.style.translate = new Translate(reset ? Length.Percent(-100f) : Length.Percent(m_Border.resolvedStyle.translate.x / width * 100f), Length.Percent(0f));
+            m_Border.style.transformOrigin = new TransformOrigin(reset ? Length.Percent(100f) : Length.Percent(m_Border.resolvedStyle.transformOrigin.x / width * 100f), Length.Percent(0f));
+
+            try
+            {
+                while (true)
+                {
+                    m_Border.style.AddTransition("translate", animationDuration, EasingMode.EaseOutSine);
+                    m_Border.style.AddTransition("transform-origin", animationDuration, EasingMode.EaseOutSine);
+                    m_Border.style.translate = new Translate(Length.Percent(100f), Length.Percent(0f));
+                    m_Border.style.transformOrigin = new TransformOrigin(Length.Percent(0f), Length.Percent(0f));
+
+                    await UniTask.WaitForSeconds(animationDuration * 2f, cancellationToken: m_Cts.Token);
+
+                    m_Border.style.RemoveTransition("translate");
+                    m_Border.style.RemoveTransition("transform-origin");
+                    m_Border.style.translate = new Translate(Length.Percent(-100f), Length.Percent(0f));
+                    m_Border.style.transformOrigin = new TransformOrigin(Length.Percent(100f), Length.Percent(0f));
+
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, m_Cts.Token);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                m_Border.style.RemoveTransition("translate");
+                m_Border.style.RemoveTransition("transform-origin");
+                m_Border.style.translate = new Translate(Length.Percent(m_Border.resolvedStyle.translate.x / width * 100f), Length.Percent(0f));
+                m_Border.style.transformOrigin = new TransformOrigin(Length.Percent(m_Border.resolvedStyle.transformOrigin.x / width * 100f), Length.Percent(0f));
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                throw;
             }
         }
     }

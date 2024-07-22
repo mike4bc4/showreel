@@ -4,8 +4,8 @@ Shader "Custom/Mask"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _AlphaTex ("Alpha Mask", 2D) = "white" {}
-        [Toggle(USE_ALPHA_MASK)] _UseAlphaMask ("Use Alpha Mask", Float) = 1
-        [Toggle] _InvertAlphaMask ("Invert Alpha Mask", Float) = 0
+        // [Toggle(USE_ALPHA_MASK)] _UseAlphaMask ("Use Alpha Mask", Float) = 1
+        // [Toggle] _InvertAlphaMask ("Invert Alpha Mask", Float) = 0
     }
     SubShader
     {
@@ -24,7 +24,7 @@ Shader "Custom/Mask"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma multi_compile _ USE_ALPHA_MASK
+            // #pragma multi_compile _ USE_ALPHA_MASK
             #include "UnityCG.cginc"
 
             struct appdata
@@ -43,7 +43,7 @@ Shader "Custom/Mask"
 
             sampler2D _MainTex;
             sampler2D _AlphaTex;
-            float _InvertAlphaMask;
+            // float _InvertAlphaMask;
 
             v2f vert (appdata v)
             {
@@ -56,15 +56,15 @@ Shader "Custom/Mask"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                #ifdef USE_ALPHA_MASK
-                    fixed4 alphaSample = tex2D(_AlphaTex, i.uv);
-                    if(_InvertAlphaMask)
-                    {
-                        alphaSample = fixed4(1, 1, 1, 1) - alphaSample;
-                    }
+                // #ifdef USE_ALPHA_MASK
+                fixed4 alphaSample = tex2D(_AlphaTex, i.uv);
+                // if(_InvertAlphaMask)
+                // {
+                //     alphaSample = fixed4(1, 1, 1, 1) - alphaSample;
+                // }
 
-                    i.color.a *= alphaSample.r;
-                #endif
+                i.color.a *= alphaSample.r;
+                // #endif
                 
                 return tex2D(_MainTex, i.uv) * i.color;
             }

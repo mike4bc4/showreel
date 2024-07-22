@@ -48,6 +48,11 @@
     white-space: nowrap;
 }
 
+.diamond-title__label--measurement{
+    position: absolute;
+    visibility: hidden;
+}
+
 .diamond-title__diamond {
     width: 32px;
     height: 32px;

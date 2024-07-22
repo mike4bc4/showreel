@@ -143,124 +143,127 @@ namespace CustomControls
 
         public Coroutine Unfold(bool immediate = false)
         {
-            if (immediate)
-            {
-                m_MainContainer.RemoveFromClassList(k_MainContainerTransitionUssClassName);
-                m_DiamondTop.Unfold(immediate: true);
-                m_DiamondBottom.Unfold(immediate: true);
-                m_MainContainer.style.height = StyleKeyword.Auto;
-                fill = 1f;
-                return null;
-            }
+            return null;
+            // if (immediate)
+            // {
+            //     m_MainContainer.RemoveFromClassList(k_MainContainerTransitionUssClassName);
+            //     m_DiamondTop.Unfold(immediate: true);
+            //     m_DiamondBottom.Unfold(immediate: true);
+            //     m_MainContainer.style.height = StyleKeyword.Auto;
+            //     fill = 1f;
+            //     return null;
+            // }
 
-            IEnumerator Coroutine()
-            {
-                m_DiamondTop.Unfold();
-                yield return m_DiamondBottom.Unfold();
+            // IEnumerator Coroutine()
+            // {
+            //     m_DiamondTop.Unfold(false);
+            //     yield return m_DiamondBottom.Unfold(false);
 
-                var anim = AnimationManager.Animate(this, nameof(fill), 1f);
-                anim.time = 1.25f;
-                anim.timingFunction = TimingFunction.EaseInOutCubic;
-                yield return anim.coroutine;
+            //     var anim = CoroutineAnimationManager.Animate(this, nameof(fill), 1f);
+            //     anim.time = 1.25f;
+            //     anim.timingFunction = TimingFunction.EaseInOutCubic;
+            //     yield return anim.coroutine;
 
-                // Set inline size to prevent changes when main container position changes.
-                style.width = resolvedStyle.width;
-                style.height = resolvedStyle.height;
+            //     // Set inline size to prevent changes when main container position changes.
+            //     style.width = resolvedStyle.width;
+            //     style.height = resolvedStyle.height;
 
-                // Cache current main container height.
-                float mainContainerHeight = m_MainContainer.resolvedStyle.height;
+            //     // Cache current main container height.
+            //     float mainContainerHeight = m_MainContainer.resolvedStyle.height;
 
-                // Hide main container and allow it to match its content.
-                m_MainContainer.style.visibility = Visibility.Hidden;
-                m_MainContainer.style.position = Position.Absolute;
-                m_MainContainer.style.height = StyleKeyword.Initial;
+            //     // Hide main container and allow it to match its content.
+            //     m_MainContainer.style.visibility = Visibility.Hidden;
+            //     m_MainContainer.style.position = Position.Absolute;
+            //     m_MainContainer.style.height = StyleKeyword.Initial;
 
-                // Wait until changes take effect.
-                yield return null;
+            //     // Wait until changes take effect.
+            //     yield return null;
 
-                // Measure main container and revert its style changes.
-                float targetHeight = m_MainContainer.resolvedStyle.height;
-                m_MainContainer.style.visibility = StyleKeyword.Initial;
-                m_MainContainer.style.position = StyleKeyword.Initial;
+            //     // Measure main container and revert its style changes.
+            //     float targetHeight = m_MainContainer.resolvedStyle.height;
+            //     m_MainContainer.style.visibility = StyleKeyword.Initial;
+            //     m_MainContainer.style.position = StyleKeyword.Initial;
 
-                // Set main container height in pixels, so transition can be started.
-                m_MainContainer.style.height = mainContainerHeight;
+            //     // Set main container height in pixels, so transition can be started.
+            //     m_MainContainer.style.height = mainContainerHeight;
 
-                // Reset inline size to once again match main container.
-                style.width = StyleKeyword.Initial;
-                style.height = StyleKeyword.Initial;
-                m_MainContainer.AddToClassList(k_MainContainerTransitionUssClassName);
+            //     // Reset inline size to once again match main container.
+            //     style.width = StyleKeyword.Initial;
+            //     style.height = StyleKeyword.Initial;
+            //     m_MainContainer.AddToClassList(k_MainContainerTransitionUssClassName);
 
-                // Wait until changes take effect.
-                yield return null;
+            //     // Wait until changes take effect.
+            //     yield return null;
 
-                // Fire transition.
-                m_MainContainer.style.height = targetHeight;
-                while (m_MainContainer.resolvedStyle.height != targetHeight)
-                {
-                    yield return null;
-                }
+            //     // Fire transition.
+            //     m_MainContainer.style.height = targetHeight;
+            //     while (m_MainContainer.resolvedStyle.height != targetHeight)
+            //     {
+            //         yield return null;
+            //     }
 
-                // Reset main container inline height.
-                m_MainContainer.style.height = StyleKeyword.Null;
-            }
+            //     // Reset main container inline height.
+            //     m_MainContainer.style.height = StyleKeyword.Null;
+            // }
 
-            if (m_Coroutine != null)
-            {
-                AnimationManager.Instance.StopCoroutine(m_Coroutine);
-            }
+            // if (m_Coroutine != null)
+            // {
+            //     CoroutineAnimationManager.Instance.StopCoroutine(m_Coroutine);
+            // }
 
-            m_Coroutine = AnimationManager.Instance.StartCoroutine(Coroutine());
-            return m_Coroutine;
+            // m_Coroutine = CoroutineAnimationManager.Instance.StartCoroutine(Coroutine());
+            // return m_Coroutine;
         }
 
         public Coroutine Fold(bool immediate = false)
         {
-            if (immediate)
-            {
-                m_MainContainer.RemoveFromClassList(k_MainContainerTransitionUssClassName);
-                m_DiamondTop.Fold(immediate: true);
-                m_DiamondBottom.Fold(immediate: true);
-                m_MainContainer.style.height = 0f;
-                fill = 0f;
-                return null;
-            }
+            return null;
+            // if (immediate)
+            // {
+            //     m_MainContainer.RemoveFromClassList(k_MainContainerTransitionUssClassName);
+            //     m_DiamondTop.Fold(immediate: true);
+            //     m_DiamondBottom.Fold(immediate: true);
+            //     m_MainContainer.style.height = 0f;
+            //     fill = 0f;
+            //     return null;
+            // }
 
-            IEnumerator Coroutine()
-            {
-                // Reset inline styles that could be possibly changed by unfold coroutine.
-                m_MainContainer.style.visibility = StyleKeyword.Null;
-                m_MainContainer.style.position = StyleKeyword.Null;
-                style.width = StyleKeyword.Null;
-                style.height = StyleKeyword.Null;
+            // IEnumerator Coroutine()
+            // {
+            //     // Reset inline styles that could be possibly changed by unfold coroutine.
+            //     m_MainContainer.style.visibility = StyleKeyword.Null;
+            //     m_MainContainer.style.position = StyleKeyword.Null;
+            //     style.width = StyleKeyword.Null;
+            //     style.height = StyleKeyword.Null;
 
-                // Set inline height, so transition can be started.
-                m_MainContainer.style.height = m_MainContainer.resolvedStyle.height;
-                m_MainContainer.AddToClassList(k_MainContainerTransitionUssClassName);
-                yield return null;
+            //     // Set inline height, so transition can be started.
+            //     m_MainContainer.style.height = m_MainContainer.resolvedStyle.height;
+            //     m_MainContainer.AddToClassList(k_MainContainerTransitionUssClassName);
+            //     yield return null;
 
-                m_MainContainer.style.height = 0f;
-                while (m_MainContainer.resolvedStyle.height != 0f)
-                {
-                    yield return null;
-                }
+            //     m_MainContainer.style.height = 0f;
+            //     while (m_MainContainer.resolvedStyle.height != 0f)
+            //     {
+            //         yield return null;
+            //     }
 
-                var anim = AnimationManager.Animate(this, nameof(fill), 0f);
-                anim.time = 1.25f;
-                anim.timingFunction = TimingFunction.EaseInOutCubic;
-                yield return anim.coroutine;
+            //     var anim = CoroutineAnimationManager.Animate(this, nameof(fill), 0f);
+            //     anim.time = 1.25f;
+            //     anim.timingFunction = TimingFunction.EaseInOutCubic;
+            //     yield return anim.coroutine;
 
-                m_DiamondTop.Fold();
-                yield return m_DiamondBottom.Fold();
-            }
+            //     m_DiamondTop.Fold(false);
+            //     yield return m_DiamondBottom.Fold(false);
+            // }
 
-            if (m_Coroutine != null)
-            {
-                AnimationManager.Instance.StopCoroutine(m_Coroutine);
-            }
+            // if (m_Coroutine != null)
+            // {
+            //     CoroutineAnimationManager.Instance.StopCoroutine(m_Coroutine);
+            // }
 
-            m_Coroutine = AnimationManager.Instance.StartCoroutine(Coroutine());
-            return m_Coroutine;
+            // m_Coroutine = CoroutineAnimationManager.Instance.StartCoroutine(Coroutine());
+            // return m_Coroutine;
+            // return null;
         }
     }
 }

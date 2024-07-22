@@ -28,11 +28,11 @@ namespace UI
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
-                m_DiamondLineHorizontal.Unfold();
+                // m_DiamondLineHorizontal.Unfold();
             }
             if (Input.GetKeyDown(KeyCode.D))
             {
-                m_DiamondLineHorizontal.Fold();
+                // m_DiamondLineHorizontal.Fold();
             }
         }
     }

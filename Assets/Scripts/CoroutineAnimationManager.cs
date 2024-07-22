@@ -1,59 +1,69 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Assertions;
 
-public class AnimationManager
+public class CoroutineAnimationManager : MonoBehaviour
 {
-    static List<AnimationEntry> m_AnimationRegistry = new List<AnimationEntry>();
+    static CoroutineAnimationManager s_Instance;
+    List<CoroutineAnimation> m_Animations;
 
-    class AnimationEntry
+    public static CoroutineAnimationManager Instance
     {
-        public Animation animation;
-        public Reference<CancellationTokenSource> cst;
+        get
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying && s_Instance == null)
+            {
+                s_Instance = GameObject.FindAnyObjectByType<CoroutineAnimationManager>();
+                Assert.IsNotNull(s_Instance, "No Animation Manager on scene.");
+            }
+#endif
+            return s_Instance;
+        }
     }
 
-    static AnimationEntry GetAnimationEntry(object obj, string property)
+    void Awake()
     {
-        foreach (var entry in m_AnimationRegistry)
+        if (s_Instance != null)
         {
-            if (entry.animation.obj == obj && entry.animation.property == property)
+            Destroy(this);
+            return;
+        }
+
+        s_Instance = this;
+        m_Animations = new List<CoroutineAnimation>();
+    }
+
+    static CoroutineAnimation GetAnimation(object obj, string property)
+    {
+        foreach (var animation in s_Instance.m_Animations)
+        {
+            if (animation.obj == obj && animation.property == property)
             {
-                return entry;
+                return animation;
             }
         }
 
         return null;
     }
 
-    static void StopAnimation(AnimationEntry entry)
-    {
-        var cst = (CancellationTokenSource)entry.cst;
-        if (cst != null)
-        {
-            cst.Cancel();
-            cst.Dispose();
-            cst = null;
-        }
-
-        m_AnimationRegistry.Remove(entry);
-    }
-
     public static void StopAnimation(object obj, string property)
     {
-        var entry = GetAnimationEntry(obj, property);
-        if (entry != null)
+        var animation = GetAnimation(obj, property);
+        if (animation != null)
         {
-            StopAnimation(entry);
+            StopAnimation(animation);
         }
     }
 
-    public static void StopAnimation(Animation animation)
+    public static void StopAnimation(CoroutineAnimation animation)
     {
-        StopAnimation(animation.obj, animation.property);
+        s_Instance.StopCoroutine(animation.coroutine);
+        s_Instance.m_Animations.Remove(animation);
     }
 
     static T LerpUnclamped<T>(T a, T b, float t)
@@ -106,15 +116,14 @@ public class AnimationManager
         return propertyInfo;
     }
 
-    public static Animation Animate<T>(object obj, AnimationDescriptor<T> animationDescriptor)
+    public static CoroutineAnimation Animate<T>(object obj, AnimationDescriptor<T> animationDescriptor)
     {
         var animation = Animate(obj, animationDescriptor.property, animationDescriptor.targetValue);
         animation.time = animationDescriptor.time;
         return animation;
     }
 
-
-    public static Animation Animate<T>(object obj, string property, T targetValue)
+    public static CoroutineAnimation Animate<T>(object obj, string property, T targetValue)
     {
         if (obj == null)
         {
@@ -122,7 +131,11 @@ public class AnimationManager
             return null;
         }
 
-        StopAnimation(obj, property);
+        var animation = GetAnimation(obj, property);
+        if (animation != null)
+        {
+            StopAnimation(animation);
+        }
 
         var propertyInfo = GetAndValidateAnimationProperty(obj, property, targetValue);
         if (propertyInfo == null)
@@ -130,24 +143,18 @@ public class AnimationManager
             return null;
         }
 
-        var cst = (Reference<CancellationTokenSource>)new CancellationTokenSource();
-        var finished = (Reference<bool>)false;
-
-        AnimationEntry animationEntry = new AnimationEntry() { cst = cst };
-        Animation animation = null;
-        
         float elapsedTime = 0f;
         T initialValue = (T)propertyInfo.GetValue(obj);
-        
-        async UniTask Action()
+
+        IEnumerator Coroutine()
         {
-            await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, cst.Value.Token);
+            yield return null;
             while (true)
             {
                 if (obj == null)
                 {
-                    StopAnimation(animationEntry);
-                    return;
+                    StopAnimation(animation);
+                    break;
                 }
 
                 float curveValue = Curve.Evaluate(animation.timingFunction, Mathf.Min(elapsedTime / animation.time, 1f));
@@ -156,22 +163,19 @@ public class AnimationManager
 
                 if (elapsedTime > animation.time)
                 {
-                    StopAnimation(animationEntry);
+                    StopAnimation(animation);
                     animation.InvokeFinished();
-                    finished.Value = true;
-                    return;
+                    break;
                 }
 
                 elapsedTime += Time.deltaTime;
                 animation.elapsedTime = elapsedTime;
-                await UniTask.NextFrame(cst.Value.Token);
+                yield return null;
             }
         }
 
-        animation = new Animation(obj, property, Action(), cst, finished);
-        animationEntry.animation = animation;
-        m_AnimationRegistry.Add(animationEntry);
-
+        animation = new CoroutineAnimation(obj, property, s_Instance.StartCoroutine(Coroutine()));
+        s_Instance.m_Animations.Add(animation);
         return animation;
     }
 }

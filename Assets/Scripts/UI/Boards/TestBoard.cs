@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using CustomControls;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Video;
@@ -26,31 +28,41 @@ namespace UI.Boards
         AnimationDescriptor<float> m_BlurZeroAnimDescriptor;
         VideoPlayer m_VideoPlayer;
 
-        public Coroutine Hide()
+        public Coroutine Hide(bool immediate = false)
         {
             throw new System.NotImplementedException();
+        }
+
+        public UniTask Hide(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HideImmediate()
+        {
+            throw new NotImplementedException();
         }
 
         public void Init()
         {
             m_VideoPlayer = VideoPlayerManager.CreatePlayer(m_VideoClip);
             var state = BoardManager.StateMachine.AddState(StateID);
-            BoardManager.InitialState.AddConnection(state.id, () =>
-            {
-                Show();
-            });
+            // BoardManager.InitialState.AddConnection(state.id, () =>
+            // {
+            //     Show();
+            // });
         }
 
-        public Coroutine Show()
+        public Coroutine Show(bool immediate = false)
         {
-            m_BackgroundLayer = LayerManager.AddNewLayer(m_BackgroundVta);
+            m_BackgroundLayer = LayerManager.CreateLayer(m_BackgroundVta);
 
-            m_DiamondFrameLayer = LayerManager.AddNewLayer(m_DiamondFrameVta);
-            m_DiamondFrameLayer.filter = new BlurFilter();
+            m_DiamondFrameLayer = LayerManager.CreateLayer(m_DiamondFrameVta);
+            // m_DiamondFrameLayer.filter = new BlurFilter();
             m_DiamondFrameLayer.alpha = 0f;
 
-            m_VideoClipLayer = LayerManager.AddNewLayer(m_EmptyVta);
-            m_VideoClipLayer.filter = new BlurFilter();
+            m_VideoClipLayer = LayerManager.CreateLayer(m_EmptyVta);
+            // m_VideoClipLayer.filter = new BlurFilter();
             m_VideoClipLayer.alpha = 0f;
 
             IEnumerator Coroutine()
@@ -62,29 +74,29 @@ namespace UI.Boards
                 var videoContainer = diamondFrame.Q<VisualElement>("video-container");
                 videoContainer.style.visibility = Visibility.Hidden;
 
-                AnimationManager.Animate(m_DiamondFrameLayer, m_AlphaOneAnimDescriptor);
+                CoroutineAnimationManager.Animate(m_DiamondFrameLayer, m_AlphaOneAnimDescriptor);
                 yield return m_WaitHalfSecond;
 
-                var anim1 = AnimationManager.Animate(m_DiamondFrameLayer.filter, m_BlurZeroAnimDescriptor);
-                yield return anim1.coroutine;
+                // var anim1 = AnimationManager.Animate(m_DiamondFrameLayer.filter, m_BlurZeroAnimDescriptor);
+                // yield return anim1.coroutine;
 
                 yield return diamondFrame.Unfold();
 
                 // Start rendering video to render texture and set it as background for blurred overlay to show.
                 m_VideoPlayer.Play();
 
-                var snapshot = videoContainer.CreateSnapshot();
-                snapshot.style.visibility = Visibility.Visible;
-                snapshot.style.backgroundImage = Background.FromRenderTexture(m_VideoPlayer.targetTexture);
+                // var snapshot = videoContainer.CreateSnapshot();
+                // snapshot.style.visibility = Visibility.Visible;
+                // snapshot.style.backgroundImage = Background.FromRenderTexture(m_VideoPlayer.targetTexture);
 
-                m_VideoClipLayer.rootVisualElement.Clear();
-                m_VideoClipLayer.rootVisualElement.Add(snapshot);
+                // m_VideoClipLayer.rootVisualElement.Clear();
+                // m_VideoClipLayer.rootVisualElement.Add(snapshot);
 
-                AnimationManager.Animate(m_VideoClipLayer, m_AlphaOneAnimDescriptor);
+                CoroutineAnimationManager.Animate(m_VideoClipLayer, m_AlphaOneAnimDescriptor);
                 yield return m_WaitHalfSecond;
 
-                var anim2 = AnimationManager.Animate(m_VideoClipLayer.filter, m_BlurZeroAnimDescriptor);
-                yield return anim2.coroutine;
+                // var anim2 = AnimationManager.Animate(m_VideoClipLayer.filter, m_BlurZeroAnimDescriptor);
+                // yield return anim2.coroutine;
 
                 // Display video on diamond frame layer.
                 videoContainer.style.backgroundImage = Background.FromRenderTexture(m_VideoPlayer.targetTexture);
@@ -105,6 +117,16 @@ namespace UI.Boards
             return m_Coroutine;
         }
 
+        public UniTask Show(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ShowImmediate()
+        {
+            throw new NotImplementedException();
+        }
+
         void Awake()
         {
             m_WaitHalfSecond = new WaitForSeconds(0.5f);
@@ -117,7 +139,7 @@ namespace UI.Boards
 
             m_BlurZeroAnimDescriptor = new AnimationDescriptor<float>()
             {
-                property = nameof(BlurFilter.size),
+                // property = nameof(BlurFilter.size),
                 targetValue = 0f,
                 time = 1f,
             };

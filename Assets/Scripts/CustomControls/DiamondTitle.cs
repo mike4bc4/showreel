@@ -1,7 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Utils;
 
 namespace CustomControls
 {
@@ -12,6 +18,7 @@ namespace CustomControls
         const string k_DiamondRightUssClassName = k_UssClassName + "__diamond-right";
         const string k_SeparatorUssClassName = k_UssClassName + "__separator";
         const string k_LabelUssClassName = k_UssClassName + "__label";
+        const string k_MeasurementVariantLabelUssClassName = k_LabelUssClassName + "--measurement";
         const string k_LabelContainerUssClassName = k_UssClassName + "__label-container";
 
         public new class UxmlFactory : UxmlFactory<DiamondTitle, UxmlTraits> { }
@@ -33,10 +40,20 @@ namespace CustomControls
         Diamond m_DiamondLeft;
         Diamond m_DiamondRight;
         Label m_Label;
+        Label m_MeasurementLabel;
         VisualElement m_Separator;
         VisualElement m_LabelContainer;
-        Coroutine m_CoroutineHandle;
         bool m_Unfolded;
+        int m_StateIndex;
+        TaskPool m_UnfoldFunctions;
+        TaskPool m_FoldFunctions;
+        CancellationTokenSource m_Cts;
+        TaskStatus m_Status;
+
+        public bool ready
+        {
+            get => m_Status.IsCompleted();
+        }
 
         public Label label
         {
@@ -46,7 +63,11 @@ namespace CustomControls
         public string text
         {
             get => m_Label.text;
-            set => m_Label.text = value;
+            set
+            {
+                m_Label.text = value;
+                m_MeasurementLabel.text = value;
+            }
         }
 
         bool unfolded
@@ -57,13 +78,20 @@ namespace CustomControls
                 m_Unfolded = value;
                 if (m_Unfolded)
                 {
-                    Unfold(immediate: true);
+                    UnfoldImmediate();
+                    m_Label.visible = true;
                 }
                 else
                 {
-                    Fold(immediate: true);
+                    FoldImmediate();
+                    m_Label.visible = false;
                 }
             }
+        }
+
+        float unfoldedWidth
+        {
+            get => m_MeasurementLabel.resolvedStyle.marginLeft + m_MeasurementLabel.resolvedStyle.marginRight + m_MeasurementLabel.resolvedStyle.width;
         }
 
         public DiamondTitle()
@@ -85,6 +113,13 @@ namespace CustomControls
             m_Label.AddToClassList(k_LabelUssClassName);
             m_LabelContainer.Add(m_Label);
 
+            m_MeasurementLabel = new Label();
+            m_MeasurementLabel.name = "measurement-label";
+            m_MeasurementLabel.pickingMode = PickingMode.Ignore;
+            m_MeasurementLabel.AddToClassList(k_LabelUssClassName);
+            m_MeasurementLabel.AddToClassList(k_MeasurementVariantLabelUssClassName);
+            m_LabelContainer.Add(m_MeasurementLabel);
+
             m_Separator = new VisualElement();
             m_Separator.name = "separator";
             m_Separator.AddToClassList(k_SeparatorUssClassName);
@@ -95,98 +130,222 @@ namespace CustomControls
             m_DiamondRight.AddToClassList(k_DiamondUssClassName);
             m_DiamondRight.AddToClassList(k_DiamondRightUssClassName);
             Add(m_DiamondRight);
-        }
 
-        void UnfoldImmediate()
-        {
-            m_LabelContainer.style.RemoveTransition("width");
-            m_DiamondLeft.Unfold(immediate: true);
-            m_DiamondRight.Unfold(immediate: true);
-            m_LabelContainer.style.width = StyleKeyword.Auto;
-            m_Label.style.visibility = StyleKeyword.Null;
-        }
+            m_UnfoldFunctions = new TaskPool();
+            m_FoldFunctions = new TaskPool();
 
-        public Coroutine Unfold(bool immediate = false)
-        {
-            if (m_CoroutineHandle != null)
+            m_UnfoldFunctions.Add(async () =>
             {
-                AnimationManager.Instance.StopCoroutine(m_CoroutineHandle);
-            }
+                var t1 = m_DiamondLeft.Unfold(m_Cts.Token);
+                var t2 = m_DiamondRight.Unfold(m_Cts.Token);
+                await (t1, t2);
+                m_StateIndex++;
+            });
 
-            if (immediate)
+            m_FoldFunctions.Add(async () =>
             {
-                UnfoldImmediate();
-                return null;
-            }
+                var t1 = m_DiamondLeft.Fold(m_Cts.Token);
+                var t2 = m_DiamondRight.Fold(m_Cts.Token);
+                await (t1, t2);
+            });
 
-            IEnumerator Coroutine()
+            m_UnfoldFunctions.Add(async () =>
             {
-                FoldImmediate();
-                m_DiamondLeft.Unfold();
-                yield return m_DiamondRight.Unfold();
-
                 m_LabelContainer.style.AddTransition("width", 0.5f, EasingMode.EaseInOutSine);
-                m_Label.style.position = Position.Absolute;
-                yield return null;  // Wait until label position is updated to read its width correctly. 
+                m_LabelContainer.style.width = unfoldedWidth;
 
-                m_Label.style.position = StyleKeyword.Initial;  // Revert label's position.
-                var targetWidth = m_Label.resolvedStyle.width + m_Label.resolvedStyle.marginLeft + m_Label.resolvedStyle.marginRight;
-                m_LabelContainer.style.width = targetWidth;
-                while (m_LabelContainer.resolvedStyle.width != targetWidth)
+                try
                 {
-                    yield return null;
+                    await UniTask.WaitWhile(() => m_LabelContainer.resolvedStyle.width != unfoldedWidth, cancellationToken: m_Cts.Token);
+                    m_StateIndex++;
                 }
+                catch (OperationCanceledException)
+                {
+                    m_LabelContainer.style.RemoveTransition("width");
+                    m_LabelContainer.style.width = m_LabelContainer.resolvedStyle.width;
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                    throw;
+                }
+            });
 
-                m_LabelContainer.style.width = StyleKeyword.Auto;
-                m_Label.style.visibility = StyleKeyword.Null;
-            }
-
-            m_CoroutineHandle = AnimationManager.Instance.StartCoroutine(Coroutine());
-            return m_CoroutineHandle;
-        }
-
-        void FoldImmediate()
-        {
-            m_LabelContainer.style.RemoveTransition("width");
-            m_DiamondLeft.Fold(immediate: true);
-            m_DiamondRight.Fold(immediate: true);
-            m_LabelContainer.style.width = 0f;
-            m_Label.style.visibility = Visibility.Hidden;
-        }
-
-        public Coroutine Fold(bool immediate = false)
-        {
-            if (m_CoroutineHandle != null)
+            m_FoldFunctions.Add(async () =>
             {
-                AnimationManager.Instance.StopCoroutine(m_CoroutineHandle);
-            }
-
-            if (immediate)
-            {
-                FoldImmediate();
-                return null;
-            }
-
-            IEnumerator Coroutine(bool immediate = false)
-            {
-                UnfoldImmediate();
-                yield return null;  // Wait until unfolded with is recalculated.
-
-                m_Label.style.visibility = Visibility.Hidden;
-                m_LabelContainer.style.width = m_LabelContainer.resolvedStyle.width;
                 m_LabelContainer.style.AddTransition("width", 0.5f, EasingMode.EaseInOutSine);
                 m_LabelContainer.style.width = 0f;
-                while (m_LabelContainer.resolvedStyle.width != 0f)
+
+                try
                 {
-                    yield return null;
+                    await UniTask.WaitWhile(() => m_LabelContainer.resolvedStyle.width != 0f, cancellationToken: m_Cts.Token);
+                    m_StateIndex--;
+                }
+                catch (OperationCanceledException)
+                {
+                    m_LabelContainer.style.RemoveTransition("width");
+                    m_LabelContainer.style.width = m_LabelContainer.resolvedStyle.width;
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                    throw;
+                }
+            });
+
+            m_UnfoldFunctions.Add(async () =>
+            {
+                var previousWidth = m_LabelContainer.style.width;
+                m_LabelContainer.style.width = StyleKeyword.Auto;
+
+                try
+                {
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, m_Cts.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    m_LabelContainer.style.width = previousWidth;
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                    throw;
+                }
+            });
+
+            m_FoldFunctions.Add(async () =>
+            {
+                var previousWidth = m_LabelContainer.style.width;
+                m_LabelContainer.style.width = m_LabelContainer.resolvedStyle.width;
+
+                try
+                {
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, m_Cts.Token);
+                    m_StateIndex--;
+                }
+                catch (OperationCanceledException)
+                {
+                    m_LabelContainer.style.width = previousWidth;
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                    throw;
+                }
+            });
+
+            FoldImmediate();
+        }
+
+        void Stop()
+        {
+            if (m_Cts != null)
+            {
+                m_Cts.Cancel();
+                m_Cts.Dispose();
+                m_Cts = null;
+            }
+        }
+
+        public void UnfoldImmediate()
+        {
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Action(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: m_Cts.Token);
                 }
 
-                m_DiamondLeft.Fold();
-                yield return m_DiamondRight.Fold();
-            }
+                UnfoldImmediateTask().Forget();
+            })();
+        }
 
-            m_CoroutineHandle = AnimationManager.Instance.StartCoroutine(Coroutine());
-            return m_CoroutineHandle;
+        async UniTask UnfoldImmediateTask()
+        {
+            m_Status.SetPending();
+            m_StateIndex = m_UnfoldFunctions.length - 1;
+            m_LabelContainer.style.RemoveTransition("width");
+            m_LabelContainer.style.width = StyleKeyword.Auto;
+
+            m_DiamondLeft.UnfoldImmediate();
+            m_DiamondRight.UnfoldImmediate();
+
+            // Using next frame instead of end of frame to wait for style changes, because it fails on frame 0.
+            await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+            m_Status.SetCompleted();
+        }
+
+        public void FoldImmediate()
+        {
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Action(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: m_Cts.Token);
+                }
+
+                FoldImmediateTask().Forget();
+            })();
+        }
+
+        async UniTask FoldImmediateTask()
+        {
+            m_Status.SetPending();
+            m_StateIndex = 0;
+            m_LabelContainer.style.RemoveTransition("width");
+            m_LabelContainer.style.width = 0f;
+
+            m_DiamondLeft.FoldImmediate();
+            m_DiamondRight.FoldImmediate();
+
+            await UniTask.NextFrame(PlayerLoopTiming.Initialization);  // Wait for style changes to be applied.
+            m_Status.SetCompleted();
+        }
+
+        public UniTask Unfold(CancellationToken ct = default)
+        {
+            Stop();
+            m_Cts = ct != default ? CancellationTokenSource.CreateLinkedTokenSource(ct) : new CancellationTokenSource();
+            async UniTask Task()
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: m_Cts.Token);
+                }
+
+                m_Status.SetPending();
+
+                try
+                {
+                    await UniTask.NextFrame(m_Cts.Token).Chain(m_UnfoldFunctions.GetRange(m_StateIndex, m_UnfoldFunctions.length - m_StateIndex));
+                }
+                finally
+                {
+                    m_Status.SetCompleted();
+                }
+            };
+
+            return Task();
+        }
+
+        public UniTask Fold(CancellationToken ct = default)
+        {
+            Stop();
+            m_Cts = ct != default ? CancellationTokenSource.CreateLinkedTokenSource(ct) : new CancellationTokenSource();
+            async UniTask Task()
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: m_Cts.Token);
+                }
+
+                m_Status.SetPending();
+                var functions = m_FoldFunctions.GetRange(0, m_StateIndex + 1);
+                functions.Reverse();
+
+                try
+                {
+                    await UniTask.NextFrame(m_Cts.Token).Chain(functions);
+                }
+                finally
+                {
+                    m_Status.SetCompleted();
+                }
+            };
+
+            return Task();
         }
     }
 }

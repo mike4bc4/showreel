@@ -1,7 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Utils;
 
 namespace CustomControls
 {
@@ -16,7 +20,13 @@ namespace CustomControls
 
         VisualElement m_HalfLeft;
         VisualElement m_HalfRight;
-        Coroutine m_CoroutineHandle;
+        CancellationTokenSource m_Cts;
+        TaskStatus m_Status;
+
+        public bool ready
+        {
+            get => m_Status.IsCompleted();
+        }
 
         public Diamond()
         {
@@ -33,72 +43,141 @@ namespace CustomControls
             Add(m_HalfRight);
         }
 
-        void UnfoldImmediate()
+        void Stop()
         {
-            m_HalfLeft.style.RemoveTransition("scale");
-            m_HalfLeft.style.scale = new Vector2(-1f, 1f);
+            if (m_Cts != null)
+            {
+                m_Cts.Cancel();
+                m_Cts.Dispose();
+                m_Cts = null;
+            }
         }
-
-        public Coroutine Unfold(bool immediate = false)
+        public void UnfoldImmediate()
         {
-            if (m_CoroutineHandle != null)
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Action(async () =>
             {
-                AnimationManager.Instance.StopCoroutine(m_CoroutineHandle);
-            }
-
-            if (immediate)
-            {
-                UnfoldImmediate();
-                return null;
-            }
-
-            IEnumerator Coroutine()
-            {
-                FoldImmediate();
-                m_HalfLeft.style.AddTransition("scale", 0.5f, EasingMode.EaseInOutSine);
-                m_HalfLeft.style.scale = new Vector2(-1f, 1f);
-                while (m_HalfLeft.resolvedStyle.scale != new Vector2(-1f, 1f))
+                if (!m_Status.IsCompleted())
                 {
-                    yield return null;
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: m_Cts.Token);
                 }
-            }
 
-            m_CoroutineHandle = AnimationManager.Instance.StartCoroutine(Coroutine());
-            return m_CoroutineHandle;
+                UnfoldImmediateTask().Forget();
+            })();
         }
 
-        void FoldImmediate()
+        async UniTask UnfoldImmediateTask()
         {
+            m_Status.SetPending();
+            m_HalfLeft.style.RemoveTransition("width");
+            m_HalfLeft.style.scale = new Vector2(-1f, 1f);
+            await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+            m_Status.SetCompleted();
+        }
+
+        public void FoldImmediate()
+        {
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Action(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: m_Cts.Token);
+                }
+
+                FoldImmediateTask().Forget();
+            })();
+        }
+
+        async UniTask FoldImmediateTask()
+        {
+            m_Status.SetPending();
             m_HalfLeft.style.RemoveTransition("width");
             m_HalfLeft.style.scale = Vector2.one;
+            await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+            m_Status.SetCompleted();
         }
 
-        public Coroutine Fold(bool immediate = false)
+        public UniTask Unfold(CancellationToken ct = default)
         {
-            if (m_CoroutineHandle != null)
+            Stop();
+            m_Cts = ct != default ? m_Cts = CancellationTokenSource.CreateLinkedTokenSource(ct) : new CancellationTokenSource();
+            async UniTask Task()
             {
-                AnimationManager.Instance.StopCoroutine(m_CoroutineHandle);
-            }
-
-            if (immediate)
-            {
-                FoldImmediate();
-                return null;
-            }
-
-            IEnumerator Coroutine()
-            {
-                UnfoldImmediate();
-                m_HalfLeft.style.AddTransition("scale", 0.5f, EasingMode.EaseInOutSine);
-                m_HalfLeft.style.scale = Vector2.one;
-                while (m_HalfLeft.resolvedStyle.scale != Vector2.one)
+                if (!m_Status.IsCompleted())
                 {
-                    yield return null;
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: m_Cts.Token);
                 }
-            }
 
-            m_CoroutineHandle = AnimationManager.Instance.StartCoroutine(Coroutine());
-            return m_CoroutineHandle;
+                await UnfoldTask();
+            };
+
+            return Task();
+        }
+
+        async UniTask UnfoldTask()
+        {
+            m_Status.SetPending();
+            m_HalfLeft.style.AddTransition("scale", 0.5f, EasingMode.EaseInOutSine);
+            m_HalfLeft.style.scale = new Vector2(-1f, 1f);
+
+            try
+            {
+                await UniTask.WaitWhile(() => m_HalfLeft.resolvedStyle.scale != new Vector2(-1f, 1f), cancellationToken: m_Cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                m_HalfLeft.style.RemoveTransition("scale");
+                m_HalfLeft.style.scale = m_HalfLeft.resolvedStyle.scale;
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                throw;
+            }
+            finally
+            {
+                m_Status.SetCompleted();
+            }
+        }
+
+        public UniTask Fold(CancellationToken ct = default)
+        {
+            Stop();
+            m_Cts = ct != default ? m_Cts = CancellationTokenSource.CreateLinkedTokenSource(ct) : new CancellationTokenSource();
+            async UniTask Task()
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: m_Cts.Token);
+                }
+
+                await FoldTask();
+            };
+
+            return Task();
+        }
+
+        async UniTask FoldTask()
+        {
+            m_Status.SetPending();
+            m_HalfLeft.style.AddTransition("scale", 0.5f, EasingMode.EaseInOutSine);
+            m_HalfLeft.style.scale = Vector2.one;
+
+            try
+            {
+                await UniTask.WaitWhile(() => m_HalfLeft.resolvedStyle.scale != Vector2.one, cancellationToken: m_Cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                m_HalfLeft.style.RemoveTransition("scale");
+                m_HalfLeft.style.scale = m_HalfLeft.resolvedStyle.scale;
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                throw;
+            }
+            finally
+            {
+                m_Status.SetCompleted();
+            }
         }
     }
 }

@@ -176,16 +176,16 @@ namespace CustomControls
                 edgeWidth = targetEdgeWidth;
                 fill = 1f;
 
-                var anim1 = AnimationManager.Animate(this, nameof(fill), 0f);
+                var anim1 = CoroutineAnimationManager.Animate(this, nameof(fill), 0f);
                 anim1.time = k_AnimationTime;
                 anim1.timingFunction = TimingFunction.EaseInCubic;
 
                 yield return anim1.coroutine;
 
-                var anim2 = AnimationManager.Animate(this, nameof(spread), 0f);
+                var anim2 = CoroutineAnimationManager.Animate(this, nameof(spread), 0f);
                 anim2.time = k_AnimationTime;
                 anim2.timingFunction = TimingFunction.EaseInCubic;
-                var anim3 = AnimationManager.Animate(this, nameof(edgeWidth), initialEdgeWidth);
+                var anim3 = CoroutineAnimationManager.Animate(this, nameof(edgeWidth), initialEdgeWidth);
                 anim3.time = k_AnimationTime;
                 anim3.timingFunction = TimingFunction.EaseInCubic;
 
@@ -194,10 +194,10 @@ namespace CustomControls
 
             if (m_Coroutine != null)
             {
-                AnimationManager.Instance.StopCoroutine(m_Coroutine);
+                CoroutineAnimationManager.Instance.StopCoroutine(m_Coroutine);
             }
 
-            m_Coroutine = AnimationManager.Instance.StartCoroutine(Coroutine());
+            m_Coroutine = CoroutineAnimationManager.Instance.StartCoroutine(Coroutine());
             return m_Coroutine;
         }
 
@@ -217,16 +217,16 @@ namespace CustomControls
                 edgeWidth = initialEdgeWidth;
                 fill = 0f;
 
-                var anim1 = AnimationManager.Animate(this, nameof(spread), 1f);
+                var anim1 = CoroutineAnimationManager.Animate(this, nameof(spread), 1f);
                 anim1.time = k_AnimationTime;
                 anim1.timingFunction = TimingFunction.EaseOutCubic;
-                var anim2 = AnimationManager.Animate(this, nameof(edgeWidth), targetEdgeWidth);
+                var anim2 = CoroutineAnimationManager.Animate(this, nameof(edgeWidth), targetEdgeWidth);
                 anim2.time = k_AnimationTime;
                 anim2.timingFunction = TimingFunction.EaseOutCubic;
 
                 yield return anim2.coroutine;
 
-                var anim3 = AnimationManager.Animate(this, nameof(fill), 1f);
+                var anim3 = CoroutineAnimationManager.Animate(this, nameof(fill), 1f);
                 anim3.time = k_AnimationTime;
                 anim3.timingFunction = TimingFunction.EaseOutCubic;
 
@@ -236,10 +236,10 @@ namespace CustomControls
 
             if (m_Coroutine != null)
             {
-                AnimationManager.Instance.StopCoroutine(m_Coroutine);
+                CoroutineAnimationManager.Instance.StopCoroutine(m_Coroutine);
             }
 
-            m_Coroutine = AnimationManager.Instance.StartCoroutine(Coroutine());
+            m_Coroutine = CoroutineAnimationManager.Instance.StartCoroutine(Coroutine());
             return m_Coroutine;
         }
     }

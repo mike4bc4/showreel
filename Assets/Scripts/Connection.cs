@@ -5,22 +5,85 @@ using UnityEngine;
 
 public class Connection
 {
-    string m_Id;
-    Action m_TransitionAction;
+    string m_ID;
+    StateMachineAction m_AsyncAction;
+    Action m_Action;
 
     public string id
     {
-        get => m_Id;
+        get => m_ID;
     }
 
-    public Action transitionAction
+    public StateMachineAction asyncAction
     {
-        get => m_TransitionAction;
-        set => m_TransitionAction = value;
+        get => m_AsyncAction;
     }
 
-    public Connection(string id)
+    public Action action
     {
-        m_Id = id;
+        get => m_Action;
     }
+
+    public bool isAsync
+    {
+        get => m_AsyncAction != null;
+    }
+
+    public Connection(string id, StateMachineAction action)
+    {
+        m_ID = id;
+        m_AsyncAction = action;
+    }
+
+    public Connection(string id, Action action)
+    {
+        m_ID = id;
+        m_Action = action;
+    }
+
+    // public void Then()
 }
+
+// public class Transition
+// {
+//     string m_FromID;
+//     string m_ToID;
+//     StateMachineAction m_ToAction;
+//     StateMachineAction m_FromAction;
+
+//     public string fromID
+//     {
+//         get => m_FromID;
+//     }
+
+//     public string toID
+//     {
+//         get => m_ToID;
+//     }
+
+//     public StateMachineAction fromAction
+//     {
+//         get => m_FromAction;
+//         set
+//         {
+
+//         }
+//     }
+
+//     public StateMachineAction toAction
+//     {
+//         get => m_ToAction;
+//         set
+//         {
+
+//         }
+//     }
+
+//     public Transition(string fromID, string toID)
+//     {
+//         m_FromID = fromID;
+//         m_ToID = toID;
+//     }
+
+//     public Transition(State fromState, State toState) : this(fromState.id, toState.id) { }
+// }

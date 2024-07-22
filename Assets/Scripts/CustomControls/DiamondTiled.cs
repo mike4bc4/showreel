@@ -87,7 +87,7 @@ namespace CustomControls
         {
             if (m_AnimationCoroutine != null)
             {
-                AnimationManager.Instance.StopCoroutine(m_AnimationCoroutine);
+                CoroutineAnimationManager.Instance.StopCoroutine(m_AnimationCoroutine);
             }
 
             foreach (var tile in tiles)
@@ -130,10 +130,10 @@ namespace CustomControls
 
             if (m_AnimationCoroutine != null)
             {
-                AnimationManager.Instance.StopCoroutine(m_AnimationCoroutine);
+                CoroutineAnimationManager.Instance.StopCoroutine(m_AnimationCoroutine);
             }
 
-            m_AnimationCoroutine = AnimationManager.Instance.StartCoroutine(Coroutine());
+            m_AnimationCoroutine = CoroutineAnimationManager.Instance.StartCoroutine(Coroutine());
         }
     }
 }

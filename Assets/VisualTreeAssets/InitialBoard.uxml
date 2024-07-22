@@ -2,9 +2,9 @@
     <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
     <ui:VisualElement name="background" style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(229, 229, 229); display: none;" />
     <ui:VisualElement name="title-viewport" style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; justify-content: center; align-items: center;">
-        <CustomControls.DiamondTitle name="title" text="Showreel" />
+        <CustomControls.DiamondTitle name="title" text="Showreel" unfolded="true" />
     </ui:VisualElement>
     <ui:VisualElement name="subtitle-viewport" style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: flex-end; margin-bottom: 128px;">
-        <CustomControls.Subtitle text="Press any key to continue" name="subtitle" />
+        <CustomControls.Subtitle text="Press any key to continue" name="subtitle" animated="true" border-scale="0.5" />
     </ui:VisualElement>
 </ui:UXML>

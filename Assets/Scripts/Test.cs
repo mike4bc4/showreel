@@ -15,16 +15,16 @@ public class Test : MonoBehaviour
     {
         var layer = GetComponent<Layer>();
         layer.Init();
-        var maskFiler = new MaskFilter();
-        layer.filter = maskFiler;
+        // var maskFiler = new MaskFilter();
+        // layer.filter = maskFiler;
 
         var title = layer.rootVisualElement.Q<DiamondTitle>("title");
         var maskTexture = TextureEditor.CreateMask(layer.rootVisualElement.layout.size, invert: true, title.worldBound);
-        maskFiler.alphaTexture = maskTexture;
+        // maskFiler.alphaTexture = maskTexture;
 
-        var snapshotLayer = LayerManager.AddNewLayer(m_EmptyVta, "SnapshotLayer");
-        var snapshot = layer.MakeSnapshot(title);
-        snapshotLayer.rootVisualElement.Add(snapshot);
-        snapshotLayer.filter = new BlurFilter();
+        var snapshotLayer = LayerManager.CreateLayer(m_EmptyVta, "SnapshotLayer");
+        // var snapshot = layer.CreateSnapshot(title);
+        // snapshotLayer.rootVisualElement.Add(snapshot);
+        // snapshotLayer.filter = new BlurFilter();
     }
 }

@@ -1,28 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-
-public class Animation
+public class CoroutineAnimation
 {
     public event Action onFinished;
 
     object m_Object;
     string m_Property;
-    UniTask m_Task;
+    Coroutine m_Coroutine;
     float m_Time;
     TimingFunction m_TimingFunction;
     float m_ElapsedTime;
-    Reference<CancellationTokenSource> m_Cst;
-    Reference<bool> m_Finished;
-
-    public bool finished
-    {
-        get => m_Finished;
-    }
 
     public object obj
     {
@@ -32,6 +22,11 @@ public class Animation
     public string property
     {
         get => m_Property;
+    }
+
+    public Coroutine coroutine
+    {
+        get => m_Coroutine;
     }
 
     public float time
@@ -52,32 +47,16 @@ public class Animation
         set => m_ElapsedTime = value;
     }
 
-    public Animation(object obj, string property, UniTask task, Reference<CancellationTokenSource> cst, Reference<bool> finished)
+    public CoroutineAnimation(object obj, string property, Coroutine coroutine)
     {
         m_Object = obj;
         m_Property = property;
+        m_Coroutine = coroutine;
         m_Time = 1f;
-        m_Task = task;
-        m_Cst = cst;
-        m_Finished = finished;
     }
 
     public void InvokeFinished()
     {
         onFinished?.Invoke();
-    }
-
-    public UniTask AsTask(CancellationToken ct = default)
-    {
-        SetTaskCancellationToken(ct);
-        return m_Task;
-    }
-
-    public void SetTaskCancellationToken(CancellationToken ct)
-    {
-        if (ct != default)
-        {
-            m_Cst.Value = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        }
     }
 }

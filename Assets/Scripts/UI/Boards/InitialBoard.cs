@@ -1,10 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using CustomControls;
+using Cysharp.Threading.Tasks;
+using TreeEditor;
+using Unity.VisualScripting;
 using UnityEditor.AssetImporters;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Utils;
 
 namespace UI.Boards
 {
@@ -14,210 +21,453 @@ namespace UI.Boards
 
         [SerializeField] VisualTreeAsset m_InitialBoardVta;
         [SerializeField] VisualTreeAsset m_EmptyVta;
-        [SerializeField] VisualTreeAsset m_BackgroundVta;
-        [SerializeField] VisualTreeAsset m_TextVta;
-        [SerializeField] VisualTreeAsset m_DiamondLineVta;
-        [SerializeField] VisualTreeAsset m_SecondaryTextVta;
-        [SerializeField] float m_ShineWidth;
-        [SerializeField] Color m_ShineColor;
+        [SerializeField] float m_FadeTime;
 
-        Layer m_InitialLayer;
-        Layer m_BackgroundLayer;
-        Layer m_TextLayer;
-        Layer m_DiamondLineLayer;
-        Layer m_SecondaryTextLayer;
-        Coroutine m_Coroutine;
-        WaitForSeconds m_WaitOneSecond;
-        WaitForSeconds m_WaitHalfSecond;
-        AnimationDescriptor<float> m_BlurDefaultAnimDescriptor;
-        AnimationDescriptor<float> m_BlurZeroAnimDescriptor;
-        AnimationDescriptor<float> m_AlphaZeroAnimDescriptor;
-        AnimationDescriptor<float> m_AlphaOneAnimDescriptor;
-
-        List<Layer> layers
-        {
-            get => new List<Layer>() {
-                m_BackgroundLayer,
-                m_TextLayer,
-                m_DiamondLineLayer,
-                m_SecondaryTextLayer
-            };
-        }
-
-        public Coroutine Hide()
-        {
-            IEnumerator Coroutine()
-            {
-                if (m_SecondaryTextLayer.filter is ShineFilter)
-                {
-                    var anim1 = AnimationManager.Animate(m_SecondaryTextLayer.filter, nameof(ShineFilter.color), new Color(1f, 1f, 1f, 0f));
-                    anim1.time = 0.25f;
-                    yield return anim1.coroutine;
-                }
-
-                AnimationManager.Animate(m_TextLayer.filter, m_BlurDefaultAnimDescriptor);
-                AnimationManager.Animate(m_DiamondLineLayer.filter, m_BlurDefaultAnimDescriptor);
-                m_SecondaryTextLayer.filter = new BlurFilter() { size = 0f };
-                AnimationManager.Animate(m_SecondaryTextLayer.filter, m_BlurDefaultAnimDescriptor);
-
-                yield return m_WaitHalfSecond;
-
-                AnimationManager.Animate(m_TextLayer, m_AlphaZeroAnimDescriptor);
-                AnimationManager.Animate(m_DiamondLineLayer, m_AlphaZeroAnimDescriptor);
-                var anim2 = AnimationManager.Animate(m_SecondaryTextLayer, m_AlphaZeroAnimDescriptor);
-
-                yield return anim2.coroutine;
-
-                foreach (var layer in layers)
-                {
-                    LayerManager.RemoveLayer(layer);
-                }
-            }
-
-            if (m_Coroutine != null)
-            {
-                StopCoroutine(m_Coroutine);
-            }
-
-            m_Coroutine = StartCoroutine(Coroutine());
-            return m_Coroutine;
-        }
-
+        Layer m_InitialBoardLayer;
         DiamondTitle m_Title;
         Subtitle m_Subtitle;
-        Layer m_SnapshotLayer;
+        int m_StateIndex;
+        TaskPool m_ShowFunctions;
+        TaskPool m_HideFunctions;
+        CancellationTokenSource m_Cts;
+        TaskStatus m_Status;
 
-        public Coroutine Show()
+        CancellationToken token
         {
-            IEnumerator Coroutine()
-            {
-                bool createLayer = LayerManager.IsRemoved(m_InitialLayer);
-                bool createSnapshotLayer = LayerManager.IsRemoved(this.m_SnapshotLayer);
-
-                if (createLayer)
-                {
-                    m_InitialLayer = LayerManager.AddNewLayer(m_InitialBoardVta);
-                    m_InitialLayer.filter = new MaskFilter();
-
-                    m_Title = m_InitialLayer.rootVisualElement.Q<DiamondTitle>("title");
-                    m_Subtitle = m_InitialLayer.rootVisualElement.Q<Subtitle>("subtitle");
-
-                    m_Title.Fold(immediate: true);
-                    yield return null;
-                }
-
-                var dynamicMask = new DynamicMask(m_InitialLayer.rootVisualElement.layout.size, invert: true);
-                dynamicMask.dirtied += () => ((MaskFilter)m_InitialLayer.filter).alphaTexture = dynamicMask.texture;
-                dynamicMask.AddElements(m_Title, m_Subtitle);
-
-                if (createSnapshotLayer)
-                {
-                    m_SnapshotLayer = LayerManager.AddNewLayer(m_EmptyVta, "SnapshotLayer");
-                    m_SnapshotLayer.filter = new BlurFilter();
-                    m_SnapshotLayer.alpha = 0f;
-                }
-
-                // yield return null;  // Wait until title is folded.
-
-
-
-                var titleSnapshot = m_InitialLayer.MakeSnapshot(m_Title);
-                m_SnapshotLayer.rootVisualElement.Add(titleSnapshot);
-
-                AnimationManager.Animate(m_SnapshotLayer, AnimationDescriptor.AlphaOne);
-                yield return m_WaitHalfSecond;
-
-                var anim1 = AnimationManager.Animate(m_SnapshotLayer.filter, AnimationDescriptor.BlurZero);
-                yield return anim1.coroutine;
-
-                dynamicMask.RemoveElements(m_Title);
-                m_SnapshotLayer.rootVisualElement.Clear();
-
-                m_Title.label.style.visibility = Visibility.Hidden;
-                yield return m_Title.Unfold();
-
-                dynamicMask.AddElements(m_Subtitle, m_Title.label);
-
-                m_Title.label.style.visibility = StyleKeyword.Null;
-                yield return null; // Wait until title label is visible;
-
-                var titleLabelSnapshot = m_InitialLayer.MakeSnapshot(m_Title.label);
-                m_SnapshotLayer.rootVisualElement.Add(titleLabelSnapshot);
-                ((BlurFilter)m_SnapshotLayer.filter).size = BlurFilter.DefaultSize;
-                m_SnapshotLayer.alpha = 0f;
-
-                AnimationManager.Animate(m_SnapshotLayer, AnimationDescriptor.AlphaOne);
-                yield return m_WaitHalfSecond;
-
-                var anim2 = AnimationManager.Animate(m_SnapshotLayer.filter, AnimationDescriptor.BlurZero);
-                yield return anim2.coroutine;
-
-                dynamicMask.RemoveElements(m_Title.label);
-                m_SnapshotLayer.rootVisualElement.Clear();
-            }
-
-            if (m_Coroutine != null)
-            {
-                StopCoroutine(m_Coroutine);
-            }
-
-            m_Coroutine = StartCoroutine(Coroutine());
-            return m_Coroutine;
+            get => m_Cts.Token;
         }
 
-        void Start()
+        public bool ready
         {
-            Show();
+            get => m_Status.IsCompleted();
         }
-
-        void Awake()
-        {
-            m_WaitOneSecond = new WaitForSeconds(1f);
-            m_WaitHalfSecond = new WaitForSeconds(0.5f);
-            m_BlurDefaultAnimDescriptor = new AnimationDescriptor<float>()
-            {
-                property = nameof(BlurFilter.size),
-                targetValue = BlurFilter.DefaultSize,
-                time = 1f,
-            };
-
-            m_BlurZeroAnimDescriptor = new AnimationDescriptor<float>()
-            {
-                property = nameof(BlurFilter.size),
-                targetValue = 0f,
-                time = 1f,
-            };
-
-            m_AlphaZeroAnimDescriptor = new AnimationDescriptor<float>()
-            {
-                property = nameof(Layer.alpha),
-                targetValue = 0f,
-                time = 1f,
-            };
-
-            m_AlphaOneAnimDescriptor = new AnimationDescriptor<float>()
-            {
-                property = nameof(Layer.alpha),
-                targetValue = 1f,
-                time = 1f,
-            };
-        }
-
-        // void Update()
-        // {
-        //     if (Input.anyKeyDown)
-        //     {
-        //         Hide();
-        //     }
-        // }
 
         public void Init()
         {
-            var state = BoardManager.StateMachine.AddState(StateID);
-            BoardManager.InitialState.AddConnection(state.id, () =>
+            m_ShowFunctions = new TaskPool();
+            m_HideFunctions = new TaskPool();
+
+            m_ShowFunctions.Add(async () =>
             {
-                Show();
+                m_InitialBoardLayer = LayerManager.CreateLayer(m_InitialBoardVta);
+                m_InitialBoardLayer.alpha = 0f;
+
+                m_Title = m_InitialBoardLayer.rootVisualElement.Q<DiamondTitle>("title");
+                m_Title.label.visible = false;
+                m_Title.FoldImmediate();
+
+                m_Subtitle = m_InitialBoardLayer.rootVisualElement.Q<Subtitle>("subtitle");
+                m_Subtitle.StopAnimation(true);
+
+                try
+                {
+                    var t1 = UniTask.NextFrame(PlayerLoopTiming.Initialization, token);   // Wait for UI styles to apply and layer creation to finish.
+                    var t2 = UniTask.WaitUntil(() => m_Title.ready && m_Subtitle.ready, cancellationToken: token);
+
+                    await (t1, t2);
+                    m_StateIndex++;
+                }
+                catch (OperationCanceledException)
+                {
+                    // There is no need to revert state of title and subtitle, as both will be removed with layer.
+                    LayerManager.RemoveLayer(m_InitialBoardLayer);
+                    throw;
+                }
             });
+
+            m_HideFunctions.Add(() =>
+            {
+                LayerManager.RemoveLayer(m_InitialBoardLayer);
+            });
+
+            m_ShowFunctions.Add(async () =>
+            {
+                m_InitialBoardLayer.MaskElements(m_Title, m_Subtitle);
+                m_InitialBoardLayer.alpha = 1f;
+
+                var layer = await m_InitialBoardLayer.CreateSnapshotLayerAsync(m_Title, "TitleSnapshotLayer", token);
+                layer.alpha = 0f;
+                layer.blurSize = Layer.DefaultBlurSize;
+                m_StateIndex++;
+            });
+
+            m_HideFunctions.Add(() =>
+            {
+                m_InitialBoardLayer.UnmaskElements(m_Title, m_Subtitle);
+                m_InitialBoardLayer.alpha = 0f;
+
+                LayerManager.RemoveLayer("TitleSnapshotLayer");
+                m_StateIndex--;
+            });
+
+            m_ShowFunctions.Add(async () =>
+            {
+                var layer = (Layer)LayerManager.GetLayer("TitleSnapshotLayer");
+                var animation = AnimationManager.Animate(layer, AnimationDescriptor.AlphaOne);
+                animation.time = m_FadeTime;
+                animation.SetTaskCancellationToken(token);
+
+                await UniTask.WaitForSeconds(animation.time / 2f, cancellationToken: token);
+                m_StateIndex++;
+            });
+
+            m_HideFunctions.Add(async () =>
+            {
+                var layer = (Layer)LayerManager.GetLayer("TitleSnapshotLayer");
+                var animation = AnimationManager.Animate(layer, AnimationDescriptor.AlphaZero);
+                animation.time = m_FadeTime;
+
+                await animation.AsTask(token);
+                m_StateIndex--;
+            });
+
+            m_ShowFunctions.Add(async () =>
+            {
+                var layer = (Layer)LayerManager.GetLayer("TitleSnapshotLayer");
+                var animation = AnimationManager.Animate(layer, AnimationDescriptor.BlurZero);
+                animation.time = m_FadeTime;
+
+                await animation.AsTask(token);
+                m_StateIndex++;
+            });
+
+            m_HideFunctions.Add(async () =>
+            {
+                var layer = (Layer)LayerManager.GetLayer("TitleSnapshotLayer");
+                var animation = AnimationManager.Animate(layer, AnimationDescriptor.BlurDefault);
+                animation.time = m_FadeTime;
+                animation.SetTaskCancellationToken(token);
+
+                await UniTask.WaitForSeconds(animation.time / 2f, cancellationToken: token);
+                m_StateIndex--;
+            });
+
+            m_ShowFunctions.Add(() =>
+            {
+                m_InitialBoardLayer.UnmaskElements(m_Title);
+                LayerManager.RemoveLayer("TitleSnapshotLayer");
+                m_StateIndex++;
+            });
+
+            m_HideFunctions.Add(async () =>
+            {
+                await m_InitialBoardLayer.CreateSnapshotLayerAsync(m_Title, "TitleSnapshotLayer", token);
+
+                m_InitialBoardLayer.MaskElements(m_Title);   // Hide when snapshot becomes visible.
+                m_StateIndex--;
+            });
+
+            m_ShowFunctions.Add(async () =>
+            {
+                await m_Title.Unfold(token);
+                m_StateIndex++;
+            });
+
+            m_HideFunctions.Add(async () =>
+            {
+                await m_Title.Fold(token);
+                m_StateIndex--;
+            });
+
+            m_ShowFunctions.Add(() =>
+            {
+                m_Title.label.visible = true;
+                var layer = m_InitialBoardLayer.CreateSnapshotLayer(m_Title.label, "TitleLabelSnapshotLayer");
+                layer.alpha = 0f;
+                layer.blurSize = Layer.DefaultBlurSize;
+                m_InitialBoardLayer.MaskElements(m_Title.label);
+                m_StateIndex++;
+            });
+
+            m_HideFunctions.Add(async () =>
+            {
+                await m_Title.label.style.SetPropertyAsync(nameof(IStyle.visibility), new StyleEnum<Visibility>(Visibility.Hidden), token);
+                LayerManager.RemoveLayer("TitleLabelSnapshotLayer");
+                m_InitialBoardLayer.UnmaskElements(m_Title.label);
+                m_StateIndex--;
+            });
+
+            m_ShowFunctions.Add(async () =>
+            {
+                var layer = LayerManager.GetLayer("TitleLabelSnapshotLayer");
+                var animation = AnimationManager.Animate(layer, AnimationDescriptor.AlphaOne);
+                animation.time = m_FadeTime;
+                animation.SetTaskCancellationToken(m_Cts.Token);
+
+                await UniTask.WaitForSeconds(animation.time / 2f, cancellationToken: m_Cts.Token);
+                m_StateIndex++;
+            });
+
+            m_HideFunctions.Add(async () =>
+            {
+                var layer = LayerManager.GetLayer("TitleLabelSnapshotLayer");
+                var animation = AnimationManager.Animate(layer, AnimationDescriptor.AlphaZero);
+                animation.time = m_FadeTime;
+
+                await animation.AsTask(m_Cts.Token);
+                m_StateIndex--;
+            });
+
+            m_ShowFunctions.Add(async () =>
+            {
+                var layer = LayerManager.GetLayer("TitleLabelSnapshotLayer");
+                var animation = AnimationManager.Animate(layer, AnimationDescriptor.BlurZero);
+                animation.time = m_FadeTime;
+
+                await animation.AsTask(m_Cts.Token);
+                m_StateIndex++;
+            });
+
+            m_HideFunctions.Add(async () =>
+            {
+                var layer = LayerManager.GetLayer("TitleLabelSnapshotLayer");
+                var animation = AnimationManager.Animate(layer, AnimationDescriptor.BlurDefault);
+                animation.time = m_FadeTime;
+                animation.SetTaskCancellationToken(m_Cts.Token);
+
+                await UniTask.WaitForSeconds(animation.time / 2f, cancellationToken: m_Cts.Token);
+                m_StateIndex--;
+            });
+
+            m_ShowFunctions.Add(() =>
+            {
+                m_InitialBoardLayer.UnmaskElements(m_Title.label);
+                LayerManager.RemoveLayer("TitleLabelSnapshotLayer");
+                var layer = m_InitialBoardLayer.CreateSnapshotLayer(m_Subtitle, "SubtitleSnapshotLayer");
+                layer.alpha = 0f;
+                layer.blurSize = Layer.DefaultBlurSize;
+                m_StateIndex++;
+            });
+
+            m_HideFunctions.Add(async () =>
+            {
+                await m_InitialBoardLayer.CreateSnapshotLayerAsync(m_Title.label, "TitleLabelSnapshotLayer", token);
+
+                m_InitialBoardLayer.MaskElements(m_Title.label); // Hide when snapshot becomes visible.
+                LayerManager.RemoveLayer("SubtitleSnapshotLayer");
+                m_StateIndex--;
+            });
+
+            m_ShowFunctions.Add(async () =>
+            {
+                var layer = LayerManager.GetLayer("SubtitleSnapshotLayer");
+                var animation = AnimationManager.Animate(layer, AnimationDescriptor.AlphaOne);
+                animation.time = m_FadeTime;
+                animation.SetTaskCancellationToken(m_Cts.Token);
+
+                await UniTask.WaitForSeconds(animation.time / 2f, cancellationToken: m_Cts.Token);
+                m_StateIndex++;
+            });
+
+            m_HideFunctions.Add(async () =>
+            {
+                var layer = LayerManager.GetLayer("SubtitleSnapshotLayer");
+                var animation = AnimationManager.Animate(layer, AnimationDescriptor.AlphaZero);
+                animation.time = m_FadeTime;
+
+                await animation.AsTask(m_Cts.Token);
+                m_StateIndex--;
+            });
+
+            m_ShowFunctions.Add(async () =>
+            {
+                var layer = LayerManager.GetLayer("SubtitleSnapshotLayer");
+                var animation = AnimationManager.Animate(layer, AnimationDescriptor.BlurZero);
+                animation.time = m_FadeTime;
+
+                await animation.AsTask(m_Cts.Token);
+                m_StateIndex++;
+            });
+
+            m_HideFunctions.Add(async () =>
+            {
+                var layer = LayerManager.GetLayer("SubtitleSnapshotLayer");
+                var animation = AnimationManager.Animate(layer, AnimationDescriptor.BlurDefault);
+                animation.time = m_FadeTime;
+                animation.SetTaskCancellationToken(m_Cts.Token);
+
+                await UniTask.WaitForSeconds(animation.time / 2f, cancellationToken: m_Cts.Token);
+                m_StateIndex--;
+            });
+
+            m_ShowFunctions.Add(() =>
+            {
+                LayerManager.RemoveLayer("SubtitleSnapshotLayer");
+                m_InitialBoardLayer.UnmaskElements(m_Subtitle);
+                m_Subtitle.StartAnimation();
+            });
+
+            m_HideFunctions.Add(async () =>
+            {
+                await m_InitialBoardLayer.CreateSnapshotLayerAsync(m_Subtitle, "SubtitleSnapshotLayer", token);
+
+                m_InitialBoardLayer.MaskElements(m_Subtitle);    // Hide when snapshot becomes visible.
+                m_Subtitle.StopAnimation(true);
+                m_StateIndex--;
+            });
+        }
+
+        void Stop()
+        {
+            if (m_Cts != null)
+            {
+                m_Cts.Cancel();
+                m_Cts.Dispose();
+                m_Cts = null;
+            }
+        }
+
+        public void ShowImmediate()
+        {
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Action(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                ShowImmediateTask().Forget();
+            })();
+        }
+
+        async UniTask ShowImmediateTask()
+        {
+            m_Status.SetPending();
+            m_StateIndex = m_ShowFunctions.length - 1;
+
+            m_InitialBoardLayer = (Layer)LayerManager.GetLayer(m_InitialBoardVta.name);
+            if (m_InitialBoardLayer == null)
+            {
+                m_InitialBoardLayer = LayerManager.CreateLayer(m_InitialBoardVta);
+            }
+
+            m_InitialBoardLayer.alpha = 0f;
+            m_InitialBoardLayer.Unmask();
+
+            m_Title = m_InitialBoardLayer.rootVisualElement.Q<DiamondTitle>("title");
+            m_Title.label.visible = true;
+            m_Title.UnfoldImmediate();
+
+            m_Subtitle = m_InitialBoardLayer.rootVisualElement.Q<Subtitle>("subtitle");
+            m_Subtitle.StartAnimation(true);
+
+            // Suppressing cancellation as this task is always supposed to finish.
+            await UniTask.WaitUntil(() => m_Subtitle.ready && m_Title.ready).SuppressCancellationThrow();
+            m_InitialBoardLayer.Clear();    // Clear layer texture as it may contain remains of old UI when reused (not recreated).
+
+            m_InitialBoardLayer.alpha = 1f;
+            LayerManager.RemoveLayer("TitleSnapshotLayer");
+            LayerManager.RemoveLayer("TitleLabelSnapshotLayer");
+            LayerManager.RemoveLayer("SubtitleSnapshotLayer");
+            m_Status.SetCompleted();
+        }
+
+        public void HideImmediate()
+        {
+            Stop();
+            m_Cts = new CancellationTokenSource();
+            UniTask.Action(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                m_Status.SetPending();
+                m_StateIndex = 0;
+                LayerManager.RemoveLayer(m_InitialBoardLayer);
+                LayerManager.RemoveLayer("TitleSnapshotLayer");
+                LayerManager.RemoveLayer("TitleLabelSnapshotLayer");
+                LayerManager.RemoveLayer("SubtitleSnapshotLayer");
+                m_Status.SetCompleted();
+            })();
+        }
+
+        public UniTask Show(CancellationToken ct = default)
+        {
+            Stop();
+            m_Cts = ct != default ? CancellationTokenSource.CreateLinkedTokenSource(ct) : new CancellationTokenSource();
+            var task = UniTask.Create(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                // Everything is happening synchronously, so there is no need to await for task or change state to pending.
+                m_Status.SetPending();
+                try
+                {
+                    await UniTask.NextFrame(m_Cts.Token).Chain(m_ShowFunctions.GetRange(m_StateIndex, m_ShowFunctions.length - m_StateIndex));
+                }
+                finally
+                {
+                    m_Status.SetCompleted();
+                }
+            });
+
+            return task;
+        }
+
+        public UniTask Hide(CancellationToken ct = default)
+        {
+            Stop();
+            m_Cts = ct != default ? CancellationTokenSource.CreateLinkedTokenSource(ct) : new CancellationTokenSource();
+            var task = UniTask.Create(async () =>
+            {
+                if (!m_Status.IsCompleted())
+                {
+                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
+                }
+
+                m_Status.SetPending();
+                var functions = m_HideFunctions.GetRange(0, m_StateIndex + 1);
+                functions.Reverse();
+
+                try
+                {
+                    await UniTask.NextFrame(m_Cts.Token).Chain(functions);
+                }
+                finally
+                {
+                    m_Status.SetCompleted();
+                }
+            });
+
+            return task;
+        }
+
+        IEnumerator Start()
+        {
+            yield return new WaitForSeconds(0.5f);
+            // Show();
+        }
+
+        void Update()
+        {
+            // if (Input.GetKeyDown(KeyCode.A))
+            // {
+            //     Show(default(CancellationToken));
+            // }
+            // else if (Input.GetKeyDown(KeyCode.D))
+            // {
+            //     Hide(default(CancellationToken));
+            // }
+            // else if (Input.GetKeyDown(KeyCode.Q))
+            // {
+            //     ShowImmediate();
+            // }
+            // else if (Input.GetKeyDown(KeyCode.E))
+            // {
+            //     HideImmediate();
+            // }
+        }
+
+        void OnDestroy()
+        {
+            Stop();
         }
     }
 }

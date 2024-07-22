@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Utils;
 
 namespace CustomControls
 {
@@ -91,10 +92,10 @@ namespace CustomControls
 
             if (m_Coroutine != null)
             {
-                AnimationManager.Instance.StopCoroutine(m_Coroutine);
+                CoroutineAnimationManager.Instance.StopCoroutine(m_Coroutine);
             }
 
-            m_Coroutine = AnimationManager.Instance.StartCoroutine(Coroutine());
+            m_Coroutine = CoroutineAnimationManager.Instance.StartCoroutine(Coroutine());
             return m_Coroutine;
         }
 
@@ -140,10 +141,10 @@ namespace CustomControls
 
             if (m_Coroutine != null)
             {
-                AnimationManager.Instance.StopCoroutine(m_Coroutine);
+                CoroutineAnimationManager.Instance.StopCoroutine(m_Coroutine);
             }
 
-            m_Coroutine = AnimationManager.Instance.StartCoroutine(Coroutine());
+            m_Coroutine = CoroutineAnimationManager.Instance.StartCoroutine(Coroutine());
             return m_Coroutine;
         }
     }

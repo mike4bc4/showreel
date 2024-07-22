@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using CustomControls;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
@@ -24,8 +26,6 @@ namespace UI
         [SerializeField] Material m_BlurEffectMaterial;
 
         List<Layer> m_LayerPool;
-
-        [SerializeField] VisualTreeAsset test;
 
         public static PanelSettings TemplatePanelSettings
         {
@@ -69,33 +69,15 @@ namespace UI
             m_LayerPool = new List<Layer>();
         }
 
-        void Start()
-        {
-
-        }
-
-        public static bool IsRemoved(LayerBase layer)
-        {
-            return layer == null || s_Instance.m_LayerPool.Contains(layer);
-        }
-
         public static void RemoveLayer(LayerBase layer)
         {
             if (layer == null)
             {
-                throw new ArgumentNullException();
+                return;
             }
 
             var layerPool = s_Instance.m_LayerPool;
-            if (layerPool.Count < k_LayerPoolSize && layer is Layer && !IsRemoved(layer))
-            {
-                layer.gameObject.SetActive(false);
-                layer.transform.SetAsFirstSibling();
-                layer.Clear();
-                layerPool.Add((Layer)layer);
-                SortLayers();
-            }
-            else
+            if (layer is EffectLayer || layerPool.Count >= k_LayerPoolSize)
             {
                 if (layer.texture is RenderTexture renderTexture)
                 {
@@ -103,6 +85,23 @@ namespace UI
                 }
 
                 Destroy(layer.gameObject);
+            }
+            else if (!layerPool.Contains(layer))
+            {
+                layer.gameObject.SetActive(false);
+                layer.transform.SetAsFirstSibling();
+                layer.name += "(Removed)";
+                layerPool.Add((Layer)layer);
+                SortLayers();
+            }
+        }
+
+        public static void RemoveLayer(string name)
+        {
+            var layer = GetLayer(name);
+            if (layer != null)
+            {
+                RemoveLayer(layer);
             }
         }
 
@@ -121,7 +120,7 @@ namespace UI
             return gameObject;
         }
 
-        public static EffectLayer AddNewEffectLayer(string name = "Effect Layer")
+        public static EffectLayer CreateEffectLayer(string name = "EffectLayer")
         {
             var gameObject = CreateLayerGameObject(name);
             var layer = gameObject.AddComponent<EffectLayer>();
@@ -130,7 +129,7 @@ namespace UI
             return layer;
         }
 
-        public static Layer AddNewLayer(string name = "Layer")
+        public static Layer CreateLayer(string name = "Layer")
         {
             Layer layer = null;
             var layerPool = s_Instance.m_LayerPool;
@@ -138,6 +137,7 @@ namespace UI
             {
                 layer = layerPool.Last();
                 layerPool.RemoveAt(layerPool.Count - 1);
+                layer.ResetLayer();
                 layer.name = name;
                 layer.transform.SetAsLastSibling();
                 layer.gameObject.SetActive(true);
@@ -153,9 +153,9 @@ namespace UI
             return layer;
         }
 
-        public static Layer AddNewLayer(VisualTreeAsset vta, string name = null)
+        public static Layer CreateLayer(VisualTreeAsset vta, string name = null)
         {
-            var layer = AddNewLayer(string.IsNullOrEmpty(name) ? vta.name : name);
+            var layer = CreateLayer(string.IsNullOrEmpty(name) ? vta.name : name);
             layer.visualTreeAsset = vta;
             return layer;
         }
@@ -168,6 +168,20 @@ namespace UI
             {
                 layers[i].transform.SetSiblingIndex(i);
             }
+        }
+
+        public static LayerBase GetLayer(string name)
+        {
+            var layers = s_Instance.m_Canvas.GetComponentsInChildren<LayerBase>(true);
+            foreach (var layer in layers)
+            {
+                if (layer.name == name)
+                {
+                    return layer;
+                }
+            }
+
+            return null;
         }
     }
 }

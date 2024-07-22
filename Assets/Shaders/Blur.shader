@@ -7,7 +7,7 @@ Shader "Custom/BlurShader"
         _Size ("Size", Range(0.0, 32.0)) = 8.0
         _Quality ("Quality", Range(0.001, 1.0)) = 0.5
         [Toggle(BLUR_ON)] _BlurEnabled ("Blur Enabled", Float) = 1
-        [Toggle(USE_ALPHA_MASK)] _UseAlphaMask ("Use Alpha Mask", Float) = 1
+        // [Toggle(USE_ALPHA_MASK)] _UseAlphaMask ("Use Alpha Mask", Float) = 1
     }
     SubShader
     {
@@ -27,7 +27,7 @@ Shader "Custom/BlurShader"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile _ BLUR_ON
-            #pragma multi_compile _ USE_ALPHA_MASK
+            // #pragma multi_compile _ USE_ALPHA_MASK
             #include "UnityCG.cginc"
 
             struct appdata
@@ -60,10 +60,10 @@ Shader "Custom/BlurShader"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                #ifdef USE_ALPHA_MASK
-                    fixed4 alphaSample = tex2D(_AlphaTex, i.uv);
-                    i.color.a *= alphaSample.r;
-                #endif
+                // #ifdef USE_ALPHA_MASK
+                fixed4 alphaSample = tex2D(_AlphaTex, i.uv);
+                i.color.a *= alphaSample.r;
+                // #endif
 
                 #ifdef BLUR_ON
                     float4 pixelSize = 1 / _ScreenParams;                
