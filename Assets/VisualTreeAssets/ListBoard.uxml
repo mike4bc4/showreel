@@ -5,7 +5,7 @@
         <ui:VisualElement name="frame-container" style="flex-direction: row; width: 1280px;">
             <ui:VisualElement name="spacer-left" style="flex-grow: 1;" />
             <CustomControls.DiamondFrameVertical color="#333333FF" corner-radius="4" name="frame" unfolded="true">
-                <ui:VisualElement style="flex-grow: 1; width: 360px; height: 640px; display: flex;" />
+                <ui:VisualElement name="video" style="flex-grow: 1; width: 360px; height: 640px; display: flex;" />
             </CustomControls.DiamondFrameVertical>
             <ui:VisualElement name="spacer-right" />
         </ui:VisualElement>
@@ -13,7 +13,7 @@
     <ui:VisualElement name="title-viewport" style="flex-grow: 1; align-items: center; justify-content: flex-start; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
         <CustomControls.DiamondTitle name="title" style="margin-top: 48px;" />
     </ui:VisualElement>
-    <ui:VisualElement name="list-viewport" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center;">
+    <ui:VisualElement name="list-viewport" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
         <ui:VisualElement name="list-container" style="width: 1280px; height: 670px; padding-right: 400px;">
             <CustomControls.ScrollBox scroll-mode="Smooth" style="margin-right: 64px; margin-left: -68px;">
                 <ui:VisualElement name="list" style="flex-grow: 1;">
@@ -22,7 +22,7 @@
                     <CustomControls.ListElement text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac volutpat nibh, non tempus magna. Sed nec neque vitae dolor semper iaculis eu vel tortor." />
                     <CustomControls.ListElement text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac volutpat nibh, non tempus magna. Sed nec neque vitae dolor semper iaculis eu vel tortor." />
                     <CustomControls.ListElement text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac volutpat nibh, non tempus magna. Sed nec neque vitae dolor semper iaculis eu vel tortor." />
-                    <CustomControls.ListElement text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac volutpat nibh, non tempus magna. Sed nec neque vitae dolor semper iaculis eu vel tortor." style="display: none;" />
+                    <CustomControls.ListElement text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac volutpat nibh, non tempus magna. Sed nec neque vitae dolor semper iaculis eu vel tortor." style="display: flex;" />
                 </ui:VisualElement>
             </CustomControls.ScrollBox>
         </ui:VisualElement>

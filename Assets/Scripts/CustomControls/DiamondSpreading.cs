@@ -144,7 +144,6 @@ namespace CustomControls
             m_CornerContainer.AddToClassList(k_CornerContainerUssClassName);
             Add(m_CornerContainer);
 
-
             m_CornerN = new VisualElement() { name = "corner-n" };
             m_CornerN.AddToClassList(k_CornerUssClassName);
             m_CornerN.AddToClassList(k_CornerNUssClassName);
@@ -225,14 +224,14 @@ namespace CustomControls
             });
 
             m_FoldTaskPool.Add(async () =>
-           {
-               var animation = AnimationManager.Animate(this, nameof(fill), 0f);
-               animation.time = animationDuration * 0.6f;
-               animation.timingFunction = TimingFunction.EaseOutCubic;
+            {
+                var animation = AnimationManager.Animate(this, nameof(fill), 0f);
+                animation.time = animationDuration * 0.6f;
+                animation.timingFunction = TimingFunction.EaseOutCubic;
 
-               await animation.AsTask(token);
-               m_StateIndex--;
-           });
+                await animation.AsTask(token);
+                m_StateIndex--;
+            });
         }
 
         void Stop()

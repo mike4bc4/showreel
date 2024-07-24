@@ -58,12 +58,20 @@ namespace CustomControls
         float m_Fill;
         int m_CornerRadius;
         int m_StateIndex;
-        TaskStatus m_Status;
-        CancellationTokenSource m_Cts;
+        // TaskStatus m_Status;
+        // CancellationTokenSource m_Cts;
         TaskPool m_FoldTaskPool;
         TaskPool m_UnfoldTaskPool;
         float m_FillAnimationDuration;
         float m_ResizeAnimationDuration;
+        // int m_ScheduledTaskCount;
+        TaskScheduler m_TaskScheduler;
+
+        public bool ready
+        {
+            // get => m_Status.IsCompleted() && m_ScheduledTaskCount == 0;
+            get => m_TaskScheduler.ready;
+        }
 
         public float fillAnimationDuration
         {
@@ -77,10 +85,10 @@ namespace CustomControls
             set => m_ResizeAnimationDuration = Mathf.Max(0f, value);
         }
 
-        CancellationToken token
-        {
-            get => m_Cts.Token;
-        }
+        // CancellationToken token
+        // {
+        //     get => m_Cts.Token;
+        // }
 
         public VisualElement mainContainer
         {
@@ -144,6 +152,7 @@ namespace CustomControls
 
         public DiamondFrameVertical()
         {
+            m_TaskScheduler = new TaskScheduler();
             m_FoldTaskPool = new TaskPool();
             m_UnfoldTaskPool = new TaskPool();
 
@@ -179,16 +188,16 @@ namespace CustomControls
 
             m_UnfoldTaskPool.Add(async () =>
             {
-                var t1 = m_DiamondTop.Unfold(token);
-                var t2 = m_DiamondBottom.Unfold(token);
+                var t1 = m_DiamondTop.Unfold(m_TaskScheduler.token);
+                var t2 = m_DiamondBottom.Unfold(m_TaskScheduler.token);
                 await (t1, t2);
                 m_StateIndex++;
             });
 
             m_FoldTaskPool.Add(async () =>
             {
-                var t1 = m_DiamondTop.Fold(token);
-                var t2 = m_DiamondBottom.Fold(token);
+                var t1 = m_DiamondTop.Fold(m_TaskScheduler.token);
+                var t2 = m_DiamondBottom.Fold(m_TaskScheduler.token);
                 await (t1, t2);
             });
 
@@ -197,7 +206,7 @@ namespace CustomControls
                 var animation = AnimationManager.Animate(this, nameof(fill), 1f);
                 animation.time = fillAnimationDuration;
                 animation.timingFunction = TimingFunction.EaseOutSine;
-                await animation.AsTask(token);
+                await animation.AsTask(m_TaskScheduler.token);
                 m_StateIndex++;
             });
 
@@ -206,7 +215,7 @@ namespace CustomControls
                 var animation = AnimationManager.Animate(this, nameof(fill), 0f);
                 animation.time = fillAnimationDuration;
                 animation.timingFunction = TimingFunction.EaseOutSine;
-                await animation.AsTask(token);
+                await animation.AsTask(m_TaskScheduler.token);
                 m_StateIndex--;
             });
 
@@ -221,7 +230,7 @@ namespace CustomControls
 
                 try
                 {
-                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, m_TaskScheduler.token);
                     m_StateIndex++;
                 }
                 catch (OperationCanceledException)
@@ -243,7 +252,7 @@ namespace CustomControls
 
                 try
                 {
-                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, m_TaskScheduler.token);
                     m_StateIndex--;
                 }
                 catch (OperationCanceledException)
@@ -270,7 +279,7 @@ namespace CustomControls
 
                 try
                 {
-                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, m_TaskScheduler.token);
                     m_StateIndex++;
                 }
                 catch (OperationCanceledException)
@@ -291,7 +300,7 @@ namespace CustomControls
 
                 try
                 {
-                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, m_TaskScheduler.token);
                     m_StateIndex--;
                 }
                 catch (OperationCanceledException)
@@ -311,7 +320,7 @@ namespace CustomControls
 
                 try
                 {
-                    await UniTask.WaitUntil(() => m_MainContainer.resolvedStyle.height == targetHeight, cancellationToken: token);
+                    await UniTask.WaitUntil(() => m_MainContainer.resolvedStyle.height == targetHeight, cancellationToken: m_TaskScheduler.token);
                     m_StateIndex++;
                 }
                 catch (OperationCanceledException)
@@ -330,7 +339,7 @@ namespace CustomControls
 
                 try
                 {
-                    await UniTask.WaitUntil(() => m_MainContainer.resolvedStyle.height == 0f, cancellationToken: token);
+                    await UniTask.WaitUntil(() => m_MainContainer.resolvedStyle.height == 0f, cancellationToken: m_TaskScheduler.token);
                     m_StateIndex--;
                 }
                 catch (OperationCanceledException)
@@ -348,7 +357,7 @@ namespace CustomControls
 
                 try
                 {
-                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, m_TaskScheduler.token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -364,7 +373,7 @@ namespace CustomControls
 
                 try
                 {
-                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                    await UniTask.NextFrame(PlayerLoopTiming.Initialization, m_TaskScheduler.token);
                     m_StateIndex--;
                 }
                 catch (OperationCanceledException)
@@ -376,28 +385,10 @@ namespace CustomControls
             });
         }
 
-        void Stop()
-        {
-            if (m_Cts != null)
-            {
-                m_Cts.Cancel();
-                m_Cts.Dispose();
-                m_Cts = null;
-            }
-        }
-
         public void UnfoldImmediate()
         {
-            Stop();
-            m_Cts = new CancellationTokenSource();
-            UniTask.Create(async () =>
+            m_TaskScheduler.Schedule(async () =>
             {
-                if (!m_Status.IsCompleted())
-                {
-                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
-                }
-
-                m_Status.SetPending();
                 m_StateIndex = m_FoldTaskPool.length - 1;
 
                 m_DiamondBottom.UnfoldImmediate();
@@ -415,22 +406,13 @@ namespace CustomControls
                 var t2 = UniTask.WaitUntil(() => m_DiamondBottom.ready && m_DiamondTop.ready);
 
                 await (t1, t2);
-                m_Status.SetCompleted();
             });
         }
 
         public void FoldImmediate()
         {
-            Stop();
-            m_Cts = new CancellationTokenSource();
-            UniTask.Create(async () =>
+            m_TaskScheduler.Schedule(async () =>
             {
-                if (!m_Status.IsCompleted())
-                {
-                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
-                }
-
-                m_Status.SetPending();
                 m_StateIndex = 0;
 
                 m_DiamondBottom.FoldImmediate();
@@ -448,63 +430,25 @@ namespace CustomControls
                 var t2 = UniTask.WaitUntil(() => m_DiamondBottom.ready && m_DiamondTop.ready);
 
                 await (t1, t2);
-                m_Status.SetCompleted();
             });
         }
 
         public UniTask Unfold(CancellationToken cancellationToken = default)
         {
-            Stop();
-            m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
-            var task = UniTask.Create(async () =>
+            return m_TaskScheduler.Schedule(async () =>
             {
-                if (!m_Status.IsCompleted())
-                {
-                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
-                }
-
-                m_Status.SetPending();
-
-                try
-                {
-
-                    await UniTask.NextFrame(token).Chain(m_UnfoldTaskPool.GetRange(m_StateIndex, m_UnfoldTaskPool.length - m_StateIndex));
-                }
-                finally
-                {
-                    m_Status.SetCompleted();
-                }
-            });
-
-            return task;
+                await UniTask.NextFrame(m_TaskScheduler.token).Chain(m_UnfoldTaskPool.GetRange(m_StateIndex, m_UnfoldTaskPool.length - m_StateIndex));
+            }, cancellationToken);
         }
 
         public UniTask Fold(CancellationToken cancellationToken = default)
         {
-            Stop();
-            m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
-            var task = UniTask.Create(async () =>
+            return m_TaskScheduler.Schedule(async () =>
             {
-                if (!m_Status.IsCompleted())
-                {
-                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
-                }
-
-                m_Status.SetPending();
                 var functions = m_FoldTaskPool.GetRange(0, m_StateIndex + 1);
                 functions.Reverse();
-
-                try
-                {
-                    await UniTask.NextFrame(token).Chain(functions);
-                }
-                finally
-                {
-                    m_Status.SetCompleted();
-                }
-            });
-
-            return task;
+                await UniTask.NextFrame(m_TaskScheduler.token).Chain(functions);
+            }, cancellationToken);
         }
     }
 }

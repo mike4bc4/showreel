@@ -236,14 +236,8 @@
 }
 
 .diamond-frame-vertical__main-container {
-    padding-left: 16px;
-    padding-right: 16px;
-}
-
-.diamond-frame-vertical__main-container--transition {
-    transition-property: height;
-    transition-duration: 1s;
-    transition-timing-function: ease-out-cubic;
+    margin-left: 16px;
+    margin-right: 16px;
 }
 
 .test {

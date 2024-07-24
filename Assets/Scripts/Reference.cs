@@ -14,5 +14,5 @@ public class Reference<T>
     }
 
     public static implicit operator T(Reference<T> box) => box.Value;
-    public static explicit operator Reference<T>(T value) => new Reference<T>() { Value = value };
+    public static implicit operator Reference<T>(T value) => new Reference<T>() { Value = value };
 }

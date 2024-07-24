@@ -181,12 +181,12 @@ namespace UI
             }
 
             var snapshot = new VisualElement();
+            snapshot.name = "snapshot";
             snapshot.style.width = rect.width;
             snapshot.style.height = rect.height;
             snapshot.style.SetPosition(new StylePosition() { position = Position.Absolute, left = rect.x, top = rect.y });
 
             var layer = LayerManager.CreateLayer(layerName);
-            // layer.alpha = 0f;
             layer.rootVisualElement.Add(snapshot);
 
             try
@@ -201,7 +201,6 @@ namespace UI
 
             snapshot.style.backgroundImage = TextureEditor.Crop(this.texture, ve.worldBound);
             await UniTask.WaitForEndOfFrame(this, ct);  // Wait yet again until snapshot background is applied.
-            // layer.alpha = 1f;
             return layer;
         }
 

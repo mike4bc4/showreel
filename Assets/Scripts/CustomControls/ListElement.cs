@@ -38,6 +38,11 @@ namespace CustomControls
         Label m_Header;
         Label m_Text;
 
+        public DiamondBullet bullet
+        {
+            get => m_DiamondBullet;
+        }
+
         public string header
         {
             get => m_Header.text;
@@ -56,6 +61,7 @@ namespace CustomControls
 
             m_DiamondBullet = new DiamondBullet() { name = "bullet" };
             m_DiamondBullet.AddToClassList(bulletUssClassName);
+            // m_DiamondBullet.UnfoldImmediate();
             Add(m_DiamondBullet);
 
             m_Button = new Button() { name = "button" };

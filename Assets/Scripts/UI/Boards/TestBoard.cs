@@ -46,30 +46,30 @@ namespace UI.Boards
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
-                var element = layer.rootVisualElement.Q<DiamondBullet>();
-                element.Unfold();
-            }
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-                var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
-                var element = layer.rootVisualElement.Q<DiamondBullet>();
-                element.Fold();
-            }
-            else if (Input.GetKeyDown(KeyCode.Q))
-            {
-                var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
-                var element = layer.rootVisualElement.Q<DiamondBullet>();
-                element.UnfoldImmediate();
-            }
-            else if (Input.GetKeyDown(KeyCode.E))
-            {
-                var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
-                var element = layer.rootVisualElement.Q<DiamondBullet>();
-                element.FoldImmediate();
-            }
+            // if (Input.GetKeyDown(KeyCode.A))
+            // {
+            //     var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
+            //     var element = layer.rootVisualElement.Q<DiamondBullet>();
+            //     element.Unfold();
+            // }
+            // else if (Input.GetKeyDown(KeyCode.D))
+            // {
+            //     var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
+            //     var element = layer.rootVisualElement.Q<DiamondBullet>();
+            //     element.Fold();
+            // }
+            // else if (Input.GetKeyDown(KeyCode.Q))
+            // {
+            //     var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
+            //     var element = layer.rootVisualElement.Q<DiamondBullet>();
+            //     element.UnfoldImmediate();
+            // }
+            // else if (Input.GetKeyDown(KeyCode.E))
+            // {
+            //     var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
+            //     var element = layer.rootVisualElement.Q<DiamondBullet>();
+            //     element.FoldImmediate();
+            // }
         }
     }
 }
