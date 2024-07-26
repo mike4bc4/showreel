@@ -13,7 +13,7 @@ class TaskScheduler
     bool m_TaskScheduled;
     bool m_TaskCompleted;
 
-    public bool ready
+    public bool isReady
     {
         get => m_TaskCompleted && !m_TaskScheduled;
     }
@@ -56,6 +56,39 @@ class TaskScheduler
     public UniTask Schedule(Func<UniTask> action, CancellationToken cancellationToken = default)
     {
         return ScheduleInternal(action, cancellationToken);
+    }
+
+    public UniTask Schedule(Func<CancellationToken, UniTask> action, CancellationToken cancellationToken = default)
+    {
+        Stop();
+        m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
+        return UniTask.Create(async () =>
+        {
+            m_TaskScheduled = true;
+            if (!m_TaskCompleted)
+            {
+                try
+                {
+                    await UniTask.WaitUntil(() => m_TaskCompleted, cancellationToken: token);
+                }
+                catch (OperationCanceledException)
+                {
+                    m_TaskScheduled = false;
+                }
+            }
+
+            m_TaskCompleted = false;
+            m_TaskScheduled = false;
+
+            try
+            {
+                await action(token);
+            }
+            finally
+            {
+                m_TaskCompleted = true;
+            }
+        });
     }
 
     UniTask ScheduleInternal(object action, CancellationToken cancellationToken = default)

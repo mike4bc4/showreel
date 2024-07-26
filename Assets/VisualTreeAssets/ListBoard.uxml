@@ -27,4 +27,5 @@
             </CustomControls.ScrollBox>
         </ui:VisualElement>
     </ui:VisualElement>
+    <ui:VisualElement name="test" style="flex-grow: 1; position: absolute; left: 100px; bottom: 100px; width: 100px; height: 100px;" />
 </ui:UXML>

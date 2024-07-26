@@ -70,7 +70,7 @@ namespace CustomControls
         public bool ready
         {
             // get => m_Status.IsCompleted() && m_ScheduledTaskCount == 0;
-            get => m_TaskScheduler.ready;
+            get => m_TaskScheduler.isReady;
         }
 
         public float fillAnimationDuration

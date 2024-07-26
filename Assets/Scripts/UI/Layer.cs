@@ -139,7 +139,7 @@ namespace UI
             base.ResetLayer();
             visualTreeAsset = null;
             blurSize = 0f;
-            Unmask();
+            UnmaskElements();
         }
 
         public Layer CreateSnapshotLayer(VisualElement ve, string layerName)
@@ -204,7 +204,7 @@ namespace UI
             return layer;
         }
 
-        public void Unmask()
+        public void UnmaskElements()
         {
             var dirty = m_MaskedElements.Count > 0;
             m_MaskedElements.Clear();

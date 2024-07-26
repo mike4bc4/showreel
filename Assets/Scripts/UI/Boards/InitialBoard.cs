@@ -344,7 +344,7 @@ namespace UI.Boards
             }
 
             m_InitialBoardLayer.alpha = 0f;
-            m_InitialBoardLayer.Unmask();
+            m_InitialBoardLayer.UnmaskElements();
 
             m_Title = m_InitialBoardLayer.rootVisualElement.Q<DiamondTitle>("title");
             m_Title.label.visible = true;

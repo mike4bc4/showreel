@@ -47,18 +47,17 @@ namespace Utils
                 throw new ArgumentException($"'{typeof(T)}' is not assignable from '{property.PropertyType}'.");
             }
 
-
-            style.visibility = Visibility.Visible;
             var previousValue = property.GetValue(style);
             property.SetValue(style, value);
 
             try
             {
-                await UniTask.NextFrame(PlayerLoopTiming.Initialization);
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken: ct);
             }
             catch (OperationCanceledException)
             {
                 property.SetValue(style, previousValue);
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization);
                 throw;
             }
         }
