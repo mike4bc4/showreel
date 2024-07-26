@@ -9,9 +9,9 @@ namespace KeyframeSystem
     {
         public int keyframeIndex { get; }
         public int keyframeCount { get; }
-        public IAnimationKeyframe AddAnimationKeyframe<T>(Action<T> setter, T from, T to, float duration = 1f, TimingFunction timingFunction = TimingFunction.EaseInOutSine, string name = null);
-        public IKeyframe AddKeyframe(KeyframeFactory keyframeFactory);
-        public IKeyframe AddWaitUntilKeyframe(WaitUntilKeyframeFactory keyframeFactory);
+        public IAnimationKeyframe AddAnimationKeyframe<T>(AnimationKeyframeDescriptor<T> descriptor);
+        public IKeyframe AddKeyframe(KeyframeDescriptor descriptor);
+        public IKeyframe AddWaitUntilKeyframe(WaitUntilKeyframeDescriptor descriptor);
         public IKeyframe GetKeyframe(int index);
         public IKeyframe GetKeyframe(string name);
         public IKeyframe this[int i] { get; }

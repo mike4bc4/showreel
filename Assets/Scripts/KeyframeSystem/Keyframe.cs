@@ -21,7 +21,7 @@ namespace KeyframeSystem
 
                 public Keyframe() { }
 
-                public Keyframe(KeyframeFactory factory) : this()
+                public Keyframe(KeyframeDescriptor factory) : this()
                 {
                     forward = factory.forward ?? KeyframeAction.Empty;
                     backward = factory.backward ?? KeyframeAction.Empty;

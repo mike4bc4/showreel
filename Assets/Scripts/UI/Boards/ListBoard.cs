@@ -43,7 +43,7 @@ public class ListBoard : Board, IBoard
         m_Player.AddTrack();
         m_Player.AddTrack();
 
-        m_Player[0].AddKeyframe(new KeyframeFactory()
+        m_Player[0].AddKeyframe(new KeyframeDescriptor()
         {
             forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
             {
@@ -87,7 +87,7 @@ public class ListBoard : Board, IBoard
             }),
         });
 
-        m_Player[0].AddKeyframe(new KeyframeFactory()
+        m_Player[0].AddKeyframe(new KeyframeDescriptor()
         {
             forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
             {
@@ -108,15 +108,16 @@ public class ListBoard : Board, IBoard
             })
         });
 
-        m_Player[0].AddAnimationKeyframe(
-            alpha => LayerManager.GetLayer("FrameSnapshotLayer").alpha = alpha,
-            0f,
-            1f,
-            m_FadeTime,
-            name: "FslAlpha"
-        );
+        m_Player[0].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>()
+        {
+            setter = alpha => LayerManager.GetLayer("FrameSnapshotLayer").alpha = alpha,
+            from = 0f,
+            to = 1f,
+            duration = m_FadeTime,
+            name = "FslAlpha",
+        });
 
-        m_Player[0].AddWaitUntilKeyframe(new WaitUntilKeyframeFactory()
+        m_Player[0].AddWaitUntilKeyframe(new WaitUntilKeyframeDescriptor()
         {
             forwardPredicate = () =>
             {
@@ -130,7 +131,7 @@ public class ListBoard : Board, IBoard
             }
         });
 
-        m_Player[1].AddWaitUntilKeyframe(new WaitUntilKeyframeFactory()
+        m_Player[1].AddWaitUntilKeyframe(new WaitUntilKeyframeDescriptor()
         {
             forwardPredicate = () =>
             {
@@ -143,13 +144,16 @@ public class ListBoard : Board, IBoard
             }
         });
 
-        m_Player[1].AddAnimationKeyframe(
-            blur => ((Layer)LayerManager.GetLayer("FrameSnapshotLayer")).blurSize = blur,
-            Layer.DefaultBlurSize,
-            0f,
-            m_FadeTime,
-            name: "FslBlur"
-        );
+        m_Player[1].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>()
+        {
+            setter = blur => ((Layer)LayerManager.GetLayer("FrameSnapshotLayer")).blurSize = blur,
+            from = Layer.DefaultBlurSize,
+            to = 0f,
+            duration = m_FadeTime,
+            name = "FslBlur",
+        });
+
+
 
         // UniTask.Create(async () =>
         // {

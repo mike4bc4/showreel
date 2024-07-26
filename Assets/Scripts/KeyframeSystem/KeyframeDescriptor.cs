@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace KeyframeSystem
 {
-    public struct KeyframeFactory
+    public struct KeyframeDescriptor
     {
         public KeyframeAction forward;
         public KeyframeAction forwardRollback;

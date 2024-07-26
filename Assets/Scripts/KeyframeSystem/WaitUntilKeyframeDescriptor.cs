@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace KeyframeSystem
 {
-    public struct WaitUntilKeyframeFactory
+    public struct WaitUntilKeyframeDescriptor
     {
         public Func<bool> forwardPredicate;
         public Func<bool> backwardPredicate;

@@ -86,9 +86,9 @@ namespace KeyframeSystem
                 }, cancellationToken);
             }
 
-            public IKeyframe AddKeyframe(KeyframeFactory keyframeFactory)
+            public IKeyframe AddKeyframe(KeyframeDescriptor descriptor)
             {
-                var keyframe = new Keyframe(keyframeFactory);
+                var keyframe = new Keyframe(descriptor);
                 AddKeyframe(keyframe);
                 return keyframe;
             }
@@ -103,17 +103,17 @@ namespace KeyframeSystem
                 }
             }
 
-            public IKeyframe AddWaitUntilKeyframe(WaitUntilKeyframeFactory keyframeFactory)
+            public IKeyframe AddWaitUntilKeyframe(WaitUntilKeyframeDescriptor descriptor)
             {
-                var keyframe = new Keyframe() { name = keyframeFactory.name };
+                var keyframe = new Keyframe() { name = descriptor.name };
                 keyframe.forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
                 {
-                    await UniTask.WaitUntil(() => keyframeFactory.forwardPredicate != null ? keyframeFactory.forwardPredicate() : true, cancellationToken: cancellationToken);
+                    await UniTask.WaitUntil(() => descriptor.forwardPredicate != null ? descriptor.forwardPredicate() : true, cancellationToken: cancellationToken);
                 });
 
                 keyframe.backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
                 {
-                    await UniTask.WaitUntil(() => keyframeFactory.backwardPredicate != null ? keyframeFactory.backwardPredicate() : true, cancellationToken: cancellationToken);
+                    await UniTask.WaitUntil(() => descriptor.backwardPredicate != null ? descriptor.backwardPredicate() : true, cancellationToken: cancellationToken);
                 });
 
                 keyframe.forwardRollback = KeyframeAction.Empty;
@@ -156,9 +156,35 @@ namespace KeyframeSystem
                 }
             }
 
-            public IAnimationKeyframe AddAnimationKeyframe<T>(Action<T> setter, T from, T to, float duration = 1f, TimingFunction timingFunction = TimingFunction.EaseInOutSine, string name = null)
+            bool ValidateAnimationType<T>()
             {
-                duration = Mathf.Max(0.001f, duration);
+                return
+                    typeof(T) == typeof(float) ||
+                    typeof(T) == typeof(Vector2) ||
+                    typeof(T) == typeof(Vector3) ||
+                    typeof(T) == typeof(Color) ||
+                    typeof(T) == typeof(Quaternion);
+            }
+
+            public IAnimationKeyframe AddAnimationKeyframe<T>(AnimationKeyframeDescriptor<T> descriptor)
+            {
+                if (!ValidateAnimationType<T>())
+                {
+                    throw new ArgumentException($"'{typeof(T)}' is not supported.");
+                }
+
+                if (descriptor.setter == null)
+                {
+                    throw new ArgumentNullException("Setter cannot be null.");
+                }
+
+                var setter = descriptor.setter;
+                T from = descriptor.from;
+                T to = descriptor.to;
+                var duration = Mathf.Max(0.001f, descriptor.duration);
+                var timingFunction = descriptor.timingFunction;
+                var name = descriptor.name;
+
                 var animationKeyframe = new AnimationKeyframe()
                 {
                     duration = duration,
