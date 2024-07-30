@@ -8,6 +8,5 @@ namespace KeyframeSystem
     {
         public float playbackTime { get; }
         public float duration { get; }
-        public float progress { get; }
     }
 }

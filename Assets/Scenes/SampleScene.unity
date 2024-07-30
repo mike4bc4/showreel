@@ -1131,6 +1131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ListBoard: {fileID: 9197481963319205126, guid: 10fd8ecd21465ba41b4256116e87551f, type: 3}
   m_FadeTime: 0.5
+  m_FlexTime: 2
   m_VideoClip: {fileID: 32900000, guid: 10581a60dda40e9499ef47ceed6f0dad, type: 3}
 --- !u!1 &2037146881
 GameObject:

@@ -58,6 +58,7 @@ namespace KeyframeSystem
 
         public void Pause()
         {
+            // Schedule nothing, this will send cancel signal to scheduled or currently executed Play and PlayBackwards.
             m_TaskScheduler.Schedule(() => { });
         }
 

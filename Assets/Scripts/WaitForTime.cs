@@ -18,16 +18,16 @@ public class WaitForTime : IEnumerator
 
     public bool MoveNext()
     {
-        if (Application.isPlaying)
-        {
+        // if (Application.isPlaying)
+        // {
             return Time.time < m_StartTime + m_Time;
-        }
-#if UNITY_EDITOR
-        else
-        {
-            return EditorApplication.timeSinceStartup < m_StartTime + m_Time;
-        }
-#endif
+        // }
+// #if UNITY_EDITOR
+        // else
+        // {
+        //     return EditorApplication.timeSinceStartup < m_StartTime + m_Time;
+        // }
+// #endif
     }
 
     public void Reset()

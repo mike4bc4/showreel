@@ -12,7 +12,11 @@ namespace KeyframeSystem
             {
                 public float playbackTime { get; set; }
                 public float duration { get; set; }
-                public float progress { get => duration != 0 ? Mathf.Clamp01(playbackTime / duration) : float.NaN; }
+                public override float progress
+                {
+                    get => duration != 0 ? Mathf.Clamp01(playbackTime / duration) : float.NaN;
+                    set => playbackTime = Mathf.Clamp01(value) * duration;
+                }
             }
         }
     }

@@ -12,6 +12,11 @@ namespace KeyframeSystem
         public T to;
         public float duration;
         public TimingFunction timingFunction;
-        public string name;
+        public string label;
+
+        public AnimationKeyframeDescriptor(string label) : this()
+        {
+            this.label = label;
+        }
     }
 }

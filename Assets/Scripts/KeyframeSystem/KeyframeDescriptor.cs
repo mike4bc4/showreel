@@ -10,6 +10,11 @@ namespace KeyframeSystem
         public KeyframeAction forwardRollback;
         public KeyframeAction backward;
         public KeyframeAction backwardRollback;
-        public string name;
+        public string label;
+
+        public KeyframeDescriptor(string label) : this()
+        {
+            this.label = label;
+        }
     }
 }

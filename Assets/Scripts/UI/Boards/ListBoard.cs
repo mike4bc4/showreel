@@ -15,8 +15,13 @@ using Utils;
 
 public class ListBoard : Board, IBoard
 {
+    public const string TitleSnapshotLayerName = "TitleSnapshotLayer";
+    public const string TitleLabelSnapshotLayerName = "TitleLabelSnapshotLayer";
+    public const string ScrollBoxSnapshotLayerName = "ScrollBoxSnapshotLayer";
+
     [SerializeField] VisualTreeAsset m_ListBoard;
     [SerializeField] float m_FadeTime;
+    [SerializeField] float m_FlexTime;
     [SerializeField] VideoClip m_VideoClip;
 
     Layer m_ListBoardLayer;
@@ -34,6 +39,23 @@ public class ListBoard : Board, IBoard
     DiamondTitle m_Title;
     ScrollBox m_ScrollBox;
     List<ListElement> m_ListElements;
+
+    [SerializeField] float m_TestProperty;
+
+    public float testProperty
+    {
+        get => m_TestProperty;
+        set
+        {
+            if (value != m_TestProperty)
+            {
+                m_TestProperty = value;
+                Debug.Log("Set");
+            }
+        }
+    }
+
+    
 
     public void Init()
     {
@@ -75,6 +97,8 @@ public class ListBoard : Board, IBoard
                 foreach (var element in m_ListElements)
                 {
                     element.visible = false;
+                    element.button.visible = false;
+                    element.bullet.FoldImmediate();
                 }
 
                 var t1 = UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
@@ -108,66 +132,371 @@ public class ListBoard : Board, IBoard
             })
         });
 
-        m_Player[0].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>()
+        m_Player[0].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>("A")
         {
             setter = alpha => LayerManager.GetLayer("FrameSnapshotLayer").alpha = alpha,
             from = 0f,
             to = 1f,
             duration = m_FadeTime,
-            name = "FslAlpha",
         });
 
-        m_Player[0].AddWaitUntilKeyframe(new WaitUntilKeyframeDescriptor()
-        {
-            forwardPredicate = () =>
-            {
-                var keyframe = m_Player[1]["FslBlur"];
-                return m_Player[1].keyframeIndex >= keyframe.index && !keyframe.isPlaying;
-            },
-            backwardPredicate = () =>
-            {
-                var keyframe = (IAnimationKeyframe)m_Player[1]["FslBlur"];
-                return keyframe.isPlaying && keyframe.progress < 0.5f;
-            }
-        });
-
-        m_Player[1].AddWaitUntilKeyframe(new WaitUntilKeyframeDescriptor()
-        {
-            forwardPredicate = () =>
-            {
-                var keyframe = (IAnimationKeyframe)m_Player[0]["FslAlpha"];
-                return keyframe.isPlaying && keyframe.progress > 0.5f;
-            },
-            backwardPredicate = () =>
-            {
-                return m_Player[0].keyframeIndex == 0 && !m_Player[0][0].isPlaying;
-            }
-        });
-
-        m_Player[1].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>()
+        m_Player[1].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>("B")
         {
             setter = blur => ((Layer)LayerManager.GetLayer("FrameSnapshotLayer")).blurSize = blur,
             from = Layer.DefaultBlurSize,
             to = 0f,
             duration = m_FadeTime,
-            name = "FslBlur",
+        })
+        .DelayForward(() => m_Player[0]["A"].progress > 0.5f)
+        .DelayBackward(() => m_Player[0]["C"].progress <= 0f);
+
+        m_Player[0].AddKeyframe(new KeyframeDescriptor("C")
+        {
+            forward = new KeyframeAction((IKeyframe keyframe) =>
+            {
+                LayerManager.RemoveLayer("FrameSnapshotLayer");
+                m_ListBoardLayer.UnmaskElements(m_Frame);
+            }),
+            backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                var layer = m_ListBoardLayer.CreateSnapshotLayer(m_Frame, "FrameSnapshotLayer");
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken: cancellationToken);
+                m_ListBoardLayer.MaskElements(m_Frame);
+            }),
+        })
+        .DelayForward(() => m_Player[1]["B"].progress >= 1f);
+
+        m_Player[0].AddKeyframe(new KeyframeDescriptor()
+        {
+            forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                await m_Frame.Unfold(cancellationToken);
+            }),
+            backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                await m_Frame.Fold(cancellationToken);
+            }),
         });
 
+        m_Player[0].AddKeyframe(new KeyframeDescriptor()
+        {
+            forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                m_Frame.mainContainer.visible = true;
+                var layer = m_ListBoardLayer.CreateSnapshotLayer(m_Frame.mainContainer, "MainContainerSnapshotLayer");
+                layer.alpha = 0f;
+                layer.blurSize = Layer.DefaultBlurSize;
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+                m_ListBoardLayer.MaskElements(m_Frame.mainContainer);
+            }),
+            backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                m_Frame.mainContainer.visible = false;
+                LayerManager.RemoveLayer("MainContainerSnapshotLayer");
+                m_ListBoardLayer.UnmaskElements(m_Frame.mainContainer);
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+            })
+        });
 
+        m_Player[0].AddKeyframe(new KeyframeDescriptor()
+        {
+            forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                var videoPlayer = VideoPlayerManager.CreatePlayer(m_VideoClip, "Player");
+                videoPlayer.Play();
+                var layer = (Layer)LayerManager.GetLayer("MainContainerSnapshotLayer");
+                var snapshot = layer.rootVisualElement.Q("snapshot");
+                snapshot.style.backgroundImage = Background.FromRenderTexture(videoPlayer.targetTexture);
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+            }),
+            backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                VideoPlayerManager.RemovePlayer("Player");
+                var layer = (Layer)LayerManager.GetLayer("MainContainerSnapshotLayer");
+                var snapshot = layer.rootVisualElement.Q("snapshot");
+                snapshot.style.backgroundImage = StyleKeyword.Null;
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+            })
+        });
 
-        // UniTask.Create(async () =>
+        m_Player[0].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>("D")
+        {
+            setter = alpha => LayerManager.GetLayer("MainContainerSnapshotLayer").alpha = alpha,
+            from = 0f,
+            to = 1f,
+            duration = m_FadeTime,
+        })
+        .DelayBackward(() => m_Player[1]["E"].progress <= 0.5f);
+
+        m_Player[1].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>("E")
+        {
+            setter = blur => ((Layer)LayerManager.GetLayer("MainContainerSnapshotLayer")).blurSize = blur,
+            from = Layer.DefaultBlurSize,
+            to = 0f,
+            duration = m_FadeTime,
+        })
+        .DelayForward(() => m_Player[0]["D"].progress >= 0.5f)
+        .DelayBackward(() => m_Player[0]["F"].progress <= 0f);
+
+        m_Player[0].AddKeyframe(new KeyframeDescriptor("F")
+        {
+            forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                var videoPlayer = VideoPlayerManager.GetPlayer("Player");
+                m_VideoElement.style.backgroundImage = Background.FromRenderTexture(videoPlayer.targetTexture);
+                m_Frame.mainContainer.visible = true;
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+            }),
+            backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                m_VideoElement.style.backgroundImage = StyleKeyword.Null;
+                m_Frame.mainContainer.visible = false;
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+            })
+        })
+        .DelayForward(() => m_Player[1]["E"].progress >= 1f);
+
+        m_Player[0].AddKeyframe(new KeyframeDescriptor()
+        {
+            forward = new KeyframeAction((IKeyframe keyframe) =>
+            {
+                m_ListBoardLayer.UnmaskElements(m_Frame.mainContainer);
+                LayerManager.RemoveLayer("MainContainerSnapshotLayer");
+            }),
+            backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                // Don't have to check whether layer already exist, as forward will be executed as a rollback method
+                // if player is paused or stopped, and will remove created layer anyway.
+                var layer = m_ListBoardLayer.CreateSnapshotLayer(m_Frame.mainContainer, "MainContainerSnapshotLayer");
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, m_TaskScheduler.token);
+
+                var videoPlayer = VideoPlayerManager.GetPlayer("Player");
+                var snapshot = layer.rootVisualElement.Q("snapshot");
+                snapshot.style.backgroundImage = Background.FromRenderTexture(videoPlayer.targetTexture);
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+                m_ListBoardLayer.MaskElements(m_Frame.mainContainer);
+            })
+        });
+
+        m_Player[0].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>()
+        {
+            setter = flex => m_FrameSpacer.style.flexGrow = flex,
+            from = 0.5f,
+            to = 1f,
+            duration = m_FlexTime,
+            timingFunction = TimingFunction.EaseOutCubic,
+        });
+
+        // TODO: Fix labels.
+        // TITLE ANIMATION
+        // m_Player[0].AddKeyframe(new KeyframeDescriptor()
         // {
-        //     while (true)
+        //     forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
         //     {
-        //         Debug.Log(strip2.GetKeyframe(1).status);
-        //         await UniTask.NextFrame();
-        //     }
-        // }).Forget();
+        //         var layer = m_ListBoardLayer.CreateSnapshotLayer(m_Title, TitleSnapshotLayerName);
+        //         layer.alpha = 0f;
+        //         layer.blurSize = Layer.DefaultBlurSize;
+        //         await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+        //     }),
+        //     backward = new KeyframeAction((IKeyframe keyframe) =>
+        //     {
+        //         LayerManager.RemoveLayer(TitleSnapshotLayerName);
+        //     })
+        // });
 
-        // strip1.AddKeyframe(new KeyframeFactory()
+        // m_Player[0].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>("F")
         // {
-        //     forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) => { }),
-        //     backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) => { })
+        //     setter = alpha => ((Layer)LayerManager.GetLayer(TitleSnapshotLayerName)).alpha = alpha,
+        //     from = 0f,
+        //     to = 1f,
+        //     duration = m_FadeTime,
+        // })
+        // .DelayBackward(() => m_Player[1]["G"].progress <= 0.5f);
+
+        // m_Player[1].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>("G")
+        // {
+        //     setter = blur => ((Layer)LayerManager.GetLayer(TitleSnapshotLayerName)).blurSize = blur,
+        //     from = Layer.DefaultBlurSize,
+        //     to = 0,
+        //     duration = m_FadeTime,
+        // })
+        // .DelayForward(() => m_Player[0]["F"].progress >= 0.5f)
+        // .DelayBackward(() => m_Player[0]["H"].progress <= 0f);
+
+        // m_Player[0].AddKeyframe(new KeyframeDescriptor("H")
+        // {
+        //     forward = new KeyframeAction((IKeyframe keyframe) =>
+        //     {
+        //         LayerManager.RemoveLayer(TitleSnapshotLayerName);
+        //         m_ListBoardLayer.UnmaskElements(m_Title);
+        //     }),
+        //     backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+        //     {
+        //         var layer = m_ListBoardLayer.CreateSnapshotLayer(m_Title, TitleSnapshotLayerName);
+        //         m_ListBoardLayer.MaskElements(m_Title);
+        //         await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+        //     })
+        // })
+        // .DelayForward(() => m_Player[1]["G"].progress >= 1f);
+
+        // m_Player[0].AddKeyframe(new KeyframeDescriptor()
+        // {
+        //     forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+        //     {
+        //         await m_Title.Unfold(cancellationToken);
+        //     }),
+        //     backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+        //     {
+        //         await m_Title.Fold(cancellationToken);
+        //     })
+        // });
+
+        // m_Player[0].AddKeyframe(new KeyframeDescriptor()
+        // {
+        //     forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+        //     {
+        //         m_Title.label.visible = true;
+        //         var layer = m_ListBoardLayer.CreateSnapshotLayer(m_Title.label, TitleLabelSnapshotLayerName);
+        //         layer.alpha = 0f;
+        //         layer.blurSize = Layer.DefaultBlurSize;
+        //         m_ListBoardLayer.MaskElements(m_Title.label);
+        //         await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+        //     }),
+        //     backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+        //     {
+        //         m_Title.label.visible = false;
+        //         LayerManager.RemoveLayer(TitleLabelSnapshotLayerName);
+        //         m_ListBoardLayer.UnmaskElements(m_Title.label);
+        //         await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+        //     })
+        // });
+
+        // m_Player[0].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>("I")
+        // {
+        //     setter = alpha => ((Layer)LayerManager.GetLayer(TitleLabelSnapshotLayerName)).alpha = alpha,
+        //     from = 0f,
+        //     to = 1f,
+        //     duration = m_FadeTime,
+        // })
+        // .DelayBackward(() => m_Player[1]["J"].progress <= 0.5f);
+
+        // m_Player[1].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>("J")
+        // {
+        //     setter = blur => ((Layer)LayerManager.GetLayer(TitleLabelSnapshotLayerName)).blurSize = blur,
+        //     from = Layer.DefaultBlurSize,
+        //     to = 0f,
+        //     duration = m_FadeTime,
+        // })
+        // .DelayForward(() => m_Player[0]["I"].progress >= 0.5f)
+        // .DelayBackward(() => m_Player[0]["K"].progress <= 0f);
+
+        // m_Player[0].AddKeyframe(new KeyframeDescriptor("K")
+        // {
+        //     forward = new KeyframeAction((IKeyframe keyframe) =>
+        //     {
+        //         LayerManager.RemoveLayer(TitleLabelSnapshotLayerName);
+        //         m_ListBoardLayer.UnmaskElements(m_Title.label);
+        //     }),
+        //     backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+        //     {
+        //         var layer = m_ListBoardLayer.CreateSnapshotLayer(m_Title.label, TitleLabelSnapshotLayerName);
+        //         await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+        //         m_ListBoardLayer.MaskElements(m_Title.label);
+        //     })
+        // })
+        // .DelayForward(() => m_Player[1]["J"].progress >= 1f);
+        // TITLE ANIMATION END
+
+        #region ScrollBox Animation
+
+        m_Player[0].AddKeyframe(new KeyframeDescriptor()
+        {
+            forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                m_ScrollBox.visible = true;
+                m_ListBoardLayer.MaskElements(m_ScrollBox);
+                var layer = m_ListBoardLayer.CreateSnapshotLayer(m_ScrollBox, ScrollBoxSnapshotLayerName);
+                layer.alpha = 0f;
+                layer.blurSize = Layer.DefaultBlurSize;
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+            }),
+            backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                m_ScrollBox.visible = false;
+                m_ListBoardLayer.MaskElements(m_ScrollBox);
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+            })
+        });
+
+        m_Player[0].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>("M")
+        {
+            setter = alpha => ((Layer)LayerManager.GetLayer(ScrollBoxSnapshotLayerName)).alpha = alpha,
+            from = 0f,
+            to = 1f,
+            duration = m_FadeTime,
+        })
+        .DelayBackward(() => m_Player[0]["N"].progress <= 0.5f);
+
+        m_Player[1].AddAnimationKeyframe(new AnimationKeyframeDescriptor<float>("N")
+        {
+            setter = blur => ((Layer)LayerManager.GetLayer(ScrollBoxSnapshotLayerName)).blurSize = blur,
+            from = Layer.DefaultBlurSize,
+            to = 0f,
+            duration = m_FadeTime,
+        })
+        .DelayForward(() => m_Player[0]["M"].progress >= 0.5f)
+        .DelayBackward(() => m_Player[0]["O"].progress <= 0f);
+
+        m_Player[0].AddKeyframe(new KeyframeDescriptor("O")
+        {
+            forward = new KeyframeAction((IKeyframe keyframe) =>
+            {
+                LayerManager.RemoveLayer(ScrollBoxSnapshotLayerName);
+                m_ListBoardLayer.UnmaskElements(m_ScrollBox);
+            }),
+            backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+            {
+                m_ListBoardLayer.CreateSnapshotLayer(m_ScrollBox, ScrollBoxSnapshotLayerName);
+                m_ListBoardLayer.MaskElements(m_ScrollBox);
+                await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
+            })
+        })
+        .DelayForward(() => m_Player[1]["N"].progress >= 1f);
+
+        #endregion
+
+        #region List Bullet Animation
+
+        // m_Player[0].AddKeyframe(new KeyframeDescriptor()
+        // {
+        //     forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+        //     {
+        //         foreach (var listElement in m_ListElements)
+        //         {
+        //             listElement.visible = true;
+        //         }
+        //     }),
+        //     backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+        //     {
+        //         foreach (var listElement in m_ListElements)
+        //         {
+
+        //         }
+        //     })
+        // });
+
+        #endregion
+
+        // m_Player[0].AddKeyframe(new KeyframeDescriptor()
+        // {
+        //     forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+        //     {
+
+        //     }),
+        //     backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
+        //     {
+
+        //     })
         // });
 
         m_TaskChain.AddLink(

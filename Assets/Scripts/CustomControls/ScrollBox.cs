@@ -53,6 +53,11 @@ namespace CustomControls
         float m_Deceleration;
         int m_ScrolledLines;
 
+        public bool isScrollBarDisplayed
+        {
+            get => m_ScrollBar.style.display == DisplayStyle.Flex;
+        }
+
         public int scrolledLines
         {
             get => m_ScrolledLines;

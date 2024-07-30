@@ -151,6 +151,7 @@ namespace UI
             }
 
             var snapshot = new VisualElement();
+            snapshot.name = "snapshot";
             snapshot.style.width = rect.width;
             snapshot.style.height = rect.height;
             snapshot.style.SetPosition(new StylePosition() { position = Position.Absolute, left = rect.x, top = rect.y });

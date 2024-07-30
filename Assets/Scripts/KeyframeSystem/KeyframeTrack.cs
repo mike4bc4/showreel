@@ -16,10 +16,12 @@ namespace KeyframeSystem
             Dictionary<string, Keyframe> m_NamedKeyframes;
             TaskScheduler m_TaskScheduler;
 
+            public IKeyframe firstKeyframe => this[0];
+            public IKeyframe lastKeyframe => this[keyframeCount - 1];
             public int keyframeIndex { get; set; }
             public int keyframeCount { get => m_Keyframes.Count; }
             public IKeyframe this[int i] => GetKeyframe(i);
-            public IKeyframe this[string name] => GetKeyframe(name);
+            public IKeyframe this[string label] => GetKeyframe(label);
 
             public KeyframeTrack()
             {
@@ -35,10 +37,15 @@ namespace KeyframeSystem
                     var keyframes = m_Keyframes.Where(k => k.index >= keyframeIndex);
                     foreach (var keyframe in keyframes)
                     {
+                        if (keyframe.forwardDelayPredicate != null && !keyframe.forwardDelayPredicate.Invoke())
+                        {
+                            await UniTask.WaitUntil(keyframe.forwardDelayPredicate, cancellationToken: ct);
+                        }
+
                         try
                         {
-                            keyframe.isPlaying = true;
                             await keyframe.forward.Invoke(keyframe, ct);
+                            keyframe.progress = 1f;
                             keyframeIndex++;
                         }
                         catch (OperationCanceledException)
@@ -46,10 +53,10 @@ namespace KeyframeSystem
                             await keyframe.forwardRollback.Invoke(keyframe, default);
                             throw;
                         }
-                        finally
-                        {
-                            keyframe.isPlaying = false;
-                        }
+                        // finally
+                        // {
+                        //     keyframe.progress = 1f;
+                        // }
                     }
 
                     keyframeIndex = m_Keyframes.Count - 1;
@@ -65,10 +72,15 @@ namespace KeyframeSystem
 
                     foreach (var keyframe in keyframes)
                     {
+                        if (keyframe.backwardDelayPredicate != null && !keyframe.backwardDelayPredicate.Invoke())
+                        {
+                            await UniTask.WaitUntil(keyframe.backwardDelayPredicate, cancellationToken: ct);
+                        }
+
                         try
                         {
-                            keyframe.isPlaying = true;
                             await keyframe.backward.Invoke(keyframe, ct);
+                            keyframe.progress = 0f;
                             keyframeIndex--;
                         }
                         catch (OperationCanceledException)
@@ -76,10 +88,10 @@ namespace KeyframeSystem
                             await keyframe.backwardRollback.Invoke(keyframe, default);
                             throw;
                         }
-                        finally
-                        {
-                            keyframe.isPlaying = false;
-                        }
+                        // finally
+                        // {
+                        //     keyframe.progress = 0f;
+                        // }
                     }
 
                     keyframeIndex = 0;
@@ -97,29 +109,11 @@ namespace KeyframeSystem
             {
                 m_Keyframes.Add(keyframe);
                 keyframe.index = m_Keyframes.Count - 1;
-                if (keyframe.name != null)
+                keyframe.track = this;
+                if (keyframe.label != null)
                 {
-                    m_NamedKeyframes.TryAdd(keyframe.name, keyframe);
+                    m_NamedKeyframes.TryAdd(keyframe.label, keyframe);
                 }
-            }
-
-            public IKeyframe AddWaitUntilKeyframe(WaitUntilKeyframeDescriptor descriptor)
-            {
-                var keyframe = new Keyframe() { name = descriptor.name };
-                keyframe.forward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
-                {
-                    await UniTask.WaitUntil(() => descriptor.forwardPredicate != null ? descriptor.forwardPredicate() : true, cancellationToken: cancellationToken);
-                });
-
-                keyframe.backward = new KeyframeAction(async (IKeyframe keyframe, CancellationToken cancellationToken) =>
-                {
-                    await UniTask.WaitUntil(() => descriptor.backwardPredicate != null ? descriptor.backwardPredicate() : true, cancellationToken: cancellationToken);
-                });
-
-                keyframe.forwardRollback = KeyframeAction.Empty;
-                keyframe.backwardRollback = KeyframeAction.Empty;
-                AddKeyframe(keyframe);
-                return keyframe;
             }
 
             public IKeyframe GetKeyframe(int index)
@@ -127,9 +121,9 @@ namespace KeyframeSystem
                 return m_Keyframes.ElementAtOrDefault(index);
             }
 
-            public IKeyframe GetKeyframe(string name)
+            public IKeyframe GetKeyframe(string label)
             {
-                if (m_NamedKeyframes.TryGetValue(name, out var keyframe))
+                if (m_NamedKeyframes.TryGetValue(label, out var keyframe))
                 {
                     return keyframe;
                 }
@@ -183,12 +177,12 @@ namespace KeyframeSystem
                 T to = descriptor.to;
                 var duration = Mathf.Max(0.001f, descriptor.duration);
                 var timingFunction = descriptor.timingFunction;
-                var name = descriptor.name;
+                var label = descriptor.label;
 
                 var animationKeyframe = new AnimationKeyframe()
                 {
                     duration = duration,
-                    name = name
+                    label = label
                 };
 
                 animationKeyframe.forward = new KeyframeAction(async (keyframe, cancellationToken) =>
@@ -204,7 +198,7 @@ namespace KeyframeSystem
                     }
                 });
 
-                animationKeyframe.backward = new KeyframeAction(async (kf, token) =>
+                animationKeyframe.backward = new KeyframeAction(async (kf, cancellationToken) =>
                 {
                     while (animationKeyframe.progress > 0f)
                     {
@@ -212,7 +206,7 @@ namespace KeyframeSystem
                         setter?.Invoke(lerpValue);
 
                         var t = Time.time;
-                        await UniTask.NextFrame(PlayerLoopTiming.Initialization, token);
+                        await UniTask.NextFrame(PlayerLoopTiming.Initialization, cancellationToken);
                         animationKeyframe.playbackTime -= (Time.time - t);
                     }
                 });

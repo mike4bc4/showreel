@@ -43,6 +43,11 @@ namespace CustomControls
             get => m_DiamondBullet;
         }
 
+        public Button button
+        {
+            get => m_Button;
+        }
+
         public string header
         {
             get => m_Header.text;
