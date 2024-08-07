@@ -710,9 +710,6 @@
 .subtitle__border {
     background-color: var(--color-secondary);
     height: 2px;
-}
-
-.subtitle__border--transition {
-    transition-property: translate, transform-origin;
-    transition-duration: 2s, 2s;
+    translate: -100% 0;
+    transform-origin: right;
 }

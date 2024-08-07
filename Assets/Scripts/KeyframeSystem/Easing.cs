@@ -9,13 +9,25 @@ namespace KeyframeSystem
         Linear,
         Ease,
         EaseInSine,
+        EaseOutSine,
         EaseInOutSine,
         EaseInCubic,
+        EaseOutCubic,
         EaseInOutCubic,
     }
 
     public static class EasingExtensions
     {
+        static float EaseOutSine(float x)
+        {
+            return Mathf.Sin((x * Mathf.PI) * 0.5f);
+        }
+
+        static float EaseOutCubic(float x)
+        {
+            return 1f - Mathf.Pow(1f - x, 3f);
+        }
+
         static float EaseInOutSine(float x)
         {
             return -(Mathf.Cos(Mathf.PI * x) - 1f) * 0.5f;
@@ -57,10 +69,14 @@ namespace KeyframeSystem
                     return EaseInOut(x);
                 case Easing.EaseInSine:
                     return EaseInSine(x);
+                case Easing.EaseOutSine:
+                    return EaseOutSine(x);
                 case Easing.EaseInOutSine:
                     return EaseInOutSine(x);
                 case Easing.EaseInCubic:
                     return EaseInCubic(x);
+                case Easing.EaseOutCubic:
+                    return EaseOutCubic(x);
                 case Easing.EaseInOutCubic:
                     return EaseInOutCubic(x);
                 default:

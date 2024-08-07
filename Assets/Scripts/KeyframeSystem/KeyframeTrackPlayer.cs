@@ -8,6 +8,12 @@ using UnityEngine;
 
 namespace KeyframeSystem
 {
+    public enum WrapMode
+    {
+        Once,
+        Loop,
+    }
+
     public partial class KeyframeTrackPlayer
     {
         public const int DefaultSampling = 60;
@@ -22,6 +28,7 @@ namespace KeyframeSystem
         float m_Time;
         float m_PlaybackSpeed;
         bool m_IsPlaying;
+        WrapMode m_WrapMode;
 
         public float time
         {
@@ -133,6 +140,12 @@ namespace KeyframeSystem
 
         public int trackCount => m_Tracks.Count;
 
+        public WrapMode wrapMode
+        {
+            get => m_WrapMode;
+            set => m_WrapMode = value;
+        }
+
         public KeyframeTrackPlayer()
         {
             m_Tracks = new List<KeyframeTrack>();
@@ -174,8 +187,7 @@ namespace KeyframeSystem
             // it later in scheduled events.
             if (m_IsPlaying)
             {
-                // Because RebuildInvokedEvents method would put current frame events into
-                // invoked set, we are handling state of new event manually.
+                // Add event to invoked events set if its invoke time is in player's past.
                 if (playbackSpeed < 0 ? evt.frameIndex >= frameIndex : evt.frameIndex <= frameIndex)
                 {
                     m_InvokedEvents.Add(evt);
@@ -231,7 +243,10 @@ namespace KeyframeSystem
                         break;
                     }
 
-                    m_InvokedEvents.Add(evt);
+                    if ((evt.invokeFlags & EventInvokeFlags.Backward) == EventInvokeFlags.Backward)
+                    {
+                        m_InvokedEvents.Add(evt);
+                    }
                 }
             }
             else
@@ -243,7 +258,10 @@ namespace KeyframeSystem
                         break;
                     }
 
-                    m_InvokedEvents.Add(evt);
+                    if ((evt.invokeFlags & EventInvokeFlags.Forward) == EventInvokeFlags.Forward)
+                    {
+                        m_InvokedEvents.Add(evt);
+                    }
                 }
             }
         }
@@ -334,7 +352,15 @@ namespace KeyframeSystem
             m_Time = Mathf.Clamp(m_Time, 0f, d);
             if ((m_Time <= 0 || d <= m_Time) && m_ScheduledEvents.Count == 0)
             {
-                Pause();
+                switch (m_WrapMode)
+                {
+                    case WrapMode.Once:
+                        Pause();
+                        break;
+                    case WrapMode.Loop:
+                        time = m_PlaybackSpeed < 0 ? duration : 0f;
+                        break;
+                }
             }
 
             onUpdate?.Invoke();
