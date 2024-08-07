@@ -1,55 +1,33 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace KeyframeSystem
 {
+    public interface IKeyframe
+    {
+        public float time { get; set; }
+        public int frameIndex { get; set; }
+        public IKeyframeTrack track { get; }
+        public float value { get; set; }
+        public Easing easing { get; set; }
+    }
+
     public partial class KeyframeTrackPlayer
     {
-        partial class KeyframeTrack : IKeyframeTrack
+        class Keyframe : IKeyframe
         {
-            class Keyframe : IKeyframe
+            public float time { get; set; }
+            public KeyframeTrack track { get; set; }
+            public float value { get; set; }
+            public Easing easing { get; set; }
+            IKeyframeTrack IKeyframe.track => this.track;
+
+            public int frameIndex
             {
-                public KeyframeAction forward;
-                public KeyframeAction forwardRollback;
-                public KeyframeAction backward;
-                public KeyframeAction backwardRollback;
-
-                public Func<bool> forwardDelayPredicate;
-                public Func<bool> backwardDelayPredicate;
-
-                public int index { get; set; }
-                public string label { get; set; }
-                public virtual float progress { get; set; }
-                public KeyframeTrack track { get; set; }
-
-                public Keyframe() { }
-
-                public Keyframe(KeyframeDescriptor factory) : this()
-                {
-                    forward = factory.forward ?? KeyframeAction.Empty;
-                    backward = factory.backward ?? KeyframeAction.Empty;
-                    forwardRollback = factory.forwardRollback ?? factory.backward;
-                    backwardRollback = factory.backwardRollback ?? factory.forward;
-                    label = factory.label;
-                }
-
-                public IKeyframe DelayForward(Func<bool> predicate)
-                {
-                    // throw new NotImplementedException();
-                    forwardDelayPredicate = predicate;
-                    return this;
-                }
-
-                public IKeyframe DelayBackward(Func<bool> predicate)
-                {
-                    // throw new NotImplementedException();
-                    backwardDelayPredicate = predicate;
-                    return this;
-                }
+                get => Mathf.RoundToInt(time * track.player.sampling);
+                set => time = value / (float)track.player.sampling;
             }
         }
     }

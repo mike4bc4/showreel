@@ -59,6 +59,7 @@
 }
 
 .diamond-title__label-container {
+    width: 0;
 }
 
 .diamond-title__diamond-right {
@@ -235,9 +236,19 @@
     width: auto;
 }
 
-.diamond-frame-vertical__main-container {
-    margin-left: 16px;
+.diamond-frame-vertical__content-container {
+    position: absolute;
+    margin-top: 32px;
+    margin-right: 32px;
+    margin-bottom: 32px;
+    margin-left: 32px;
+}
+
+.diamond-frame-vertical__resizing-element {
+    width: 266px;
+    height: 291px;
     margin-right: 16px;
+    margin-left: 16px;
 }
 
 .test {
@@ -383,7 +394,7 @@
 }
 
 .diamond-bullet {
-    overflow: hidden;
+    overflow: visible;
     flex-direction: row;
 }
 
@@ -402,7 +413,7 @@
     margin-right: -15px;
     align-items: flex-end;
     justify-content: center;
-    flex-grow: 1;
+    flex-grow: 0;
 }
 
 .interface__arrow {

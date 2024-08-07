@@ -8,6 +8,11 @@ namespace UI
     public abstract class LayerBase : MonoBehaviour
     {
         public static readonly LayerComparer Comparer = new LayerComparer();
+        public const float DefaultBlur = 8f;
+
+        const string k_BlurSizePropertyName = "_BlurSize";
+        const string k_BlurOnKeyword = "BLUR_ON";
+        const float k_BlurDisabledEpsilon = 0.1f;
 
         public class LayerComparer : IComparer<LayerBase>
         {
@@ -73,6 +78,23 @@ namespace UI
             }
         }
 
+        public float blur
+        {
+            get => m_RawImage.material.GetFloat(k_BlurSizePropertyName);
+            set
+            {
+                m_RawImage.material.SetFloat(k_BlurSizePropertyName, value);
+                if (value > k_BlurDisabledEpsilon)
+                {
+                    m_RawImage.material.EnableKeyword(k_BlurOnKeyword);
+                }
+                else
+                {
+                    m_RawImage.material.DisableKeyword(k_BlurOnKeyword);
+                }
+            }
+        }
+
         public virtual void Init()
         {
             m_RawImage = GetComponent<RawImage>();
@@ -80,6 +102,16 @@ namespace UI
             {
                 m_RawImage = gameObject.AddComponent<RawImage>();
             }
+        }
+
+        public void SetAlpha(float alpha)
+        {
+            this.alpha = alpha;
+        }
+
+        public void SetBlur(float blur)
+        {
+            this.blur = blur;
         }
 
         public void Clear()
@@ -94,6 +126,7 @@ namespace UI
         {
             color = Color.white;
             alpha = 1f;
+            blur = 0f;
             Clear();
         }
     }

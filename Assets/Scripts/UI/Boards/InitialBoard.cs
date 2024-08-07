@@ -85,7 +85,7 @@ namespace UI.Boards
 
                 var layer = await m_InitialBoardLayer.CreateSnapshotLayerAsync(m_Title, "TitleSnapshotLayer", token);
                 layer.alpha = 0f;
-                layer.blurSize = Layer.DefaultBlurSize;
+                layer.blur = Layer.DefaultBlur;
                 m_StateIndex++;
             });
 
@@ -172,7 +172,7 @@ namespace UI.Boards
                 m_Title.label.visible = true;
                 var layer = m_InitialBoardLayer.CreateSnapshotLayer(m_Title.label, "TitleLabelSnapshotLayer");
                 layer.alpha = 0f;
-                layer.blurSize = Layer.DefaultBlurSize;
+                layer.blur = Layer.DefaultBlur;
                 m_InitialBoardLayer.MaskElements(m_Title.label);
                 m_StateIndex++;
             });
@@ -233,7 +233,7 @@ namespace UI.Boards
                 LayerManager.RemoveLayer("TitleLabelSnapshotLayer");
                 var layer = m_InitialBoardLayer.CreateSnapshotLayer(m_Subtitle, "SubtitleSnapshotLayer");
                 layer.alpha = 0f;
-                layer.blurSize = Layer.DefaultBlurSize;
+                layer.blur = Layer.DefaultBlur;
                 m_StateIndex++;
             });
 

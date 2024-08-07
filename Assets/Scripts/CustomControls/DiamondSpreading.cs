@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using KeyframeSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Utils;
@@ -28,19 +29,13 @@ namespace CustomControls
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            UxmlFloatAttributeDescription m_EdgeWidth = new UxmlFloatAttributeDescription() { name = "edge-width", defaultValue = 0.3f };
-            UxmlFloatAttributeDescription m_Spread = new UxmlFloatAttributeDescription() { name = "spread", defaultValue = 1f };
-            UxmlFloatAttributeDescription m_Fill = new UxmlFloatAttributeDescription() { name = "fill", defaultValue = 1f };
-            UxmlFloatAttributeDescription m_AnimationDuration = new UxmlFloatAttributeDescription() { name = "animation-duration", defaultValue = 0.5f };
+            UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
                 base.Init(ve, bag, cc);
                 DiamondSpreading diamondFolded = (DiamondSpreading)ve;
-                diamondFolded.edgeWidth = m_EdgeWidth.GetValueFromBag(bag, cc);
-                diamondFolded.spread = m_Spread.GetValueFromBag(bag, cc);
-                diamondFolded.fill = m_Fill.GetValueFromBag(bag, cc);
-                diamondFolded.animationDuration = m_AnimationDuration.GetValueFromBag(bag, cc);
+                diamondFolded.animationProgress = m_AnimationProgress.GetValueFromBag(bag, cc);
             }
         }
 
@@ -53,27 +48,20 @@ namespace CustomControls
         float m_EdgeWidth;
         float m_Spread;
         float m_Fill;
-        float m_AnimationDuration;
-        CancellationTokenSource m_Cts;
-        TaskStatus m_Status;
-        TaskPool m_UnfoldTaskPool;
-        TaskPool m_FoldTaskPool;
-        int m_StateIndex;
+        KeyframeTrackPlayer m_Player;
 
-        public bool ready
+        public float animationProgress
         {
-            get => m_Status.IsCompleted();
-        }
-
-        CancellationToken token
-        {
-            get => m_Cts.Token;
-        }
-
-        public float animationDuration
-        {
-            get => m_AnimationDuration;
-            set => m_AnimationDuration = Mathf.Max(0f, value);
+            get => m_Player.time / m_Player.duration;
+            set
+            {
+                var previousFrameIndex = m_Player.frameIndex;
+                m_Player.time = m_Player.duration * Mathf.Clamp01(value);
+                if (m_Player.frameIndex != previousFrameIndex)
+                {
+                    m_Player.Update();
+                }
+            }
         }
 
         public float fill
@@ -124,7 +112,6 @@ namespace CustomControls
         }
 
         public float initialEdgeWidth { get; set; }
-
         public float targetEdgeWidth { get; set; }
 
         List<VisualElement> corners
@@ -134,8 +121,7 @@ namespace CustomControls
 
         public DiamondSpreading()
         {
-            m_FoldTaskPool = new TaskPool();
-            m_UnfoldTaskPool = new TaskPool();
+            m_Player = new KeyframeTrackPlayer();
             m_CornerBodies = new List<VisualElement>();
 
             AddToClassList(k_UssClassName);
@@ -185,167 +171,22 @@ namespace CustomControls
             m_CornerE.Add(cornerBody);
 
             targetEdgeWidth = 0.3f;
-            initialEdgeWidth = targetEdgeWidth / 2f;
 
-            m_UnfoldTaskPool.Add(async () =>
-            {
-                var animation1 = AnimationManager.Animate(this, nameof(spread), 1f);
-                animation1.time = animationDuration * 0.4f;
-                animation1.timingFunction = TimingFunction.EaseOutCubic;
+            fill = 0f;
+            spread = 0f;
+            edgeWidth = targetEdgeWidth * 0.5f;
 
-                var animation2 = AnimationManager.Animate(this, nameof(edgeWidth), targetEdgeWidth);
-                animation2.time = animationDuration * 0.4f;
-                animation2.timingFunction = TimingFunction.EaseOutCubic;
+            var t1 = m_Player.AddKeyframeTrack((float spread) => this.spread = spread);
+            t1.AddKeyframe(0, 0f);
+            t1.AddKeyframe(20, 1f);
 
-                await (animation1.AsTask(token), animation2.AsTask(token));
-                m_StateIndex++;
-            });
+            var t2 = m_Player.AddKeyframeTrack((float edgeWidth) => this.edgeWidth = edgeWidth);
+            t2.AddKeyframe(0, targetEdgeWidth * 0.5f);
+            t2.AddKeyframe(20, targetEdgeWidth);
 
-            m_FoldTaskPool.Add(async () =>
-            {
-                var animation1 = AnimationManager.Animate(this, nameof(spread), 0f);
-                animation1.time = animationDuration * 0.4f;
-                animation1.timingFunction = TimingFunction.EaseOutCubic;
-
-                var animation2 = AnimationManager.Animate(this, nameof(edgeWidth), initialEdgeWidth);
-                animation2.time = animationDuration * 0.4f;
-                animation2.timingFunction = TimingFunction.EaseOutCubic;
-
-                await (animation1.AsTask(token), animation2.AsTask(token));
-            });
-
-            m_UnfoldTaskPool.Add(async () =>
-            {
-                var animation = AnimationManager.Animate(this, nameof(fill), 1f);
-                animation.time = animationDuration * 0.6f;
-                animation.timingFunction = TimingFunction.EaseOutCubic;
-
-                await animation.AsTask(token);
-            });
-
-            m_FoldTaskPool.Add(async () =>
-            {
-                var animation = AnimationManager.Animate(this, nameof(fill), 0f);
-                animation.time = animationDuration * 0.6f;
-                animation.timingFunction = TimingFunction.EaseOutCubic;
-
-                await animation.AsTask(token);
-                m_StateIndex--;
-            });
-        }
-
-        void Stop()
-        {
-            if (m_Cts != null)
-            {
-                m_Cts.Cancel();
-                m_Cts.Dispose();
-                m_Cts = null;
-            }
-        }
-
-        public void FoldImmediate()
-        {
-            Stop();
-            m_Cts = new CancellationTokenSource();
-            UniTask.Create(async () =>
-            {
-                if (!m_Status.IsCompleted())
-                {
-                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
-                }
-
-                m_Status.SetPending();
-                m_StateIndex = 0;
-
-                AnimationManager.StopAnimation(this, nameof(edgeWidth));
-                AnimationManager.StopAnimation(this, nameof(spread));
-                AnimationManager.StopAnimation(this, nameof(fill));
-
-                edgeWidth = initialEdgeWidth;
-                spread = 0f;
-                fill = 0f;
-
-                await UniTask.NextFrame(PlayerLoopTiming.Initialization);
-                m_Status.SetCompleted();
-            });
-        }
-
-        public void UnfoldImmediate()
-        {
-            Stop();
-            m_Cts = new CancellationTokenSource();
-            UniTask.Create(async () =>
-            {
-                if (!m_Status.IsCompleted())
-                {
-                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
-                }
-
-                m_Status.SetPending();
-                m_StateIndex = m_UnfoldTaskPool.length - 1;
-
-                AnimationManager.StopAnimation(this, nameof(edgeWidth));
-                AnimationManager.StopAnimation(this, nameof(spread));
-                AnimationManager.StopAnimation(this, nameof(fill));
-
-                edgeWidth = targetEdgeWidth;
-                spread = 1f;
-                fill = 1f;
-
-                await UniTask.NextFrame(PlayerLoopTiming.Initialization);
-                m_Status.SetCompleted();
-            });
-        }
-
-        public UniTask Fold(CancellationToken cancellationToken = default)
-        {
-            Stop();
-            m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
-            return UniTask.Create(async () =>
-            {
-                if (!m_Status.IsCompleted())
-                {
-                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
-                }
-
-                m_Status.SetPending();
-                var functions = m_FoldTaskPool.GetRange(0, m_StateIndex + 1);
-                functions.Reverse();
-
-                try
-                {
-                    await UniTask.NextFrame(token).Chain(functions);
-                }
-                finally
-                {
-                    m_Status.SetCompleted();
-                }
-            });
-        }
-
-        public UniTask Unfold(CancellationToken cancellationToken = default)
-        {
-            Stop();
-            m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
-            return UniTask.Create(async () =>
-            {
-                if (!m_Status.IsCompleted())
-                {
-                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
-                }
-
-                m_Status.SetPending();
-
-                try
-                {
-                    await UniTask.NextFrame(token).Chain(m_UnfoldTaskPool.GetRange(m_StateIndex, m_UnfoldTaskPool.length - m_StateIndex));
-                }
-                finally
-                {
-                    m_Status.SetCompleted();
-                }
-            });
+            var t3 = m_Player.AddKeyframeTrack((float fill) => this.fill = fill);
+            t3.AddKeyframe(20, 0f);
+            t3.AddKeyframe(40, 1f);
         }
     }
 }

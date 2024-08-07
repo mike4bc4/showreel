@@ -11,10 +11,13 @@ Material:
   m_Shader: {fileID: 4800000, guid: bd2fbbb8bb780e847a3398f2e767fc9e, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _MASK_CHANNELS_NONE
   m_InvalidKeywords:
   - _C1_A
   - _C1_C1
+  - _MASKCHANNELS_EIGHT
+  - _MASKCHANNELS_TWO
   - _OVERLAY_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -27,7 +30,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _AlphaTex:
-        m_Texture: {fileID: 2800000, guid: 1458695c6f4d3684a9a5328fcd23e5fd, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -75,7 +78,10 @@ Material:
     - _Quality: 3
     - _Steps: 1
     m_Floats:
+    - _Blend2: 1
     - _BlurEnabled: 0
+    - _BlurQuality: 0.5
+    - _BlurSize: 8
     - _BoxSize: 12.54
     - _BoxSpread: 3.71
     - _BumpScale: 1
@@ -86,6 +92,8 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _MASK_CHANNELS: 0
+    - _MaskChannels: 2
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -105,5 +113,29 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Mask12Coords: {r: 0, g: 0, b: 0.2, a: 0.2}
+    - _Mask1Coords: {r: 0, g: 0, b: 0.25, a: 0.25}
+    - _Mask2Coords: {r: -1, g: -1, b: -1, a: -1}
+    - _Mask34Coords: {r: -1, g: -1, b: -1, a: -1}
+    - _Mask3Coords: {r: -1, g: -1, b: -1, a: -1}
+    - _Mask4Coords: {r: -1, g: -1, b: -1, a: -1}
+    - _Mask56Coords: {r: -1, g: -1, b: -1, a: -1}
+    - _Mask5Coords: {r: 0.75, g: 0.75, b: 1, a: 1}
+    - _Mask6Coords: {r: -1, g: -1, b: -1, a: -1}
+    - _Mask78Coords: {r: -1, g: -1, b: -1, a: -1}
+    - _Mask7Coords: {r: -1, g: -1, b: -1, a: -1}
+    - _Mask8Coords: {r: -1, g: -1, b: -1, a: -1}
+    - _MaskCoords0: {r: -1, g: -1, b: -1, a: -1}
+    - _MaskCoords1: {r: -1, g: -1, b: -1, a: -1}
+    - _MaskCoords10: {r: -1, g: -1, b: -1, a: -1}
+    - _MaskCoords11: {r: -1, g: -1, b: -1, a: -1}
+    - _MaskCoords2: {r: -1, g: -1, b: -1, a: -1}
+    - _MaskCoords3: {r: -1, g: -1, b: -1, a: -1}
+    - _MaskCoords4: {r: -1, g: -1, b: -1, a: -1}
+    - _MaskCoords5: {r: -1, g: -1, b: -1, a: -1}
+    - _MaskCoords6: {r: -1, g: -1, b: -1, a: -1}
+    - _MaskCoords7: {r: -1, g: -1, b: -1, a: -1}
+    - _MaskCoords8: {r: -1, g: -1, b: -1, a: -1}
+    - _MaskCoords9: {r: -1, g: -1, b: -1, a: -1}
     - _ShineColor: {r: 1, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

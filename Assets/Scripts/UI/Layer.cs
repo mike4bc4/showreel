@@ -5,6 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 using Utils;
@@ -13,24 +14,45 @@ namespace UI
 {
     public class Layer : LayerBase
     {
-        public const float DefaultBlurSize = 8f;
-
+        const string k_MaskChannelsNoneKeyword = "_MASK_CHANNELS_NONE";
+        const string k_MaskChannelsX8Keyword = "_MASK_CHANNELS_X8";
+        const string k_MaskChannelsX16Keyword = "_MASK_CHANNELS_X16";
+        const string k_MaskCoordsPropertyName = "_MaskCoords";
+        const int k_MaskCoordsPropertyCount = 16;
         const string k_AlphaTexPropertyName = "_AlphaTex";
-        const string k_QualityPropertyName = "_Quality";
-        const string k_BlurSizePropertyName = "_Size";
-        const string k_BlurOnKeyword = "BLUR_ON";
         const float k_BlurDisabledEpsilon = 0.1f;
 
         UIDocument m_UIDocument;
         List<VisualElement> m_MaskedElements;
-        bool m_BlurEnabled;
         bool m_BlocksInput;
         Dictionary<VisualElement, PickingMode> m_ElementPickingModes;
 
+        LocalKeyword m_MaskChannelsNoneKeyword;
+        LocalKeyword m_MaskChannelsX8Keyword;
+        LocalKeyword m_MaskChannelsX16Keyword;
+
         public bool interactable
         {
-            get => rootVisualElement.enabledSelf;
-            set => rootVisualElement.SetEnabled(value);
+            get
+            {
+                var panelRaycaster = rootVisualElement?.GetSelectableGameObject()?.GetComponent<PanelEventHandler>();
+                if (panelRaycaster == null)
+                {
+                    throw new Exception($"Unable to acquire '{typeof(PanelEventHandler)}' component.");
+                }
+
+                return panelRaycaster.isActiveAndEnabled;
+            }
+            set
+            {
+                var panelRaycaster = rootVisualElement?.GetSelectableGameObject()?.GetComponent<PanelEventHandler>();
+                if (panelRaycaster == null)
+                {
+                    throw new Exception($"Unable to acquire '{typeof(PanelEventHandler)}' component.");
+                }
+
+                panelRaycaster.enabled = value;
+            }
         }
 
         // This actually is kind of workaround, as normally we would have to change picking mode for
@@ -87,28 +109,6 @@ namespace UI
             get => m_UIDocument.rootVisualElement;
         }
 
-        public float blurSize
-        {
-            get => m_RawImage.material.GetFloat(k_BlurSizePropertyName);
-            set
-            {
-                m_RawImage.material.SetFloat(k_BlurSizePropertyName, value);
-                var blurEnabled = value > k_BlurDisabledEpsilon;
-                if (blurEnabled != m_BlurEnabled)
-                {
-                    m_BlurEnabled = blurEnabled;
-                    if (m_BlurEnabled)
-                    {
-                        m_RawImage.material.EnableKeyword(k_BlurOnKeyword);
-                    }
-                    else
-                    {
-                        m_RawImage.material.DisableKeyword(k_BlurOnKeyword);
-                    }
-                }
-            }
-        }
-
         public override void Init()
         {
             base.Init();
@@ -131,14 +131,17 @@ namespace UI
 
             m_RawImage.texture = renderTexture;
             m_RawImage.material = Instantiate(LayerManager.BlurMaterial);
-            blurSize = 0f;
+            blur = 0f;
+
+            m_MaskChannelsNoneKeyword = new LocalKeyword(m_RawImage.material.shader, k_MaskChannelsNoneKeyword);
+            m_MaskChannelsX8Keyword = new LocalKeyword(m_RawImage.material.shader, k_MaskChannelsX8Keyword);
+            m_MaskChannelsX16Keyword = new LocalKeyword(m_RawImage.material.shader, k_MaskChannelsX16Keyword);
         }
 
         public override void ResetLayer()
         {
             base.ResetLayer();
             visualTreeAsset = null;
-            blurSize = 0f;
             UnmaskElements();
         }
 
@@ -147,7 +150,7 @@ namespace UI
             var rect = ve.worldBound;
             if (float.IsNaN(rect.width) || float.IsNaN(rect.height))
             {
-                throw new Exception($"'{ve}' world bound rect dimensions are unknown, probably its layout still have to be recalculated.");
+                throw new Exception($"'{ve.GetType()} {ve.name}' world bound rect dimensions are unknown, probably its layout still have to be recalculated.");
             }
 
             var snapshot = new VisualElement();
@@ -155,18 +158,7 @@ namespace UI
             snapshot.style.width = rect.width;
             snapshot.style.height = rect.height;
             snapshot.style.SetPosition(new StylePosition() { position = Position.Absolute, left = rect.x, top = rect.y });
-
-            // Texture will be assigned at the end of frame, when UI frame has already been generated.
-            new Func<UniTask>(async () =>
-            {
-                await UniTask.WaitForEndOfFrame(this);
-                if (ve == null || snapshot == null)
-                {
-                    return;
-                }
-
-                snapshot.style.backgroundImage = TextureEditor.Crop(this.texture, ve.worldBound);
-            })();
+            snapshot.style.backgroundImage = TextureEditor.Crop(this.texture, ve.worldBound);
 
             var layer = LayerManager.CreateLayer(layerName);
             layer.rootVisualElement.Add(snapshot);
@@ -211,7 +203,7 @@ namespace UI
             m_MaskedElements.Clear();
             if (dirty)
             {
-                UpdateAlphaTexture();
+                UpdateMask();
             }
         }
 
@@ -228,7 +220,7 @@ namespace UI
 
             if (dirty)
             {
-                UpdateAlphaTexture();
+                UpdateMask();
             }
         }
 
@@ -246,12 +238,17 @@ namespace UI
 
             if (dirty)
             {
-                UpdateAlphaTexture();
+                UpdateMask();
             }
         }
 
-        Texture CreateAlphaTexture()
+        void UpdateMask()
         {
+            if (rootVisualElement.layout.size.IsNan())
+            {
+                throw new Exception("Layer dimensions are unknown, probably its layout still have to be recalculated.");
+            }
+
             var rects = new List<Rect>();
             for (int i = 0; i < m_MaskedElements.Count; i++)
             {
@@ -261,26 +258,25 @@ namespace UI
                     m_MaskedElements.RemoveAt(i);
                     i--;
                 }
-
-                rects.Add(ve.worldBound);
+                else
+                {
+                    rects.Add(ve.worldBound);
+                }
             }
 
-            return TextureEditor.CreateMask(rootVisualElement.layout.size, invert: true, rects.ToArray());
-        }
-
-        void UpdateAlphaTexture()
-        {
-            if (m_RawImage.material == null)
+            var w = rootVisualElement.layout.width;
+            var h = rootVisualElement.layout.height;
+            for (int i = 0; i < k_MaskCoordsPropertyCount; i++)
             {
-                m_RawImage.material = Instantiate(LayerManager.MaskMaterial);
+                var maskCoords = i < rects.Count
+                    ? new Vector4(rects[i].xMin / w, 1 - rects[i].yMax / h, rects[i].xMax / w, 1 - rects[i].yMin / h)
+                    : new Vector4(-1f, -1f, -1f, -1f);
+                m_RawImage.material.SetVector(k_MaskCoordsPropertyName + i, maskCoords);
             }
 
-            if (!m_RawImage.material.HasTexture(k_AlphaTexPropertyName))
-            {
-                throw new Exception($"'{m_RawImage.material}' does not have '{k_AlphaTexPropertyName}' property thus it does not support element masking.");
-            }
-
-            m_RawImage.material.SetTexture(k_AlphaTexPropertyName, m_MaskedElements.Count > 0 ? CreateAlphaTexture() : null);
+            m_RawImage.material.SetKeyword(m_MaskChannelsNoneKeyword, rects.Count == 0);
+            m_RawImage.material.SetKeyword(m_MaskChannelsX8Keyword, rects.Count > 0 && rects.Count <= 8);
+            m_RawImage.material.SetKeyword(m_MaskChannelsX16Keyword, rects.Count > 8);
         }
     }
 }

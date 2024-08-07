@@ -3,8 +3,8 @@ Shader "Custom/GrabPassBlur"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Size ("Size", Range(0.0, 32.0)) = 8.0
-        _Quality ("Quality", Range(0.001, 1.0)) = 0.5
+        _BlurSize ("Blur Size", Range(0.0, 32.0)) = 8.0
+        _BlurQuality ("Blur Quality", Range(0.001, 1.0)) = 0.5
         [Toggle(BLUR_ON)] _BlurEnabled ("Blur Enabled", Float) = 1
     }
     SubShader
@@ -49,8 +49,8 @@ Shader "Custom/GrabPassBlur"
             };
 
             sampler2D _BackgroundTexture;
-            float _Size;
-            float _Quality;
+            float _BlurSize;
+            float _BlurQuality;
 
             v2f vert(appdata v) {
                 v2f o;
@@ -63,9 +63,9 @@ Shader "Custom/GrabPassBlur"
             fixed4 frag(v2f i) : SV_Target
             {
                 #ifdef BLUR_ON
-                    _Size = max(0, _Size);
+                    _BlurSize = max(0, _BlurSize);
                     float4 pixelSize = 1 / _ScreenParams;                
-                    int quality = ceil(16 * _Quality) + 1;
+                    int quality = ceil(16 * _BlurQuality) + 1;
                     float step = 1 / float(quality);
 
                     fixed4 color;
@@ -75,7 +75,7 @@ Shader "Custom/GrabPassBlur"
                         {
                             float a = float(x) / float(quality - 1);
                             float b = float(y) / float(quality - 1);
-                            float2 offset = pixelSize.xy * _Size * (float2(a, b) * 2 - 1);
+                            float2 offset = pixelSize.xy * _BlurSize * (float2(a, b) * 2 - 1);
                             color += tex2Dproj(_BackgroundTexture, i.grabPos + float4(offset, 0, 0)) / float(quality * quality);
                         }
                     }

@@ -6,7 +6,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Utils;
 
-class TaskScheduler
+public class TaskScheduler
 {
     CancellationTokenSource m_Cts;
     int m_ScheduledTaskCount;

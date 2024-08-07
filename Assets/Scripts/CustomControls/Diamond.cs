@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using KeyframeSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Utils;
@@ -16,12 +17,37 @@ namespace CustomControls
 
         public new class UxmlFactory : UxmlFactory<Diamond, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits { }
+        public new class UxmlTraits : VisualElement.UxmlTraits
+        {
+            UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
+
+            public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
+            {
+                base.Init(ve, bag, cc);
+                var diamond = (Diamond)ve;
+                diamond.animationProgress = m_AnimationProgress.GetValueFromBag(bag, cc);
+            }
+        }
 
         VisualElement m_HalfLeft;
         VisualElement m_HalfRight;
         CancellationTokenSource m_Cts;
         TaskStatus m_Status;
+        KeyframeTrackPlayer m_Player;
+
+        public float animationProgress
+        {
+            get => m_Player.time / m_Player.duration;
+            set
+            {
+                var previousFrameIndex = m_Player.frameIndex;
+                m_Player.time = m_Player.duration * Mathf.Clamp01(value);
+                if (previousFrameIndex != m_Player.frameIndex)
+                {
+                    m_Player.Update();
+                }
+            }
+        }
 
         public bool ready
         {
@@ -30,6 +56,7 @@ namespace CustomControls
 
         public Diamond()
         {
+            m_Player = new KeyframeTrackPlayer();
             AddToClassList(k_UssClassName);
 
             m_HalfLeft = new VisualElement();
@@ -41,6 +68,10 @@ namespace CustomControls
             m_HalfRight.name = "half-right";
             m_HalfRight.AddToClassList(k_HalfUssClassName);
             Add(m_HalfRight);
+
+            var t1 = m_Player.AddKeyframeTrack((float scaleX) => m_HalfLeft.style.scale = new Vector2(scaleX, 1f));
+            t1.AddKeyframe(0, 1f, Easing.EaseInOutSine);
+            t1.AddKeyframe(60, -1f);
         }
 
         void Stop()

@@ -37,7 +37,7 @@ namespace UI.Boards
             m_ControlsLayer.displayOrder = DisplayOrder;
             m_ControlsLayer.interactable = false;
             m_ControlsLayer.alpha = 0f;
-            m_ControlsLayer.blurSize = Layer.DefaultBlurSize;
+            m_ControlsLayer.blur = Layer.DefaultBlur;
             m_ControlsLayer.panelSortingOrder = SortingOrder;
 
             m_ShowTaskPool.Add(async () =>
@@ -110,7 +110,7 @@ namespace UI.Boards
                 m_StateIndex = m_ShowTaskPool.length - 1;
                 m_ControlsLayer.interactable = true;
                 m_ControlsLayer.alpha = 1f;
-                m_ControlsLayer.blurSize = 0f;
+                m_ControlsLayer.blur = 0f;
                 m_Status.SetCompleted();
             })();
         }
@@ -130,7 +130,7 @@ namespace UI.Boards
                 m_StateIndex = 0;
                 m_ControlsLayer.interactable = false;
                 m_ControlsLayer.alpha = 0f;
-                m_ControlsLayer.blurSize = 1f;
+                m_ControlsLayer.blur = 1f;
                 m_Status.SetCompleted();
             })();
         }

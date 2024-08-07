@@ -253,7 +253,7 @@ namespace UI.Boards
                 await UniTask.NextFrame(PlayerLoopTiming.Initialization);
 
                 m_EffectLayer.alpha = 1f;
-                m_EffectLayer.blurSize = EffectLayer.DefaultBlurSize;
+                m_EffectLayer.blur = EffectLayer.DefaultBlur;
                 m_EffectLayer.color = m_EffectLayerColor;
 
                 m_DialogBoxLayer.alpha = 1f;
@@ -283,7 +283,7 @@ namespace UI.Boards
                 await UniTask.NextFrame(PlayerLoopTiming.Initialization);
 
                 m_EffectLayer.alpha = 0f;
-                m_EffectLayer.blurSize = 0f;
+                m_EffectLayer.blur = 0f;
                 m_EffectLayer.color = Color.white;
 
                 m_DialogBoxLayer.alpha = 0f;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using KeyframeSystem;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -25,15 +26,15 @@ namespace CustomControls
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            UxmlBoolAttributeDescription m_Unfolded = new UxmlBoolAttributeDescription() { name = "unfolded", defaultValue = true };
             UxmlStringAttributeDescription m_Text = new UxmlStringAttributeDescription() { name = "text", defaultValue = "Label" };
+            UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
                 base.Init(ve, bag, cc);
                 DiamondTitle diamondTitle = (DiamondTitle)ve;
-                diamondTitle.unfolded = m_Unfolded.GetValueFromBag(bag, cc);
                 diamondTitle.text = m_Text.GetValueFromBag(bag, cc);
+                diamondTitle.animationProgress = m_AnimationProgress.GetValueFromBag(bag, cc);
             }
         }
 
@@ -49,6 +50,22 @@ namespace CustomControls
         TaskPool m_FoldFunctions;
         CancellationTokenSource m_Cts;
         TaskStatus m_Status;
+        KeyframeTrackPlayer m_Player;
+        // IKeyframe<float> m_FinalKeyframe;
+
+        public float animationProgress
+        {
+            get => m_Player.time / m_Player.duration;
+            set
+            {
+                var previousFrameIndex = m_Player.frameIndex;
+                m_Player.time = m_Player.duration * Mathf.Clamp01(value);
+                if (m_Player.frameIndex != previousFrameIndex)
+                {
+                    m_Player.Update();
+                }
+            }
+        }
 
         public bool ready
         {
@@ -70,25 +87,6 @@ namespace CustomControls
             }
         }
 
-        bool unfolded
-        {
-            get => m_Unfolded;
-            set
-            {
-                m_Unfolded = value;
-                if (m_Unfolded)
-                {
-                    UnfoldImmediate();
-                    m_Label.visible = true;
-                }
-                else
-                {
-                    FoldImmediate();
-                    m_Label.visible = false;
-                }
-            }
-        }
-
         float unfoldedWidth
         {
             get => m_MeasurementLabel.resolvedStyle.marginLeft + m_MeasurementLabel.resolvedStyle.marginRight + m_MeasurementLabel.resolvedStyle.width;
@@ -96,6 +94,7 @@ namespace CustomControls
 
         public DiamondTitle()
         {
+            m_Player = new KeyframeTrackPlayer();
             AddToClassList(k_UssClassName);
 
             m_DiamondLeft = new Diamond();
@@ -222,7 +221,34 @@ namespace CustomControls
                 }
             });
 
-            FoldImmediate();
+            var t1 = m_Player.AddKeyframeTrack((float animationProgress) => m_DiamondRight.animationProgress = m_DiamondLeft.animationProgress = animationProgress);
+            t1.AddKeyframe(0, 0f);
+            t1.AddKeyframe(60, 1f);
+
+            var t2 = m_Player.AddKeyframeTrack((float widthScale) =>
+            {
+                if (!unfoldedWidth.IsNan())
+                {
+                    m_LabelContainer.style.width = unfoldedWidth * widthScale;
+                }
+                else
+                {
+                    void OnGeometryChanged(GeometryChangedEvent evt)
+                    {
+                        m_LabelContainer.style.width = unfoldedWidth * widthScale;
+                        m_MeasurementLabel.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                    }
+
+                    m_MeasurementLabel.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                }
+            });
+            t2.AddKeyframe(60, 0f);
+            t2.AddKeyframe(120, 1f);
+        }
+
+        public void SetAnimationProgress(float animationProgress)
+        {
+            this.animationProgress = animationProgress;
         }
 
         void Stop()

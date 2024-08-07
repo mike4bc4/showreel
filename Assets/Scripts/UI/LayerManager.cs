@@ -26,6 +26,11 @@ namespace UI
         [SerializeField] Material m_BlurEffectMaterial;
 
         List<Layer> m_LayerPool;
+        List<LayerBase> m_Layers;
+
+        static List<LayerBase> layers => s_Instance.m_Layers;
+        static List<Layer> layerPool => s_Instance.m_LayerPool;
+        static Canvas canvas => s_Instance.m_Canvas;
 
         public static PanelSettings TemplatePanelSettings
         {
@@ -67,6 +72,11 @@ namespace UI
 
             s_Instance = this;
             m_LayerPool = new List<Layer>();
+            m_Layers = canvas.GetComponentsInChildren<LayerBase>(true).ToList();
+            foreach (var layer in m_Layers)
+            {
+                layer.Init();
+            }
         }
 
         public static void RemoveLayer(LayerBase layer)
@@ -76,7 +86,6 @@ namespace UI
                 return;
             }
 
-            var layerPool = s_Instance.m_LayerPool;
             if (layer is EffectLayer || layerPool.Count >= k_LayerPoolSize)
             {
                 if (layer.texture is RenderTexture renderTexture)
@@ -85,6 +94,7 @@ namespace UI
                 }
 
                 Destroy(layer.gameObject);
+                layers.Remove(layer);
             }
             else if (!layerPool.Contains(layer))
             {
@@ -124,6 +134,7 @@ namespace UI
         {
             var gameObject = CreateLayerGameObject(name);
             var layer = gameObject.AddComponent<EffectLayer>();
+            layers.Add(layer);
             layer.Init();
             SortLayers();
             return layer;
@@ -132,7 +143,6 @@ namespace UI
         public static Layer CreateLayer(string name = "Layer")
         {
             Layer layer = null;
-            var layerPool = s_Instance.m_LayerPool;
             if (layerPool.Count > 0)
             {
                 layer = layerPool.Last();
@@ -146,6 +156,7 @@ namespace UI
             {
                 var gameObject = CreateLayerGameObject(name);
                 layer = gameObject.AddComponent<Layer>();
+                layers.Add(layer);
                 layer.Init();
             }
 
@@ -162,7 +173,6 @@ namespace UI
 
         public static void SortLayers()
         {
-            var layers = s_Instance.m_Canvas.GetComponentsInChildren<LayerBase>(includeInactive: true).ToList();
             layers.Sort(Layer.Comparer);
             for (int i = 0; i < layers.Count; i++)
             {
@@ -172,12 +182,16 @@ namespace UI
 
         public static LayerBase GetLayer(string name)
         {
-            var layers = s_Instance.m_Canvas.GetComponentsInChildren<LayerBase>(true);
-            foreach (var layer in layers)
+            for (int i = 0; i < layers.Count; i++)
             {
-                if (layer.name == name)
+                if (layers[i] == null)
                 {
-                    return layer;
+                    // Clear reference in case of layer not being removed via RemoveLayer().
+                    layers.RemoveAt(i);
+                }
+                else if (layers[i].name == name)
+                {
+                    return layers[i];
                 }
             }
 
