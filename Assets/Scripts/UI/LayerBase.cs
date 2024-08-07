@@ -18,30 +18,49 @@ namespace UI
         {
             public int Compare(LayerBase x, LayerBase y)
             {
-                if (x.gameObject.activeSelf != y.gameObject.activeSelf)
+                if (x.active != y.active)
                 {
-                    return x.gameObject.activeSelf.CompareTo(y.gameObject.activeSelf);
+                    return x.active.CompareTo(y.active);
                 }
 
-                if (x.displayOrder == y.displayOrder)
-                {
-                    return x.transform.GetSiblingIndex().CompareTo(y.transform.GetSiblingIndex());
-                }
-
-                return x.displayOrder.CompareTo(y.displayOrder);
+                return x.displaySortOrder.CompareTo(y.displaySortOrder);
             }
         }
 
-        [SerializeField] protected int m_DisplayOrder;
+        [SerializeField] int m_DisplaySortOrder;
+        [SerializeField] bool m_Active;
 
         protected RawImage m_RawImage;
+        float m_Alpha;
 
-        public int displayOrder
+        public bool active
         {
-            get => m_DisplayOrder;
+            get => m_Active;
             set
             {
-                m_DisplayOrder = value;
+                if (m_Active != value)
+                {
+                    m_Active = value;
+                    if (m_Active)
+                    {
+                        OnActivate();
+                    }
+                    else
+                    {
+                        OnDeactivate();
+                    }
+
+                    LayerManager.SortLayers();
+                }
+            }
+        }
+
+        public int displaySortOrder
+        {
+            get => m_DisplaySortOrder;
+            set
+            {
+                m_DisplaySortOrder = value;
                 LayerManager.SortLayers();
             }
         }
@@ -69,12 +88,16 @@ namespace UI
 
         public float alpha
         {
-            get => m_RawImage.color.a;
+            get => m_Alpha;
             set
             {
-                var color = m_RawImage.color;
-                color.a = Mathf.Clamp01(value);
-                m_RawImage.color = color;
+                m_Alpha = Mathf.Clamp01(value);
+                if (active)
+                {
+                    var color = m_RawImage.color;
+                    color.a = m_Alpha;
+                    m_RawImage.color = color;
+                }
             }
         }
 
@@ -98,10 +121,25 @@ namespace UI
         public virtual void Init()
         {
             m_RawImage = GetComponent<RawImage>();
-            if (m_RawImage == null)
-            {
-                m_RawImage = gameObject.AddComponent<RawImage>();
-            }
+            m_RawImage ??= gameObject.AddComponent<RawImage>();
+        }
+
+        void Awake()
+        {
+            m_Active = true;
+        }
+
+        protected virtual void OnActivate()
+        {
+            alpha = m_Alpha;
+        }
+
+        protected virtual void OnDeactivate()
+        {
+            m_Alpha = m_RawImage.color.a;
+            var color = m_RawImage.color;
+            color.a = 0f;
+            m_RawImage.color = color;
         }
 
         public void SetAlpha(float alpha)

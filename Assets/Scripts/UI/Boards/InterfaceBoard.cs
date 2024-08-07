@@ -34,11 +34,11 @@ namespace UI.Boards
             m_HideTaskPool = new TaskPool();
 
             m_ControlsLayer = LayerManager.CreateLayer(m_ControlsVta, "InterfaceControls");
-            m_ControlsLayer.displayOrder = DisplayOrder;
+            m_ControlsLayer.displaySortOrder = DisplayOrder;
             m_ControlsLayer.interactable = false;
             m_ControlsLayer.alpha = 0f;
             m_ControlsLayer.blur = Layer.DefaultBlur;
-            m_ControlsLayer.panelSortingOrder = SortingOrder;
+            m_ControlsLayer.inputSortOrder = SortingOrder;
 
             m_ShowTaskPool.Add(async () =>
             {

@@ -10,6 +10,6 @@
         <ui:VisualElement style="flex-grow: 1; width: 156px; height: 256px; display: flex;" />
     </CustomControls.DiamondFrameVertical>
     <CustomControls.DiamondSpreading animation-progress="1.21" style="position: absolute; width: 80px; height: 80px; top: 454px; left: 810px; display: none;" />
-    <CustomControls.DiamondBullet animation-progress="-0.09" style="position: absolute; top: 327px; left: 672px; width: 200px; display: flex;" />
-    <CustomControls.Subtitle border-scale="0,5" text="Press any key to continue" animation-progress="0.96" style="position: absolute; top: 513px; align-self: center;" />
+    <CustomControls.DiamondBullet style="position: absolute; top: 327px; left: 672px; width: 200px; display: none;" />
+    <CustomControls.Subtitle border-scale="0,5" text="Press any key to continue" animation-progress="0.96" style="position: absolute; top: 513px; align-self: center; display: none;" />
 </ui:UXML>

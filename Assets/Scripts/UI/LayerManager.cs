@@ -77,6 +77,8 @@ namespace UI
             {
                 layer.Init();
             }
+
+            SortLayers();
         }
 
         public static void RemoveLayer(LayerBase layer)
@@ -98,9 +100,8 @@ namespace UI
             }
             else if (!layerPool.Contains(layer))
             {
-                layer.gameObject.SetActive(false);
-                layer.transform.SetAsFirstSibling();
-                layer.name += "(Removed)";
+                layer.active = false;
+                layer.name += "(Inactive)";
                 layerPool.Add((Layer)layer);
                 SortLayers();
             }
@@ -145,12 +146,11 @@ namespace UI
             Layer layer = null;
             if (layerPool.Count > 0)
             {
-                layer = layerPool.Last();
-                layerPool.RemoveAt(layerPool.Count - 1);
+                layer = layerPool[0];
+                layerPool.RemoveAt(0);
                 layer.ResetLayer();
                 layer.name = name;
-                layer.transform.SetAsLastSibling();
-                layer.gameObject.SetActive(true);
+                layer.active = true;
             }
             else
             {

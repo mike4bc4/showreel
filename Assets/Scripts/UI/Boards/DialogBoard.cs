@@ -109,15 +109,15 @@ namespace UI.Boards
 
             m_DialogBoxLayer = LayerManager.CreateLayer(m_DialogBoxVta);
             m_DialogBoxLayer.alpha = 0f;
-            m_DialogBoxLayer.displayOrder = DisplayOrder;
-            m_DialogBoxLayer.panelSortingOrder = SortingOrder;
+            m_DialogBoxLayer.displaySortOrder = DisplayOrder;
+            m_DialogBoxLayer.inputSortOrder = SortingOrder;
             m_DialogBoxLayer.interactable = false;
             m_DialogBoxLayer.blocksRaycasts = false;
 
             m_EffectLayer = LayerManager.CreateEffectLayer("DialogBackgroundBlur");
             m_EffectLayer.color = Color.white;
             m_EffectLayer.alpha = 0f;
-            m_EffectLayer.displayOrder = DisplayOrder - 1;
+            m_EffectLayer.displaySortOrder = DisplayOrder - 1;
 
             m_ScrollBox = m_DialogBoxLayer.rootVisualElement.Q<ScrollBox>("scroll-box");
             m_Title = m_DialogBoxLayer.rootVisualElement.Q<DiamondTitle>("title");

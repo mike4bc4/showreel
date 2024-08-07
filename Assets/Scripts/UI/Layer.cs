@@ -24,8 +24,8 @@ namespace UI
 
         UIDocument m_UIDocument;
         List<VisualElement> m_MaskedElements;
-        bool m_BlocksInput;
-        Dictionary<VisualElement, PickingMode> m_ElementPickingModes;
+        bool m_BlocksRaycast;
+        bool m_Interactable;
 
         LocalKeyword m_MaskChannelsNoneKeyword;
         LocalKeyword m_MaskChannelsX8Keyword;
@@ -33,25 +33,14 @@ namespace UI
 
         public bool interactable
         {
-            get
-            {
-                var panelRaycaster = rootVisualElement?.GetSelectableGameObject()?.GetComponent<PanelEventHandler>();
-                if (panelRaycaster == null)
-                {
-                    throw new Exception($"Unable to acquire '{typeof(PanelEventHandler)}' component.");
-                }
-
-                return panelRaycaster.isActiveAndEnabled;
-            }
+            get => m_Interactable;
             set
             {
-                var panelRaycaster = rootVisualElement?.GetSelectableGameObject()?.GetComponent<PanelEventHandler>();
-                if (panelRaycaster == null)
+                m_Interactable = value;
+                if (active)
                 {
-                    throw new Exception($"Unable to acquire '{typeof(PanelEventHandler)}' component.");
+                    rootVisualElement.GetSelectableGameObject().GetComponent<PanelEventHandler>().enabled = m_Interactable;
                 }
-
-                panelRaycaster.enabled = value;
             }
         }
 
@@ -64,29 +53,36 @@ namespace UI
         // and hidden behind IPanel interface.
         public bool blocksRaycasts
         {
-            get
-            {
-                var panelRaycaster = rootVisualElement?.GetSelectableGameObject()?.GetComponent<PanelRaycaster>();
-                if (panelRaycaster == null)
-                {
-                    throw new Exception($"Unable to acquire '{typeof(PanelRaycaster)}' component.");
-                }
-
-                return panelRaycaster.isActiveAndEnabled;
-            }
+            get => m_BlocksRaycast;
             set
             {
-                var panelRaycaster = rootVisualElement?.GetSelectableGameObject()?.GetComponent<PanelRaycaster>();
-                if (panelRaycaster == null)
+                m_BlocksRaycast = value;
+                if (active)
                 {
-                    throw new Exception($"Unable to acquire '{typeof(PanelRaycaster)}' component.");
+                    rootVisualElement.GetSelectableGameObject().GetComponent<PanelRaycaster>().enabled = m_BlocksRaycast;
                 }
-
-                panelRaycaster.enabled = value;
             }
         }
 
-        public float panelSortingOrder
+        protected override void OnActivate()
+        {
+            base.OnActivate();
+            blocksRaycasts = m_BlocksRaycast;
+            interactable = m_Interactable;
+        }
+
+        protected override void OnDeactivate()
+        {
+            base.OnDeactivate();
+            var eventHandler = rootVisualElement.GetSelectableGameObject().GetComponent<PanelEventHandler>();
+            var raycaster = rootVisualElement.GetSelectableGameObject().GetComponent<PanelRaycaster>();
+            m_Interactable = eventHandler.isActiveAndEnabled;
+            m_BlocksRaycast = raycaster.isActiveAndEnabled;
+            eventHandler.enabled = false;
+            raycaster.enabled = false;
+        }
+
+        public float inputSortOrder
         {
             get => m_UIDocument.panelSettings.sortingOrder;
             set => m_UIDocument.panelSettings.sortingOrder = value;
@@ -113,7 +109,6 @@ namespace UI
         {
             base.Init();
             m_MaskedElements = new List<VisualElement>();
-            m_ElementPickingModes = new Dictionary<VisualElement, PickingMode>();
 
             m_UIDocument = GetComponent<UIDocument>();
             if (m_UIDocument == null)
@@ -141,8 +136,14 @@ namespace UI
         public override void ResetLayer()
         {
             base.ResetLayer();
-            visualTreeAsset = null;
+
+            // It's important to unmask before UIDocument is modified, otherwise
+            // panel becomes dirty and unmask fails because of unknown panel size
+            // which returns NaN vector during recalculation phase.
             UnmaskElements();
+
+            visualTreeAsset = null;
+            rootVisualElement.Clear();
         }
 
         public Layer CreateSnapshotLayer(VisualElement ve, string layerName)
@@ -162,38 +163,7 @@ namespace UI
 
             var layer = LayerManager.CreateLayer(layerName);
             layer.rootVisualElement.Add(snapshot);
-            return layer;
-        }
-
-        public async UniTask<Layer> CreateSnapshotLayerAsync(VisualElement ve, string layerName, CancellationToken ct)
-        {
-            var rect = ve.worldBound;
-            if (float.IsNaN(rect.width) || float.IsNaN(rect.height))
-            {
-                throw new Exception($"'{ve}' world bound rect dimensions are unknown, probably its layout still have to be recalculated.");
-            }
-
-            var snapshot = new VisualElement();
-            snapshot.name = "snapshot";
-            snapshot.style.width = rect.width;
-            snapshot.style.height = rect.height;
-            snapshot.style.SetPosition(new StylePosition() { position = Position.Absolute, left = rect.x, top = rect.y });
-
-            var layer = LayerManager.CreateLayer(layerName);
-            layer.rootVisualElement.Add(snapshot);
-
-            try
-            {
-                await UniTask.WaitForEndOfFrame(this, ct);    // Wait until all UI changes are applied and snapshot background texture can be created.
-            }
-            catch (OperationCanceledException)
-            {
-                LayerManager.RemoveLayer(layer);
-                throw;
-            }
-
-            snapshot.style.backgroundImage = TextureEditor.Crop(this.texture, ve.worldBound);
-            await UniTask.WaitForEndOfFrame(this, ct);  // Wait yet again until snapshot background is applied.
+            layer.displaySortOrder = displaySortOrder + 1;
             return layer;
         }
 
