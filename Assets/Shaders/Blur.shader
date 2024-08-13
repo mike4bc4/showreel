@@ -8,7 +8,7 @@ Shader "Custom/BlurShader"
         _BlurQuality ("Blur Quality", Range(0.001, 1.0)) = 0.5
         [Toggle(BLUR_ON)] _BlurEnabled ("Blur Enabled", Float) = 1
 
-        [HideInInspector] _MaskCoords0 ("Mask Coords 0", Vector) = (-1, -1, -1, -1)
+         _MaskCoords0 ("Mask Coords 0", Vector) = (-1, -1, -1, -1)
         [HideInInspector] _MaskCoords1 ("Mask Coords 1", Vector) = (-1, -1, -1, -1)
         [HideInInspector] _MaskCoords2 ("Mask Coords 2", Vector) = (-1, -1, -1, -1)
         [HideInInspector] _MaskCoords3 ("Mask Coords 3", Vector) = (-1, -1, -1, -1)
@@ -24,6 +24,7 @@ Shader "Custom/BlurShader"
         [HideInInspector] _MaskCoords11 ("Mask Coords 13", Vector) = (-1, -1, -1, -1)
         [HideInInspector] _MaskCoords11 ("Mask Coords 14", Vector) = (-1, -1, -1, -1)
         [HideInInspector] _MaskCoords11 ("Mask Coords 15", Vector) = (-1, -1, -1, -1)
+        _InvertMask ("Invert Mask", Integer) = 0
         
         [KeywordEnum(None, X8, X16)] _MASK_CHANNELS("Mask Channels", Float) = 0
     }
@@ -82,6 +83,7 @@ Shader "Custom/BlurShader"
             float4 _MaskCoords13;
             float4 _MaskCoords14;
             float4 _MaskCoords15;
+            float _InvertMask;
 
             v2f vert (appdata v)
             {
@@ -113,6 +115,8 @@ Shader "Custom/BlurShader"
                             color += tex2D(_MainTex, i.uv + offset) / float(quality * quality);
                         }
                     }
+
+                    color.rgb *= 1 / color.a;
                 #else
                     color = tex2D(_MainTex, i.uv);
                 #endif
@@ -123,11 +127,15 @@ Shader "Custom/BlurShader"
                         _MaskCoords4, _MaskCoords5, _MaskCoords6, _MaskCoords7
                     };
 
-                    for(int idx = 0; idx < 8; idx++){
-                        if(i.uv.x > coords[idx].x && i.uv.x < coords[idx].z && i.uv.y > coords[idx].y && i.uv.y < coords[idx].w)
-                        {
-                            discard;
-                        }
+                    int isMasked = 0;
+                    for(int idx = 0; idx < 8; idx++)
+                    {
+                        isMasked |= i.uv.x > coords[idx].x && i.uv.x < coords[idx].z && i.uv.y > coords[idx].y && i.uv.y < coords[idx].w;
+                    }
+
+                    if((isMasked && !_InvertMask) || (!isMasked && _InvertMask))
+                    {
+                        discard;
                     }
                 #endif
 
@@ -139,11 +147,15 @@ Shader "Custom/BlurShader"
                         _MaskCoords12, _MaskCoords13, _MaskCoords14, _MaskCoords15
                     };
 
-                    for(int idx = 0; idx < 16; idx++){
-                        if(i.uv.x > coords[idx].x && i.uv.x < coords[idx].z && i.uv.y > coords[idx].y && i.uv.y < coords[idx].w)
-                        {
-                            discard;
-                        }
+                    int isMasked = 0;
+                    for(int idx = 0; idx < 8; idx++)
+                    {
+                        isMasked |= i.uv.x > coords[idx].x && i.uv.x < coords[idx].z && i.uv.y > coords[idx].y && i.uv.y < coords[idx].w;
+                    }
+
+                    if((isMasked && !_InvertMask) || (!isMasked && _InvertMask))
+                    {
+                        discard;
                     }
                 #endif
 

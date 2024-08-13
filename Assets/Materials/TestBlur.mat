@@ -12,7 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _MASK_CHANNELS_NONE
+  - _MASK_CHANNELS_X8
   m_InvalidKeywords:
   - _C1_A
   - _C1_C1
@@ -75,6 +75,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints:
     - _BoxSize: 3
+    - _InvertMask: 0
     - _Quality: 3
     - _Steps: 1
     m_Floats:
@@ -92,7 +93,8 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _MASK_CHANNELS: 0
+    - _InvertMask: 0
+    - _MASK_CHANNELS: 1
     - _MaskChannels: 2
     - _Metallic: 0
     - _Mode: 0

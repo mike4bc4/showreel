@@ -19,6 +19,7 @@ namespace UI
         const string k_MaskChannelsX16Keyword = "_MASK_CHANNELS_X16";
         const string k_MaskCoordsPropertyName = "_MaskCoords";
         const int k_MaskCoordsPropertyCount = 16;
+        const string k_InvertMaskPropertyName = "_InvertMask";
         const string k_AlphaTexPropertyName = "_AlphaTex";
         const float k_BlurDisabledEpsilon = 0.1f;
 
@@ -26,6 +27,7 @@ namespace UI
         List<VisualElement> m_MaskedElements;
         bool m_BlocksRaycast;
         bool m_Interactable;
+        List<ElementEffectLayer> m_ElementEffectLayers;
 
         LocalKeyword m_MaskChannelsNoneKeyword;
         LocalKeyword m_MaskChannelsX8Keyword;
@@ -105,10 +107,17 @@ namespace UI
             get => m_UIDocument.rootVisualElement;
         }
 
+        public bool invertMask
+        {
+            get => m_RawImage.material.GetInteger(k_InvertMaskPropertyName) == 1;
+            set => m_RawImage.material.SetInteger(k_InvertMaskPropertyName, value ? 1 : 0);
+        }
+
         public override void Init()
         {
             base.Init();
             m_MaskedElements = new List<VisualElement>();
+            m_ElementEffectLayers = new List<ElementEffectLayer>();
 
             m_UIDocument = GetComponent<UIDocument>();
             if (m_UIDocument == null)
@@ -127,15 +136,65 @@ namespace UI
             m_RawImage.texture = renderTexture;
             m_RawImage.material = Instantiate(LayerManager.BlurMaterial);
             blur = 0f;
+            invertMask = false;
 
             m_MaskChannelsNoneKeyword = new LocalKeyword(m_RawImage.material.shader, k_MaskChannelsNoneKeyword);
             m_MaskChannelsX8Keyword = new LocalKeyword(m_RawImage.material.shader, k_MaskChannelsX8Keyword);
             m_MaskChannelsX16Keyword = new LocalKeyword(m_RawImage.material.shader, k_MaskChannelsX16Keyword);
         }
 
+        public ElementEffectLayer AddElementEffectLayer(VisualElement ve)
+        {
+            if (!rootVisualElement.IsMyDescendant(ve))
+            {
+                throw new Exception($"'{ve}' is not descendant of '{this}'");
+            }
+
+            var effectLayer = ElementEffectLayer.Create((string.IsNullOrEmpty(ve.name) ? ve.GetType() : ve.name) + "(EffectLayer)");
+            effectLayer.transform.SetParent(transform);
+            effectLayer.texture = texture;
+            effectLayer.trackedElement = ve;
+            effectLayer.Init();
+            m_ElementEffectLayers.Add(effectLayer);
+            return effectLayer;
+        }
+
+        public void RemoveElementEffectLayer(VisualElement ve)
+        {
+            var effectLayer = GetElementEffectLayer(ve);
+            if (effectLayer != null)
+            {
+                RemoveElementEffectLayer(effectLayer);
+            }
+        }
+
+        public void RemoveElementEffectLayer(ElementEffectLayer effectLayer)
+        {
+            m_ElementEffectLayers.Remove(effectLayer);
+            Destroy(effectLayer.gameObject);
+        }
+
+        public ElementEffectLayer GetElementEffectLayer(VisualElement ve)
+        {
+            foreach (var effectLayer in m_ElementEffectLayers)
+            {
+                if (effectLayer.trackedElement == ve)
+                {
+                    return effectLayer;
+                }
+            }
+
+            return null;
+        }
+
         public override void ResetLayer()
         {
             base.ResetLayer();
+            invertMask = false;
+            foreach (var layer in m_ElementEffectLayers)
+            {
+                RemoveElementEffectLayer(layer);
+            }
 
             // It's important to unmask before UIDocument is modified, otherwise
             // panel becomes dirty and unmask fails because of unknown panel size

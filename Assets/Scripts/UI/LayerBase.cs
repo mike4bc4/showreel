@@ -152,6 +152,11 @@ namespace UI
             this.blur = blur;
         }
 
+        public void SetColor(Color color)
+        {
+            this.color = color;
+        }
+
         public void Clear()
         {
             RenderTexture rt = RenderTexture.active;

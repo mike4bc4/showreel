@@ -16,6 +16,17 @@ namespace Utils
         static readonly Type s_RuntimePanelType = s_Assembly.GetType("UnityEngine.UIElements.RuntimePanel");
         static readonly PropertyInfo s_SelectableGameObjectProperty = s_RuntimePanelType.GetProperty("selectableGameObject");
 
+        public static bool IsMyDescendant(this VisualElement ve, VisualElement descendant)
+        {
+            var parent = descendant.hierarchy.parent;
+            while (parent != null && parent != ve)
+            {
+                parent = parent.hierarchy.parent;
+            }
+
+            return parent == ve;
+        }
+
         /// <returns>
         /// GameObject which has PanelEventHandler and PanelRaycaster components. This game object is usually
         /// a child of EventSystem and will be created for each active PanelSettings object attached to UIDocuments on scene.

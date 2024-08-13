@@ -24,6 +24,7 @@ namespace UI
         [SerializeField] Material m_ShineMaterial;
         [SerializeField] Material m_MaskMaterial;
         [SerializeField] Material m_BlurEffectMaterial;
+        [SerializeField] Shader m_EffectLayerShader;
 
         List<Layer> m_LayerPool;
         List<LayerBase> m_Layers;
@@ -60,6 +61,11 @@ namespace UI
         public static Material BlurEffectMaterial
         {
             get => s_Instance.m_BlurEffectMaterial;
+        }
+
+        public static Shader EffectLayerShader
+        {
+            get => s_Instance.m_EffectLayerShader;
         }
 
         void Awake()
