@@ -16,7 +16,7 @@ namespace UI.Boards
 
         [SerializeField] VisualTreeAsset m_ControlsVta;
 
-        Layer2 m_ControlsLayer;
+        Layer m_ControlsLayer;
         KeyframeTrackPlayer m_Player;
 
         public void Init()
@@ -26,15 +26,15 @@ namespace UI.Boards
 
             m_Player.AddEvent(0, () =>
             {
-                m_ControlsLayer = LayerManager2.CreateLayer(m_ControlsVta, displaySortOrder: DisplaySortOrder);
+                m_ControlsLayer = LayerManager.CreateLayer(m_ControlsVta, displaySortOrder: DisplaySortOrder);
                 m_ControlsLayer.inputSortOrder = InputSortOrder;
                 m_ControlsLayer.interactable = false;
                 m_ControlsLayer.alpha = 0f;
-                m_ControlsLayer.blurSize = Layer2.DefaultBlurSize;
+                m_ControlsLayer.blurSize = Layer.DefaultBlurSize;
             }, EventInvokeFlags.Forward);
             m_Player.AddEvent(0, () =>
             {
-                LayerManager2.RemoveLayer(m_ControlsLayer);
+                LayerManager.RemoveLayer(m_ControlsLayer);
             }, EventInvokeFlags.Backward);
 
             var t1 = m_Player.AddKeyframeTrack((float alpha) =>
@@ -54,7 +54,7 @@ namespace UI.Boards
                     m_ControlsLayer.blurSize = blurSize;
                 }
             });
-            t2.AddKeyframe(10, Layer2.DefaultBlurSize);
+            t2.AddKeyframe(10, Layer.DefaultBlurSize);
             t2.AddKeyframe(30, 0f);
 
             m_Player.AddEvent(30, () =>

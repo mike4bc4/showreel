@@ -25,7 +25,7 @@ namespace UI.Boards
         KeyframeTrackPlayer m_Player;
         KeyframeTrackPlayer m_SubtitleAnimationPlayer;
 
-        Layer2 m_InitialBoardLayer;
+        Layer m_InitialBoardLayer;
         PostProcessingLayer m_PostProcessingLayer;
         DiamondTitle m_Title;
         Subtitle m_Subtitle;
@@ -41,7 +41,7 @@ namespace UI.Boards
 
             m_Player.AddEvent(0, () =>
             {
-                m_InitialBoardLayer = LayerManager2.CreateLayer(m_InitialBoardVta, displaySortOrder: k_DisplaySortOrder);
+                m_InitialBoardLayer = LayerManager.CreateLayer(m_InitialBoardVta, displaySortOrder: k_DisplaySortOrder);
 
                 m_Title = m_InitialBoardLayer.rootVisualElement.Q<DiamondTitle>("title");
                 m_Title.style.opacity = 0f;
@@ -52,7 +52,7 @@ namespace UI.Boards
                 m_Subtitle.style.opacity = 0f;
                 m_Subtitle.animationProgress = 0f;
 
-                m_PostProcessingLayer = LayerManager2.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
+                m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
                 m_PostProcessingLayer.overscan = 8f;
                 m_PostProcessingLayer.maskElement = m_Title;
                 m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
@@ -60,8 +60,8 @@ namespace UI.Boards
 
             m_Player.AddEvent(0, () =>
             {
-                LayerManager2.RemoveLayer(m_InitialBoardLayer);
-                LayerManager2.RemoveLayer(m_PostProcessingLayer);
+                LayerManager.RemoveLayer(m_InitialBoardLayer);
+                LayerManager.RemoveLayer(m_PostProcessingLayer);
             }, EventInvokeFlags.Backward);
 
             var t1 = m_Player.AddKeyframeTrack((float opacity) =>
@@ -81,7 +81,7 @@ namespace UI.Boards
                     m_PostProcessingLayer.blurSize = blurSize;
                 }
             });
-            t2.AddKeyframe(10, Layer.DefaultBlur);
+            t2.AddKeyframe(10, Layer.DefaultBlurSize);
             t2.AddKeyframe(30, 0f);
 
             m_Player.AddEvent(30, () =>
@@ -129,7 +129,7 @@ namespace UI.Boards
                     m_PostProcessingLayer.blurSize = blurSize;
                 }
             });
-            t5.AddKeyframe(100, Layer.DefaultBlur);
+            t5.AddKeyframe(100, Layer.DefaultBlurSize);
             t5.AddKeyframe(120, 0f);
 
             m_Player.AddEvent(120, () =>
@@ -163,18 +163,18 @@ namespace UI.Boards
                     m_PostProcessingLayer.blurSize = blurSize;
                 }
             });
-            t7.AddKeyframe(130, Layer.DefaultBlur);
+            t7.AddKeyframe(130, Layer.DefaultBlurSize);
             t7.AddKeyframe(150, 0f);
 
             m_Player.AddEvent(150, () =>
             {
-                LayerManager2.RemoveLayer(m_PostProcessingLayer);
+                LayerManager.RemoveLayer(m_PostProcessingLayer);
                 m_SubtitleAnimationPlayer.Play();
             }, EventInvokeFlags.Forward);
 
             m_Player.AddEvent(150, () =>
             {
-                m_PostProcessingLayer = LayerManager2.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
+                m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
                 m_PostProcessingLayer.overscan = 8f;
                 m_PostProcessingLayer.maskElement = m_Subtitle;
                 m_SubtitleAnimationPlayer.Stop();

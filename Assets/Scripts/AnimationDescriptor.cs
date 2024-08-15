@@ -33,7 +33,7 @@ public abstract class AnimationDescriptor
     {
         get => new AnimationDescriptor<float>()
         {
-            property = nameof(Layer.blur),
+            property = nameof(Layer.blurSize),
             targetValue = 0f,
             time = 1f,
         };
@@ -43,8 +43,8 @@ public abstract class AnimationDescriptor
     {
         get => new AnimationDescriptor<float>()
         {
-            property = nameof(Layer.blur),
-            targetValue = Layer.DefaultBlur,
+            property = nameof(Layer.blurSize),
+            targetValue = Layer.DefaultBlurSize,
             time = 1f,
         };
     }

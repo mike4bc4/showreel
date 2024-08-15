@@ -30,7 +30,7 @@ public class ListBoard : Board, IBoard
     [SerializeField] VideoClip m_VideoClip;
     [SerializeField] int m_ListElementCount;
 
-    Layer2 m_ListBoardLayer;
+    Layer m_ListBoardLayer;
     PostProcessingLayer m_PostProcessingLayer;
     KeyframeTrackPlayer m_Player;
 
@@ -53,7 +53,7 @@ public class ListBoard : Board, IBoard
 
         m_Player.AddEvent(0, () =>
         {
-            m_ListBoardLayer = LayerManager2.CreateLayer(m_ListBoard, displaySortOrder: k_DisplaySortOrder);
+            m_ListBoardLayer = LayerManager.CreateLayer(m_ListBoard, displaySortOrder: k_DisplaySortOrder);
             m_ListBoardLayer.blocksRaycasts = true;
             m_ListBoardLayer.interactable = false;
 
@@ -86,15 +86,15 @@ public class ListBoard : Board, IBoard
                 element.button.style.opacity = 0f;
             }
 
-            m_PostProcessingLayer = LayerManager2.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
+            m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
             m_PostProcessingLayer.maskElement = m_Frame;
             m_PostProcessingLayer.overscan = 8f;
             m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
         }, EventInvokeFlags.Forward);
         m_Player.AddEvent(0, () =>
         {
-            LayerManager2.RemoveLayer(m_ListBoardLayer);
-            LayerManager2.RemoveLayer(m_PostProcessingLayer);
+            LayerManager.RemoveLayer(m_ListBoardLayer);
+            LayerManager.RemoveLayer(m_PostProcessingLayer);
         }, EventInvokeFlags.Backward);
 
         var t1 = m_Player.AddKeyframeTrack((float opacity) =>
@@ -371,11 +371,11 @@ public class ListBoard : Board, IBoard
 
         m_Player.AddEvent(titleAnimationStartFrameIndex + 120, () =>
         {
-            LayerManager2.RemoveLayer(m_PostProcessingLayer);
+            LayerManager.RemoveLayer(m_PostProcessingLayer);
         }, EventInvokeFlags.Forward);
         m_Player.AddEvent(titleAnimationStartFrameIndex + 120, () =>
         {
-            m_PostProcessingLayer = LayerManager2.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
+            m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
             m_PostProcessingLayer.maskElement = m_Title.label;
             m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
         }, EventInvokeFlags.Backward);

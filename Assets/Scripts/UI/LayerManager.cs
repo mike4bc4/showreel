@@ -1,116 +1,110 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using CustomControls;
-using Cysharp.Threading.Tasks;
+using UI;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
+using Utils;
 
 namespace UI
 {
-    public class LayerManager : MonoBehaviour
+    public partial class LayerManager : MonoBehaviour
     {
-        const int k_LayerPoolSize = 10;
-
+        const string k_CommandBufferName = "UIDocumentCommandBuffer";
+        const CameraEvent k_CameraEvent = CameraEvent.AfterEverything;
         static LayerManager s_Instance;
 
-        [SerializeField] Canvas m_Canvas;
-        [SerializeField] PanelSettings m_TemplatePanelSettings;
-        [SerializeField] RenderTexture m_TemplateRenderTexture;
-        [SerializeField] Material m_BlurMaterial;
-        [SerializeField] Material m_ShineMaterial;
-        [SerializeField] Material m_MaskMaterial;
-        [SerializeField] Material m_BlurEffectMaterial;
-        [SerializeField] Shader m_EffectLayerShader;
+        [SerializeField] Shader m_LayerShader;
+        [SerializeField] PanelSettings m_PanelSettings;
+        [SerializeField] Material m_BlitCopyMaterial;
 
-        List<Layer> m_LayerPool;
-        List<LayerBase> m_Layers;
+        List<BaseLayer> m_Layers;
+        CommandBuffer m_CommandBuffer;
 
-        static List<LayerBase> layers => s_Instance.m_Layers;
-        static List<Layer> layerPool => s_Instance.m_LayerPool;
-        static Canvas canvas => s_Instance.m_Canvas;
+        public static int layerCount => layers.Count;
 
-        public static PanelSettings TemplatePanelSettings
+        static PanelSettings panelSettings => s_Instance.m_PanelSettings;
+        static Shader layerShader => s_Instance.m_LayerShader;
+        static List<BaseLayer> layers => s_Instance.m_Layers;
+        static new Transform transform => ((Component)s_Instance).transform;
+        static Material blitCopyMaterial => s_Instance.m_BlitCopyMaterial;
+
+        static CommandBuffer commandBuffer
         {
-            get => s_Instance.m_TemplatePanelSettings;
-        }
-
-        public static RenderTexture TemplateRenderTexture
-        {
-            get => s_Instance.m_TemplateRenderTexture;
-        }
-
-        public static Material BlurMaterial
-        {
-            get => s_Instance.m_BlurMaterial;
-        }
-
-        public static Material ShineMaterial
-        {
-            get => s_Instance.m_ShineMaterial;
-        }
-
-        public static Material MaskMaterial
-        {
-            get => s_Instance.m_MaskMaterial;
-        }
-
-        public static Material BlurEffectMaterial
-        {
-            get => s_Instance.m_BlurEffectMaterial;
-        }
-
-        public static Shader EffectLayerShader
-        {
-            get => s_Instance.m_EffectLayerShader;
+            get => s_Instance.m_CommandBuffer;
+            set => s_Instance.m_CommandBuffer = value;
         }
 
         void Awake()
         {
-            if (s_Instance != null)
+            if (s_Instance != null && s_Instance != this)
             {
                 Destroy(this);
-                return;
             }
 
             s_Instance = this;
-            m_LayerPool = new List<Layer>();
-            m_Layers = canvas.GetComponentsInChildren<LayerBase>(true).ToList();
-            foreach (var layer in m_Layers)
-            {
-                layer.Init();
-            }
-
-            SortLayers();
+            m_Layers = new List<BaseLayer>();
         }
 
-        public static void RemoveLayer(LayerBase layer)
+        public static PostProcessingLayer CreatePostProcessingLayer(string name = "PostProcessingLayer", int displaySortOrder = 0)
+        {
+            var gameObject = new GameObject(name);
+            gameObject.transform.SetParent(transform);
+
+            var layer = gameObject.AddComponent<PostProcessingLayer>();
+            layer.name = name;
+            layer.displaySortOrder = displaySortOrder;
+            layer.onDisplaySortOrderChanged += RebuildCommandBuffer;
+            layer.Init(new Material(layerShader));
+            layers.Add(layer);
+            layers.Sort(BaseLayer.Comparer);
+
+            RebuildCommandBuffer();
+
+            return layer;
+        }
+
+        public static Layer CreateLayer(VisualTreeAsset vta = null, string name = "Layer", int displaySortOrder = 0)
+        {
+            var renderTexture = RenderTexture.GetTemporary(Camera.main.pixelWidth, Camera.main.pixelHeight);
+
+            var ps = Instantiate(panelSettings);
+            ps.targetTexture = renderTexture;
+
+            var gameObject = new GameObject(name);
+            gameObject.transform.SetParent(transform);
+
+            var uiDocument = gameObject.AddComponent<UIDocument>();
+            uiDocument.panelSettings = ps;
+            uiDocument.visualTreeAsset = vta;
+
+            var layer = gameObject.AddComponent<Layer>();
+            layer.name = name;
+            layer.displaySortOrder = displaySortOrder;
+            layer.onDisplaySortOrderChanged += RebuildCommandBuffer;
+            layer.Init(new Material(layerShader), uiDocument);
+            layers.Add(layer);
+            layers.Sort(BaseLayer.Comparer);
+
+            RebuildCommandBuffer();
+
+            return layer;
+        }
+
+        public static void RemoveLayer(BaseLayer layer)
         {
             if (layer == null)
             {
                 return;
             }
 
-            if (layer is EffectLayer || layerPool.Count >= k_LayerPoolSize)
-            {
-                if (layer.texture is RenderTexture renderTexture)
-                {
-                    renderTexture.Release();
-                }
+            var baseLayer = (BaseLayer)layer;
+            layers.Remove(baseLayer);
+            DestroyImmediate(baseLayer.gameObject);
 
-                Destroy(layer.gameObject);
-                layers.Remove(layer);
-            }
-            else if (!layerPool.Contains(layer))
-            {
-                layer.active = false;
-                layer.name += "(Inactive)";
-                layerPool.Add((Layer)layer);
-                SortLayers();
-            }
+            RebuildCommandBuffer();
         }
 
         public static void RemoveLayer(string name)
@@ -122,86 +116,61 @@ namespace UI
             }
         }
 
-        static GameObject CreateLayerGameObject(string name)
+        public static BaseLayer GetLayer(string name)
         {
-            var gameObject = new GameObject(name, typeof(RectTransform));
-            gameObject.transform.SetParent(s_Instance.m_Canvas.transform);
-
-            // Fill entire canvas.
-            var rectTransform = (RectTransform)gameObject.transform;
-            rectTransform.localScale = Vector3.one;
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.one;
-            rectTransform.offsetMin = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;
-            return gameObject;
-        }
-
-        public static EffectLayer CreateEffectLayer(string name = "EffectLayer")
-        {
-            var gameObject = CreateLayerGameObject(name);
-            var layer = gameObject.AddComponent<EffectLayer>();
-            layers.Add(layer);
-            layer.Init();
-            SortLayers();
-            return layer;
-        }
-
-        public static Layer CreateLayer(string name = "Layer")
-        {
-            Layer layer = null;
-            if (layerPool.Count > 0)
+            foreach (var layer in layers)
             {
-                layer = layerPool[0];
-                layerPool.RemoveAt(0);
-                layer.ResetLayer();
-                layer.name = name;
-                layer.active = true;
-            }
-            else
-            {
-                var gameObject = CreateLayerGameObject(name);
-                layer = gameObject.AddComponent<Layer>();
-                layers.Add(layer);
-                layer.Init();
-            }
-
-            SortLayers();
-            return layer;
-        }
-
-        public static Layer CreateLayer(VisualTreeAsset vta, string name = null)
-        {
-            var layer = CreateLayer(string.IsNullOrEmpty(name) ? vta.name : name);
-            layer.visualTreeAsset = vta;
-            return layer;
-        }
-
-        public static void SortLayers()
-        {
-            layers.Sort(Layer.Comparer);
-            for (int i = 0; i < layers.Count; i++)
-            {
-                layers[i].transform.SetSiblingIndex(i);
-            }
-        }
-
-        public static LayerBase GetLayer(string name)
-        {
-            for (int i = 0; i < layers.Count; i++)
-            {
-                if (layers[i] == null)
+                if (layer.name == name)
                 {
-                    // Clear reference in case of layer not being removed via RemoveLayer().
-                    layers.RemoveAt(i);
-                }
-                else if (layers[i].name == name)
-                {
-                    return layers[i];
+                    return layer;
                 }
             }
 
             return null;
         }
+
+        static void RebuildCommandBuffer()
+        {
+            if (commandBuffer != null)
+            {
+                Camera.main.RemoveCommandBuffer(k_CameraEvent, commandBuffer);
+            }
+
+            if (layers.Count == 0)
+            {
+                return;
+            }
+
+            commandBuffer = new CommandBuffer();
+            commandBuffer.name = k_CommandBufferName;
+
+            var outputTexID = Shader.PropertyToID("_OutputRT");
+            commandBuffer.GetTemporaryRT(outputTexID, -1, -1);  // -1, -1 For camera pixel width and height.
+
+            // Here we are copying camera texture into output texture to preserve originally generated image.
+            // Because of 'reasons' Unity may flip camera target render texture upside down, that's why
+            // instead of default 'Hidden/BlitCopy' shader, we are using modified version which flips texture 
+            // coords if UNITY_UV_STARTS_AT_TOP keyword is enabled.
+            commandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, outputTexID, blitCopyMaterial);
+
+            for (int i = 0; i < layers.Count; i++)
+            {
+                if (layers[i] is Layer layer)
+                {
+                    commandBuffer.Blit(layer.uiDocument.panelSettings.targetTexture, outputTexID, layer.material);
+                }
+                else if (layers[i] is PostProcessingLayer postProcessingLayer)
+                {
+                    var tmpTexID = Shader.PropertyToID("_Temp1" + i);
+                    commandBuffer.GetTemporaryRT(tmpTexID, -1, -1);
+                    commandBuffer.Blit(outputTexID, tmpTexID);
+                    commandBuffer.Blit(tmpTexID, outputTexID, postProcessingLayer.material);
+                }
+            }
+
+            commandBuffer.Blit(outputTexID, Camera.main.targetTexture);
+            Camera.main.AddCommandBuffer(k_CameraEvent, commandBuffer);
+        }
     }
 }
+

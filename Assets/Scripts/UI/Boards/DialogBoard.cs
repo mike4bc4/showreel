@@ -33,7 +33,7 @@ namespace UI.Boards
 
         [SerializeField] VisualTreeAsset m_DialogBoxVta;
 
-        Layer2 m_DialogBoxLayer;
+        Layer m_DialogBoxLayer;
         PostProcessingLayer m_BackgroundPostProcessingLayer;
         PostProcessingLayer m_PostProcessingLayer;
         ScrollBox m_ScrollBox;
@@ -124,13 +124,13 @@ namespace UI.Boards
 
             m_Player.AddEvent(0, () =>
             {
-                m_DialogBoxLayer = LayerManager2.CreateLayer(m_DialogBoxVta, displaySortOrder: DisplaySortOrder);
+                m_DialogBoxLayer = LayerManager.CreateLayer(m_DialogBoxVta, displaySortOrder: DisplaySortOrder);
                 m_DialogBoxLayer.alpha = 0f;
                 m_DialogBoxLayer.inputSortOrder = InputSortOrder;
                 m_DialogBoxLayer.interactable = false;
                 m_DialogBoxLayer.blocksRaycasts = true;
 
-                m_BackgroundPostProcessingLayer = LayerManager2.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder - 1);
+                m_BackgroundPostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder - 1);
 
                 m_ScrollBox = m_DialogBoxLayer.rootVisualElement.Q<ScrollBox>("scroll-box");
                 m_ScrollBox.Clear();
@@ -165,12 +165,12 @@ namespace UI.Boards
             }, EventInvokeFlags.Forward);
             m_Player.AddEvent(0, () =>
             {
-                LayerManager2.RemoveLayer(m_DialogBoxLayer);
-                LayerManager2.RemoveLayer(m_BackgroundPostProcessingLayer);
+                LayerManager.RemoveLayer(m_DialogBoxLayer);
+                LayerManager.RemoveLayer(m_BackgroundPostProcessingLayer);
                 m_TitlePlayer.frameIndex = 0;
                 if (m_PostProcessingLayer != null)
                 {
-                    LayerManager2.RemoveLayer(m_PostProcessingLayer);
+                    LayerManager.RemoveLayer(m_PostProcessingLayer);
                 }
             }, EventInvokeFlags.Backward);
 
@@ -192,7 +192,7 @@ namespace UI.Boards
                 }
             });
             t2.AddKeyframe(0, 0f);
-            t2.AddKeyframe(30, Layer.DefaultBlur);
+            t2.AddKeyframe(30, Layer.DefaultBlurSize);
 
             var t3 = m_Player.AddKeyframeTrack((float scaleMultiplier) =>
             {
@@ -230,14 +230,14 @@ namespace UI.Boards
 
             m_TitlePlayer.AddEvent(0, () =>
             {
-                m_PostProcessingLayer = LayerManager2.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder + 1);
+                m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder + 1);
                 m_PostProcessingLayer.overscan = 8f;
                 m_PostProcessingLayer.maskElement = m_Title;
                 m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
             }, EventInvokeFlags.Forward);
             m_TitlePlayer.AddEvent(0, () =>
             {
-                LayerManager2.RemoveLayer(m_PostProcessingLayer);
+                LayerManager.RemoveLayer(m_PostProcessingLayer);
             }, EventInvokeFlags.Backward);
 
             var t5 = m_TitlePlayer.AddKeyframeTrack((float opacity) =>
@@ -298,11 +298,11 @@ namespace UI.Boards
 
             m_TitlePlayer.AddEvent(120, () =>
             {
-                LayerManager2.RemoveLayer(m_PostProcessingLayer);
+                LayerManager.RemoveLayer(m_PostProcessingLayer);
             }, EventInvokeFlags.Forward);
             m_TitlePlayer.AddEvent(120, () =>
             {
-                m_PostProcessingLayer = LayerManager2.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder + 1);
+                m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder + 1);
                 m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
                 m_PostProcessingLayer.maskElement = m_Title.label;
             }, EventInvokeFlags.Backward);
