@@ -53,49 +53,52 @@ public class ListBoard : Board, IBoard
 
         m_Player.AddEvent(0, () =>
         {
-            m_ListBoardLayer = LayerManager.CreateLayer(m_ListBoard, displaySortOrder: k_DisplaySortOrder);
-            m_ListBoardLayer.blocksRaycasts = true;
-            m_ListBoardLayer.interactable = false;
-
-            m_FrameViewport = m_ListBoardLayer.rootVisualElement.Q("frame-viewport");
-            m_TitleViewport = m_ListBoardLayer.rootVisualElement.Q("title-viewport");
-            m_ListViewport = m_ListBoardLayer.rootVisualElement.Q("list-viewport");
-
-            m_Frame = m_FrameViewport.Q<DiamondFrameVertical>();
-            m_Frame.animationProgress = 0f;
-            m_Frame.style.opacity = 0f;
-            m_Frame.contentContainer.style.opacity = 0f;
-            m_VideoElement = m_Frame.contentContainer.Q("video");
-
-            m_FrameSpacer = m_FrameViewport.Q("spacer-left");
-            m_FrameSpacer.style.flexGrow = 0.5f;
-
-            m_Title = m_TitleViewport.Q<DiamondTitle>();
-            m_Title.animationProgress = 0f;
-            m_Title.style.opacity = 0f;
-            m_Title.label.style.opacity = 0f;
-
-            m_ScrollBox = m_ListViewport.Query<ScrollBox>();
-            m_ScrollBox.style.opacity = 0f;
-
-            m_ListElements = m_ListViewport.Query<ListElement>().ToList();
-            foreach (var element in m_ListElements)
+            if (m_Player.playbackSpeed > 0)
             {
-                element.bullet.animationProgress = 0f;
-                element.bullet.visible = false;
-                element.button.style.opacity = 0f;
-            }
+                m_ListBoardLayer = LayerManager.CreateLayer(m_ListBoard, displaySortOrder: k_DisplaySortOrder);
+                m_ListBoardLayer.blocksRaycasts = true;
+                m_ListBoardLayer.interactable = false;
 
-            m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
-            m_PostProcessingLayer.maskElement = m_Frame;
-            m_PostProcessingLayer.overscan = 8f;
-            m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
-        }, EventInvokeFlags.Forward);
-        m_Player.AddEvent(0, () =>
-        {
-            LayerManager.RemoveLayer(m_ListBoardLayer);
-            LayerManager.RemoveLayer(m_PostProcessingLayer);
-        }, EventInvokeFlags.Backward);
+                m_FrameViewport = m_ListBoardLayer.rootVisualElement.Q("frame-viewport");
+                m_TitleViewport = m_ListBoardLayer.rootVisualElement.Q("title-viewport");
+                m_ListViewport = m_ListBoardLayer.rootVisualElement.Q("list-viewport");
+
+                m_Frame = m_FrameViewport.Q<DiamondFrameVertical>();
+                m_Frame.animationProgress = 0f;
+                m_Frame.style.opacity = 0f;
+                m_Frame.contentContainer.style.opacity = 0f;
+                m_VideoElement = m_Frame.contentContainer.Q("video");
+
+                m_FrameSpacer = m_FrameViewport.Q("spacer-left");
+                m_FrameSpacer.style.flexGrow = 0.5f;
+
+                m_Title = m_TitleViewport.Q<DiamondTitle>();
+                m_Title.animationProgress = 0f;
+                m_Title.style.opacity = 0f;
+                m_Title.label.style.opacity = 0f;
+
+                m_ScrollBox = m_ListViewport.Query<ScrollBox>();
+                m_ScrollBox.style.opacity = 0f;
+
+                m_ListElements = m_ListViewport.Query<ListElement>().ToList();
+                foreach (var element in m_ListElements)
+                {
+                    element.bullet.animationProgress = 0f;
+                    element.bullet.visible = false;
+                    element.button.style.opacity = 0f;
+                }
+
+                m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
+                m_PostProcessingLayer.maskElement = m_Frame;
+                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
+            }
+            else
+            {
+                LayerManager.RemoveLayer(m_ListBoardLayer);
+                LayerManager.RemoveLayer(m_PostProcessingLayer);
+            }
+        });
 
         var t1 = m_Player.AddKeyframeTrack((float opacity) =>
         {
@@ -119,12 +122,15 @@ public class ListBoard : Board, IBoard
 
         m_Player.AddEvent(30, () =>
         {
-            m_PostProcessingLayer.maskElement = null;
-        }, EventInvokeFlags.Forward);
-        m_Player.AddEvent(30, () =>
-        {
-            m_PostProcessingLayer.maskElement = m_Frame;
-        }, EventInvokeFlags.Backward);
+            if (m_Player.playbackSpeed > 0)
+            {
+                m_PostProcessingLayer.maskElement = null;
+            }
+            else
+            {
+                m_PostProcessingLayer.maskElement = m_Frame;
+            }
+        });
 
         var t3 = m_Player.AddKeyframeTrack((float animationProgress) =>
         {
@@ -138,23 +144,26 @@ public class ListBoard : Board, IBoard
 
         m_Player.AddEvent(120, () =>
         {
-            var videoPlayer = VideoPlayerManager.CreatePlayer(m_VideoClip, k_VideoPlayerName);
-            videoPlayer.Play();
-            m_VideoElement.style.backgroundImage = Background.FromRenderTexture(videoPlayer.targetTexture);
+            if (m_Player.playbackSpeed > 0)
+            {
+                var videoPlayer = VideoPlayerManager.CreatePlayer(m_VideoClip, k_VideoPlayerName);
+                videoPlayer.Play();
+                m_VideoElement.style.backgroundImage = Background.FromRenderTexture(videoPlayer.targetTexture);
 
-            m_PostProcessingLayer.maskElement = m_VideoElement;
-            m_PostProcessingLayer.overscan = 8f;
-            m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
-        }, EventInvokeFlags.Forward);
-        m_Player.AddEvent(120, () =>
-        {
-            VideoPlayerManager.RemovePlayer(k_VideoPlayerName);
-            m_VideoElement.style.backgroundImage = null;
+                m_PostProcessingLayer.maskElement = m_VideoElement;
+                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
+            }
+            else
+            {
+                VideoPlayerManager.RemovePlayer(k_VideoPlayerName);
+                m_VideoElement.style.backgroundImage = null;
 
-            m_PostProcessingLayer.maskElement = null;
-            m_PostProcessingLayer.overscan = 8f;
-            m_PostProcessingLayer.blurSize = 0f;
-        }, EventInvokeFlags.Backward);
+                m_PostProcessingLayer.maskElement = null;
+                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.blurSize = 0f;
+            }
+        });
 
         var t4 = m_Player.AddKeyframeTrack((float opacity) =>
         {
@@ -188,16 +197,19 @@ public class ListBoard : Board, IBoard
 
         m_Player.AddEvent(195, () =>
         {
-            m_PostProcessingLayer.maskElement = m_ScrollBox;
-            m_PostProcessingLayer.overscan = 8f;
-            m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
-        }, EventInvokeFlags.Forward);
-        m_Player.AddEvent(195, () =>
-        {
-            m_PostProcessingLayer.maskElement = m_VideoElement;
-            m_PostProcessingLayer.overscan = 8f;
-            m_PostProcessingLayer.blurSize = 0f;
-        }, EventInvokeFlags.Backward);
+            if (m_Player.playbackSpeed > 0)
+            {
+                m_PostProcessingLayer.maskElement = m_ScrollBox;
+                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
+            }
+            else
+            {
+                m_PostProcessingLayer.maskElement = m_VideoElement;
+                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.blurSize = 0f;
+            }
+        });
 
         var t7 = m_Player.AddKeyframeTrack((float opacity) =>
         {
@@ -229,12 +241,15 @@ public class ListBoard : Board, IBoard
             int bulletAnimationStartFrameIndex = startFrameIndex + i * bulletAnimationDelay;
             m_Player.AddEvent(bulletAnimationStartFrameIndex, () =>
             {
-                m_ListElements[index].bullet.visible = true;
-            }, EventInvokeFlags.Forward);
-            m_Player.AddEvent(bulletAnimationStartFrameIndex, () =>
-            {
-                m_ListElements[index].bullet.visible = false;
-            }, EventInvokeFlags.Backward);
+                if (m_Player.playbackSpeed > 0)
+                {
+                    m_ListElements[index].bullet.visible = true;
+                }
+                else
+                {
+                    m_ListElements[index].bullet.visible = false;
+                }
+            });
 
             var tt1 = m_Player.AddKeyframeTrack((float animationProgress) =>
             {
@@ -249,16 +264,19 @@ public class ListBoard : Board, IBoard
             int buttonAnimationStartFrameIndex = bulletAnimationStartFrameIndex + fadeDelay;
             m_Player.AddEvent(buttonAnimationStartFrameIndex, () =>
             {
-                m_PostProcessingLayer.maskElement = m_ListElements[index].button;
-                m_PostProcessingLayer.overscan = 8f;
-                m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
-            }, EventInvokeFlags.Forward);
-            m_Player.AddEvent(buttonAnimationStartFrameIndex, () =>
-            {
-                m_PostProcessingLayer.maskElement = index > 0 ? m_ListElements[index - 1].button : m_ScrollBox;
-                m_PostProcessingLayer.overscan = 8f;
-                m_PostProcessingLayer.blurSize = 0f;
-            }, EventInvokeFlags.Backward);
+                if (m_Player.playbackSpeed > 0)
+                {
+                    m_PostProcessingLayer.maskElement = m_ListElements[index].button;
+                    m_PostProcessingLayer.overscan = 8f;
+                    m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
+                }
+                else
+                {
+                    m_PostProcessingLayer.maskElement = index > 0 ? m_ListElements[index - 1].button : m_ScrollBox;
+                    m_PostProcessingLayer.overscan = 8f;
+                    m_PostProcessingLayer.blurSize = 0f;
+                }
+            });
 
             var tt2 = m_Player.AddKeyframeTrack((float opacity) =>
             {
@@ -284,18 +302,21 @@ public class ListBoard : Board, IBoard
         int titleAnimationStartFrameIndex = startFrameIndex + (m_ListElementCount - 1) * bulletAnimationDelay + fadeDelay + 30;
         m_Player.AddEvent(titleAnimationStartFrameIndex, () =>
         {
-            m_ListBoardLayer.interactable = true;
-            m_PostProcessingLayer.maskElement = m_Title;
-            m_PostProcessingLayer.overscan = 8f;
-            m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
-        }, EventInvokeFlags.Forward);
-        m_Player.AddEvent(titleAnimationStartFrameIndex, () =>
-        {
-            m_ListBoardLayer.interactable = false;
-            m_PostProcessingLayer.maskElement = m_ListElements[m_ListElementCount - 1].button;
-            m_PostProcessingLayer.overscan = 8f;
-            m_PostProcessingLayer.blurSize = 0f;
-        }, EventInvokeFlags.Backward);
+            if (m_Player.playbackSpeed > 0)
+            {
+                m_ListBoardLayer.interactable = true;
+                m_PostProcessingLayer.maskElement = m_Title;
+                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
+            }
+            else
+            {
+                m_ListBoardLayer.interactable = false;
+                m_PostProcessingLayer.maskElement = m_ListElements[m_ListElementCount - 1].button;
+                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.blurSize = 0f;
+            }
+        });
 
         var t9 = m_Player.AddKeyframeTrack((float opacity) =>
         {
@@ -319,12 +340,15 @@ public class ListBoard : Board, IBoard
 
         m_Player.AddEvent(titleAnimationStartFrameIndex + 30, () =>
         {
-            m_PostProcessingLayer.maskElement = null;
-        }, EventInvokeFlags.Forward);
-        m_Player.AddEvent(titleAnimationStartFrameIndex + 30, () =>
-        {
-            m_PostProcessingLayer.maskElement = m_Title;
-        }, EventInvokeFlags.Backward);
+            if (m_Player.playbackSpeed > 0)
+            {
+                m_PostProcessingLayer.maskElement = null;
+            }
+            else
+            {
+                m_PostProcessingLayer.maskElement = m_Title;
+            }
+        });
 
         var t11 = m_Player.AddKeyframeTrack((float animationProgress) =>
         {
@@ -338,16 +362,19 @@ public class ListBoard : Board, IBoard
 
         m_Player.AddEvent(titleAnimationStartFrameIndex + 90, () =>
         {
-            m_PostProcessingLayer.maskElement = m_Title.label;
-            m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
-            m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
-        }, EventInvokeFlags.Forward);
-        m_Player.AddEvent(titleAnimationStartFrameIndex + 90, () =>
-        {
-            m_PostProcessingLayer.maskElement = null;
-            m_PostProcessingLayer.overscan = 8f;
-            m_PostProcessingLayer.blurSize = 0f;
-        }, EventInvokeFlags.Backward);
+            if (m_Player.playbackSpeed > 0)
+            {
+                m_PostProcessingLayer.maskElement = m_Title.label;
+                m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
+                m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
+            }
+            else
+            {
+                m_PostProcessingLayer.maskElement = null;
+                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.blurSize = 0f;
+            }
+        });
 
         var t12 = m_Player.AddKeyframeTrack((float opacity) =>
         {
@@ -371,14 +398,17 @@ public class ListBoard : Board, IBoard
 
         m_Player.AddEvent(titleAnimationStartFrameIndex + 120, () =>
         {
-            LayerManager.RemoveLayer(m_PostProcessingLayer);
-        }, EventInvokeFlags.Forward);
-        m_Player.AddEvent(titleAnimationStartFrameIndex + 120, () =>
-        {
-            m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
-            m_PostProcessingLayer.maskElement = m_Title.label;
-            m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
-        }, EventInvokeFlags.Backward);
+            if (m_Player.playbackSpeed > 0)
+            {
+                LayerManager.RemoveLayer(m_PostProcessingLayer);
+            }
+            else
+            {
+                m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
+                m_PostProcessingLayer.maskElement = m_Title.label;
+                m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
+            }
+        });
     }
 
     public void ShowImmediate()

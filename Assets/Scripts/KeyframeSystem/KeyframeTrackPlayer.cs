@@ -166,18 +166,17 @@ namespace KeyframeSystem
             return keyframeTrack;
         }
 
-        public ITrackEvent AddEvent(int frameIndex, Action action, EventInvokeFlags invokeFlags = EventInvokeFlags.Both, int delay = 0)
+        public ITrackEvent AddEvent(int frameIndex, Action action, int delay = 0)
         {
-            return AddEvent(frameIndex / (float)sampling, action, invokeFlags, delay);
+            return AddEvent(frameIndex / (float)sampling, action, delay);
         }
 
-        public ITrackEvent AddEvent(float time, Action action, EventInvokeFlags invokeFlags = EventInvokeFlags.Both, int delay = 0)
+        public ITrackEvent AddEvent(float time, Action action, int delay = 0)
         {
             var evt = new TrackEvent();
             evt.player = this;
             evt.time = time;
             evt.action = action;
-            evt.invokeFlags = invokeFlags;
             evt.delay = delay;
             m_Events.Add(evt);
             m_Events.Sort((e1, e2) => e1.frameIndex.CompareTo(e2.frameIndex));
@@ -199,12 +198,12 @@ namespace KeyframeSystem
             return evt;
         }
 
-        public List<ITrackEvent> Update(EventInvokeFlags invokeFlags = EventInvokeFlags.Both, bool force = false)
+        public List<ITrackEvent> Update(bool force = false)
         {
             var events = new List<ITrackEvent>();
             foreach (var evt in m_Events)
             {
-                if (evt.frameIndex == frameIndex && (evt.invokeFlags & invokeFlags) == invokeFlags)
+                if (evt.frameIndex == frameIndex)
                 {
                     events.Add(evt);
                 }
@@ -243,10 +242,7 @@ namespace KeyframeSystem
                         break;
                     }
 
-                    if ((evt.invokeFlags & EventInvokeFlags.Backward) == EventInvokeFlags.Backward)
-                    {
-                        m_InvokedEvents.Add(evt);
-                    }
+                    m_InvokedEvents.Add(evt);
                 }
             }
             else
@@ -258,27 +254,22 @@ namespace KeyframeSystem
                         break;
                     }
 
-                    if ((evt.invokeFlags & EventInvokeFlags.Forward) == EventInvokeFlags.Forward)
-                    {
-                        m_InvokedEvents.Add(evt);
-                    }
+                    m_InvokedEvents.Add(evt);
                 }
             }
         }
 
         void RebuildQueuedEvents()
         {
-            // Here we are creating sorted queue of events that should be executed in the future. This means that
-            // only events with correct invoke flag are included. Events which already have been invoked or are
-            // awaiting for invocation in scheduled events list are skipped, so calling this method twice does
-            // not break current player state unless playback direction has been changed in the meantime.
+            // Here we are creating sorted queue of events that should be executed in the future. Events which already 
+            // have been invoked or are awaiting for invocation in scheduled events list are skipped, so calling this 
+            // method twice does not break current player state unless playback direction has been changed in the meantime.
             // In such case invoked events set should be rebuild to avoid adding events from the past that actually
             // have never been reached.
             m_QueuedEvents.Clear();
-            var invokeFlags = playbackSpeed < 0 ? EventInvokeFlags.Backward : EventInvokeFlags.Forward;
             foreach (var evt in m_Events)
             {
-                if ((evt.invokeFlags & invokeFlags) == invokeFlags && !m_InvokedEvents.Contains(evt) && !m_ScheduledEvents.Contains(evt))
+                if (!m_InvokedEvents.Contains(evt) && !m_ScheduledEvents.Contains(evt))
                 {
                     m_QueuedEvents.Add(evt);
                 }

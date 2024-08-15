@@ -26,16 +26,19 @@ namespace UI.Boards
 
             m_Player.AddEvent(0, () =>
             {
-                m_ControlsLayer = LayerManager.CreateLayer(m_ControlsVta, displaySortOrder: DisplaySortOrder);
-                m_ControlsLayer.inputSortOrder = InputSortOrder;
-                m_ControlsLayer.interactable = false;
-                m_ControlsLayer.alpha = 0f;
-                m_ControlsLayer.blurSize = Layer.DefaultBlurSize;
-            }, EventInvokeFlags.Forward);
-            m_Player.AddEvent(0, () =>
-            {
-                LayerManager.RemoveLayer(m_ControlsLayer);
-            }, EventInvokeFlags.Backward);
+                if (m_Player.playbackSpeed > 0)
+                {
+                    m_ControlsLayer = LayerManager.CreateLayer(m_ControlsVta, displaySortOrder: DisplaySortOrder);
+                    m_ControlsLayer.inputSortOrder = InputSortOrder;
+                    m_ControlsLayer.interactable = false;
+                    m_ControlsLayer.alpha = 0f;
+                    m_ControlsLayer.blurSize = Layer.DefaultBlurSize;
+                }
+                else
+                {
+                    LayerManager.RemoveLayer(m_ControlsLayer);
+                }
+            });
 
             var t1 = m_Player.AddKeyframeTrack((float alpha) =>
             {
@@ -59,12 +62,15 @@ namespace UI.Boards
 
             m_Player.AddEvent(30, () =>
             {
-                m_ControlsLayer.interactable = true;
-            }, EventInvokeFlags.Forward);
-            m_Player.AddEvent(30, () =>
-            {
-                m_ControlsLayer.interactable = false;
-            }, EventInvokeFlags.Backward);
+                if (m_Player.playbackSpeed > 0)
+                {
+                    m_ControlsLayer.interactable = true;
+                }
+                else
+                {
+                    m_ControlsLayer.interactable = false;
+                }
+            });
         }
 
 

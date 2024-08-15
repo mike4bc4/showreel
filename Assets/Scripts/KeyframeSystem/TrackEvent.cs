@@ -9,20 +9,11 @@ using UnityEngine;
 
 namespace KeyframeSystem
 {
-    [Flags]
-    public enum EventInvokeFlags
-    {
-        Forward = 1,
-        Backward = 2,
-        Both = (Forward | Backward),
-    }
-
     public interface ITrackEvent
     {
         public float time { get; set; }
         public int delay { get; set; }
         public Action action { get; set; }
-        public EventInvokeFlags invokeFlags { get; set; }
         public KeyframeTrackPlayer player { get; }
     }
 
@@ -36,7 +27,6 @@ namespace KeyframeSystem
             public KeyframeTrackPlayer player { get; set; }
             public int currentFrameDelay { get; set; }
             public Action action { get; set; }
-            public EventInvokeFlags invokeFlags { get; set; }
             public string batchId { get; set; }
 
             public int delay

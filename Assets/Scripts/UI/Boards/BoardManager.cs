@@ -67,7 +67,7 @@ namespace UI.Boards
             m_InitialState = m_StateMachine.AddState(s_InitialStateID);
             // m_StateMachine.SetState(s_InitialStateID);
 
-            m_Boards = GetComponentsInChildren<Board>().ToList();
+            m_Boards = GetComponentsInChildren<Board>(true).ToList();
         }
 
         void Start()

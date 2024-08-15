@@ -124,55 +124,58 @@ namespace UI.Boards
 
             m_Player.AddEvent(0, () =>
             {
-                m_DialogBoxLayer = LayerManager.CreateLayer(m_DialogBoxVta, displaySortOrder: DisplaySortOrder);
-                m_DialogBoxLayer.alpha = 0f;
-                m_DialogBoxLayer.inputSortOrder = InputSortOrder;
-                m_DialogBoxLayer.interactable = false;
-                m_DialogBoxLayer.blocksRaycasts = true;
-
-                m_BackgroundPostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder - 1);
-
-                m_ScrollBox = m_DialogBoxLayer.rootVisualElement.Q<ScrollBox>("scroll-box");
-                m_ScrollBox.Clear();
-                m_ScrollBox.Add(contentContainer);
-
-                m_Title = m_DialogBoxLayer.rootVisualElement.Q<DiamondTitle>("title");
-                m_Title.style.opacity = 0f;
-                m_Title.label.style.opacity = 0f;
-                m_Title.animationProgress = 0f;
-                m_Title.text = m_TitleText;
-
-                m_LeftButton = m_DialogBoxLayer.rootVisualElement.Q<Button>("left-button");
-                m_LeftButton.RegisterCallback<ClickEvent>(evt => leftButtonClicked?.Invoke());
-
-                m_LeftButtonLabel = m_LeftButton.Q<Label>("text");
-                m_LeftButtonLabel.text = m_LeftButtonLabelText;
-
-                m_RightButton = m_DialogBoxLayer.rootVisualElement.Q<Button>("right-button");
-                m_RightButton.RegisterCallback<ClickEvent>(evt => rightButtonClicked?.Invoke());
-
-                m_RightButtonLabel = m_RightButton.Q<Label>("text");
-                m_RightButtonLabel.text = m_RightButtonLabelText;
-
-                m_DialogContainer = m_DialogBoxLayer.rootVisualElement.Q<VisualElement>("box-container");
-                m_DialogContainer.RegisterCallback<ClickEvent>(evt => backgroundClicked?.Invoke());
-
-                m_BoxShadow = m_DialogBoxLayer.rootVisualElement.Q<VisualElement>("box-shadow");
-                m_BoxShadow.style.scale = Vector2.one;
-                m_ButtonContainer = m_DialogBoxLayer.rootVisualElement.Q<VisualElement>("button-container");
-
-                ApplyButtonsDisplaySettings();
-            }, EventInvokeFlags.Forward);
-            m_Player.AddEvent(0, () =>
-            {
-                LayerManager.RemoveLayer(m_DialogBoxLayer);
-                LayerManager.RemoveLayer(m_BackgroundPostProcessingLayer);
-                m_TitlePlayer.frameIndex = 0;
-                if (m_PostProcessingLayer != null)
+                if (m_Player.playbackSpeed > 0)
                 {
-                    LayerManager.RemoveLayer(m_PostProcessingLayer);
+                    m_DialogBoxLayer = LayerManager.CreateLayer(m_DialogBoxVta, displaySortOrder: DisplaySortOrder);
+                    m_DialogBoxLayer.alpha = 0f;
+                    m_DialogBoxLayer.inputSortOrder = InputSortOrder;
+                    m_DialogBoxLayer.interactable = false;
+                    m_DialogBoxLayer.blocksRaycasts = true;
+
+                    m_BackgroundPostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder - 1);
+
+                    m_ScrollBox = m_DialogBoxLayer.rootVisualElement.Q<ScrollBox>("scroll-box");
+                    m_ScrollBox.Clear();
+                    m_ScrollBox.Add(contentContainer);
+
+                    m_Title = m_DialogBoxLayer.rootVisualElement.Q<DiamondTitle>("title");
+                    m_Title.style.opacity = 0f;
+                    m_Title.label.style.opacity = 0f;
+                    m_Title.animationProgress = 0f;
+                    m_Title.text = m_TitleText;
+
+                    m_LeftButton = m_DialogBoxLayer.rootVisualElement.Q<Button>("left-button");
+                    m_LeftButton.RegisterCallback<ClickEvent>(evt => leftButtonClicked?.Invoke());
+
+                    m_LeftButtonLabel = m_LeftButton.Q<Label>("text");
+                    m_LeftButtonLabel.text = m_LeftButtonLabelText;
+
+                    m_RightButton = m_DialogBoxLayer.rootVisualElement.Q<Button>("right-button");
+                    m_RightButton.RegisterCallback<ClickEvent>(evt => rightButtonClicked?.Invoke());
+
+                    m_RightButtonLabel = m_RightButton.Q<Label>("text");
+                    m_RightButtonLabel.text = m_RightButtonLabelText;
+
+                    m_DialogContainer = m_DialogBoxLayer.rootVisualElement.Q<VisualElement>("box-container");
+                    m_DialogContainer.RegisterCallback<ClickEvent>(evt => backgroundClicked?.Invoke());
+
+                    m_BoxShadow = m_DialogBoxLayer.rootVisualElement.Q<VisualElement>("box-shadow");
+                    m_BoxShadow.style.scale = Vector2.one;
+                    m_ButtonContainer = m_DialogBoxLayer.rootVisualElement.Q<VisualElement>("button-container");
+
+                    ApplyButtonsDisplaySettings();
                 }
-            }, EventInvokeFlags.Backward);
+                else
+                {
+                    LayerManager.RemoveLayer(m_DialogBoxLayer);
+                    LayerManager.RemoveLayer(m_BackgroundPostProcessingLayer);
+                    m_TitlePlayer.frameIndex = 0;
+                    if (m_PostProcessingLayer != null)
+                    {
+                        LayerManager.RemoveLayer(m_PostProcessingLayer);
+                    }
+                }
+            });
 
             var t1 = m_Player.AddKeyframeTrack((float t) =>
             {
@@ -216,29 +219,35 @@ namespace UI.Boards
 
             m_Player.AddEvent(35, () =>
             {
-                m_DialogBoxLayer.interactable = true;
-                m_TitlePlayer.Play();
-            }, EventInvokeFlags.Forward);
-            m_Player.AddEvent(35, () =>
-            {
-                m_DialogBoxLayer.interactable = false;
-                m_TitlePlayer.Pause();
-            }, EventInvokeFlags.Backward);
+                if (m_Player.playbackSpeed > 0)
+                {
+                    m_DialogBoxLayer.interactable = true;
+                    m_TitlePlayer.Play();
+                }
+                else
+                {
+                    m_DialogBoxLayer.interactable = false;
+                    m_TitlePlayer.Pause();
+                }
+            });
 
             m_TitlePlayer = new KeyframeTrackPlayer();
             m_TitlePlayer.sampling = 60;
 
             m_TitlePlayer.AddEvent(0, () =>
             {
-                m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder + 1);
-                m_PostProcessingLayer.overscan = 8f;
-                m_PostProcessingLayer.maskElement = m_Title;
-                m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
-            }, EventInvokeFlags.Forward);
-            m_TitlePlayer.AddEvent(0, () =>
-            {
-                LayerManager.RemoveLayer(m_PostProcessingLayer);
-            }, EventInvokeFlags.Backward);
+                if (m_Player.playbackSpeed > 0)
+                {
+                    m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder + 1);
+                    m_PostProcessingLayer.overscan = 8f;
+                    m_PostProcessingLayer.maskElement = m_Title;
+                    m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
+                }
+                else
+                {
+                    LayerManager.RemoveLayer(m_PostProcessingLayer);
+                }
+            });
 
             var t5 = m_TitlePlayer.AddKeyframeTrack((float opacity) =>
             {
@@ -266,15 +275,18 @@ namespace UI.Boards
 
             m_TitlePlayer.AddEvent(90, () =>
             {
-                m_PostProcessingLayer.maskElement = m_Title.label;
-                m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
-                m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
-            }, EventInvokeFlags.Forward);
-            m_TitlePlayer.AddEvent(90, () =>
-            {
-                m_PostProcessingLayer.maskElement = m_Title;
-                m_PostProcessingLayer.overscan = 8f;
-            }, EventInvokeFlags.Backward);
+                if (m_Player.playbackSpeed > 0)
+                {
+                    m_PostProcessingLayer.maskElement = m_Title.label;
+                    m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
+                    m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
+                }
+                else
+                {
+                    m_PostProcessingLayer.maskElement = m_Title;
+                    m_PostProcessingLayer.overscan = 8f;
+                }
+            });
 
             var t8 = m_TitlePlayer.AddKeyframeTrack((float opacity) =>
             {
@@ -298,14 +310,17 @@ namespace UI.Boards
 
             m_TitlePlayer.AddEvent(120, () =>
             {
-                LayerManager.RemoveLayer(m_PostProcessingLayer);
-            }, EventInvokeFlags.Forward);
-            m_TitlePlayer.AddEvent(120, () =>
-            {
-                m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder + 1);
-                m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
-                m_PostProcessingLayer.maskElement = m_Title.label;
-            }, EventInvokeFlags.Backward);
+                if (m_Player.playbackSpeed > 0)
+                {
+                    LayerManager.RemoveLayer(m_PostProcessingLayer);
+                }
+                else
+                {
+                    m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder + 1);
+                    m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
+                    m_PostProcessingLayer.maskElement = m_Title.label;
+                }
+            });
         }
 
         void ApplyButtonsDisplaySettings()
