@@ -79,6 +79,7 @@ namespace UI.Boards
 
             // m_StateMachine.SetState(InitialBoard.StateID);
             // m_StateMachine.SetState(TestBoard.StateID);
+            GetBoard<BackgroundBoard>().ShowImmediate();
         }
 
         public static T GetBoard<T>()

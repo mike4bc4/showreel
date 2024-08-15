@@ -18,9 +18,11 @@ namespace UI.Boards
     {
         public static readonly string StateID = Guid.NewGuid().ToString();
 
-        const int k_DisplaySortOrder = 0;
+        const int k_DisplaySortOrder = 1;
+        const string k_TitleElementName = "title";
+        const string k_SubtitleElementName = "subtitle";
 
-        [SerializeField] VisualTreeAsset m_InitialBoardVta;
+        [SerializeField] VisualTreeAsset m_InitialBoardVisualTreeAsset;
 
         KeyframeTrackPlayer m_Player;
         KeyframeTrackPlayer m_SubtitleAnimationPlayer;
@@ -43,14 +45,14 @@ namespace UI.Boards
             {
                 if (m_Player.playbackSpeed > 0)
                 {
-                    m_InitialBoardLayer = LayerManager.CreateLayer(m_InitialBoardVta, displaySortOrder: k_DisplaySortOrder);
+                    m_InitialBoardLayer = LayerManager.CreateLayer(m_InitialBoardVisualTreeAsset, displaySortOrder: k_DisplaySortOrder);
 
-                    m_Title = m_InitialBoardLayer.rootVisualElement.Q<DiamondTitle>("title");
+                    m_Title = m_InitialBoardLayer.rootVisualElement.Q<DiamondTitle>(k_TitleElementName);
                     m_Title.style.opacity = 0f;
                     m_Title.label.style.opacity = 0f;
                     m_Title.animationProgress = 0f;
 
-                    m_Subtitle = m_InitialBoardLayer.rootVisualElement.Q<Subtitle>("subtitle");
+                    m_Subtitle = m_InitialBoardLayer.rootVisualElement.Q<Subtitle>(k_SubtitleElementName);
                     m_Subtitle.style.opacity = 0f;
                     m_Subtitle.animationProgress = 0f;
 
@@ -99,7 +101,13 @@ namespace UI.Boards
                 }
             });
 
-            var t3 = m_Player.AddKeyframeTrack((float progress) => m_Title?.SetAnimationProgress(progress));
+            var t3 = m_Player.AddKeyframeTrack((float animationProgress) =>
+            {
+                if (m_Title != null)
+                {
+                    m_Title.animationProgress = animationProgress;
+                }
+            });
             t3.AddKeyframe(30, 0f);
             t3.AddKeyframe(90, 1f);
 
@@ -198,41 +206,81 @@ namespace UI.Boards
 
         public void ShowImmediate()
         {
+            m_Player.Stop();
+            m_Player.time = m_Player.duration;
 
+            if (m_InitialBoardLayer == null)
+            {
+                m_InitialBoardLayer = LayerManager.CreateLayer(m_InitialBoardVisualTreeAsset, displaySortOrder: k_DisplaySortOrder);
+            }
+
+            if (m_PostProcessingLayer != null)
+            {
+                LayerManager.RemoveLayer(m_PostProcessingLayer);
+            }
+
+            m_Title = m_InitialBoardLayer.rootVisualElement.Q<DiamondTitle>(k_TitleElementName);
+            m_Subtitle = m_InitialBoardLayer.rootVisualElement.Q<Subtitle>(k_SubtitleElementName);
+            m_Player.Update();
+
+            if (m_SubtitleAnimationPlayer.isPlaying)
+            {
+                m_SubtitleAnimationPlayer.Stop();
+            }
+
+            m_SubtitleAnimationPlayer.Play();
         }
 
         public void HideImmediate()
         {
+            m_Player.Stop();
+            m_Player.time = 0;
 
+            if (m_InitialBoardLayer != null)
+            {
+                LayerManager.RemoveLayer(m_InitialBoardLayer);
+            }
+
+            if (m_PostProcessingLayer != null)
+            {
+                LayerManager.RemoveLayer(m_PostProcessingLayer);
+            }
+
+            if (m_SubtitleAnimationPlayer.isPlaying)
+            {
+                m_SubtitleAnimationPlayer.Stop();
+            }
         }
 
-        public UniTask Show(CancellationToken ct = default)
+        public void Show()
         {
-            return UniTask.CompletedTask;
+            m_Player.playbackSpeed = 1f;
+            m_Player.Play();
         }
 
-        public UniTask Hide(CancellationToken ct = default)
+        public void Hide()
         {
-            return UniTask.CompletedTask;
+            m_Player.playbackSpeed = -1;
+            m_Player.Play();
         }
 
         void Update()
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
-                m_Player.playbackSpeed = 1f;
-                m_Player.Play();
+                Show();
             }
             else if (Input.GetKeyDown(KeyCode.D))
             {
-                m_Player.playbackSpeed = -1;
-                m_Player.Play();
+                Hide();
             }
             else if (Input.GetKeyDown(KeyCode.Q))
             {
+                ShowImmediate();
             }
             else if (Input.GetKeyDown(KeyCode.E))
             {
+                HideImmediate();
             }
         }
     }

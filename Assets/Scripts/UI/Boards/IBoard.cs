@@ -8,10 +8,10 @@ namespace UI.Boards
 {
     public interface IBoard
     {
-        public UniTask Show(CancellationToken cancellationToken = default);
-        public UniTask Hide(CancellationToken cancellationToken = default);
-        public void ShowImmediate();
-        public void HideImmediate();
+        // public UniTask Show(CancellationToken cancellationToken = default);
+        // public UniTask Hide(CancellationToken cancellationToken = default);
+        // public void ShowImmediate();
+        // public void HideImmediate();
         public void Init();
     }
 }

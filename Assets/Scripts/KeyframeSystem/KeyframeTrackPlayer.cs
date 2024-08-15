@@ -30,6 +30,11 @@ namespace KeyframeSystem
         bool m_IsPlaying;
         WrapMode m_WrapMode;
 
+        public bool isPlayingForward
+        {
+            get => m_PlaybackSpeed >= 0f;
+        }
+
         public float time
         {
             get => m_Time;
