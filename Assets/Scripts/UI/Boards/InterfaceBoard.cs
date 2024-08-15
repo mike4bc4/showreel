@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using KeyframeSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Utils;
@@ -10,201 +11,103 @@ namespace UI.Boards
 {
     public class InterfaceBoard : Board, IBoard
     {
-        public const int SortingOrder = 1000;   // Sorting order affects UI element picking.
-        public const int DisplayOrder = 1000;   // Display order affects Layer sorting
+        public const int InputSortOrder = 1000;   // Sorting order affects UI element picking.
+        public const int DisplaySortOrder = 1000;   // Display order affects Layer sorting
 
         [SerializeField] VisualTreeAsset m_ControlsVta;
-        [SerializeField] float m_FadeTime;
 
-        Layer m_ControlsLayer;
-        CancellationTokenSource m_Cts;
-        TaskStatus m_Status;
-        int m_StateIndex;
-        TaskPool m_ShowTaskPool;
-        TaskPool m_HideTaskPool;
-
-        CancellationToken token
-        {
-            get => m_Cts.Token;
-        }
+        Layer2 m_ControlsLayer;
+        KeyframeTrackPlayer m_Player;
 
         public void Init()
         {
-            m_ShowTaskPool = new TaskPool();
-            m_HideTaskPool = new TaskPool();
+            m_Player = new KeyframeTrackPlayer();
+            m_Player.sampling = 60;
 
-            m_ControlsLayer = LayerManager.CreateLayer(m_ControlsVta, "InterfaceControls");
-            m_ControlsLayer.displaySortOrder = DisplayOrder;
-            m_ControlsLayer.interactable = false;
-            m_ControlsLayer.alpha = 0f;
-            m_ControlsLayer.blur = Layer.DefaultBlur;
-            m_ControlsLayer.inputSortOrder = SortingOrder;
-
-            m_ShowTaskPool.Add(async () =>
+            m_Player.AddEvent(0, () =>
             {
-                var animation = AnimationManager.Animate(m_ControlsLayer, AnimationDescriptor.AlphaOne);
-                animation.time = m_FadeTime;
-                animation.SetTaskCancellationToken(token);
-                await UniTask.WaitForSeconds(m_FadeTime / 2f, cancellationToken: token);
-                m_StateIndex++;
-            });
-
-            m_HideTaskPool.Add(async () =>
+                m_ControlsLayer = LayerManager2.CreateLayer(m_ControlsVta, displaySortOrder: DisplaySortOrder);
+                m_ControlsLayer.inputSortOrder = InputSortOrder;
+                m_ControlsLayer.interactable = false;
+                m_ControlsLayer.alpha = 0f;
+                m_ControlsLayer.blurSize = Layer2.DefaultBlurSize;
+            }, EventInvokeFlags.Forward);
+            m_Player.AddEvent(0, () =>
             {
-                var animation = AnimationManager.Animate(m_ControlsLayer, AnimationDescriptor.AlphaZero);
-                animation.time = m_FadeTime;
-                await animation.AsTask(token);
-            });
+                LayerManager2.RemoveLayer(m_ControlsLayer);
+            }, EventInvokeFlags.Backward);
 
-            m_ShowTaskPool.Add(async () =>
+            var t1 = m_Player.AddKeyframeTrack((float alpha) =>
             {
-                var animation = AnimationManager.Animate(m_ControlsLayer, AnimationDescriptor.BlurZero);
-                animation.time = m_FadeTime;
-                await animation.AsTask(token);
-                m_StateIndex++;
+                if (m_ControlsLayer != null)
+                {
+                    m_ControlsLayer.alpha = alpha;
+                }
             });
+            t1.AddKeyframe(0, 0f);
+            t1.AddKeyframe(20, 1f);
 
-            m_HideTaskPool.Add(async () =>
+            var t2 = m_Player.AddKeyframeTrack((float blurSize) =>
             {
-                var animation = AnimationManager.Animate(m_ControlsLayer, AnimationDescriptor.BlurDefault);
-                animation.time = m_FadeTime;
-                animation.SetTaskCancellationToken(token);
-                await UniTask.WaitForSeconds(m_FadeTime / 2f, cancellationToken: token);
-                m_StateIndex--;
+                if (m_ControlsLayer != null)
+                {
+                    m_ControlsLayer.blurSize = blurSize;
+                }
             });
+            t2.AddKeyframe(10, Layer2.DefaultBlurSize);
+            t2.AddKeyframe(30, 0f);
 
-            m_ShowTaskPool.Add(() =>
+            m_Player.AddEvent(30, () =>
             {
                 m_ControlsLayer.interactable = true;
-            });
-
-            m_HideTaskPool.Add(() =>
+            }, EventInvokeFlags.Forward);
+            m_Player.AddEvent(30, () =>
             {
                 m_ControlsLayer.interactable = false;
-                m_StateIndex--;
-            });
+            }, EventInvokeFlags.Backward);
         }
 
-        void Stop()
-        {
-            if (m_Cts != null)
-            {
-                m_Cts.Cancel();
-                m_Cts.Dispose();
-                m_Cts = null;
-            }
-        }
 
         public void ShowImmediate()
         {
-            Stop();
-            m_Cts = new CancellationTokenSource();
-            UniTask.Action(async () =>
-            {
-                if (!m_Status.IsCompleted())
-                {
-                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
-                }
 
-                m_Status.SetPending();
-                m_StateIndex = m_ShowTaskPool.length - 1;
-                m_ControlsLayer.interactable = true;
-                m_ControlsLayer.alpha = 1f;
-                m_ControlsLayer.blur = 0f;
-                m_Status.SetCompleted();
-            })();
         }
 
         public void HideImmediate()
         {
-            Stop();
-            m_Cts = new CancellationTokenSource();
-            UniTask.Action(async () =>
-            {
-                if (!m_Status.IsCompleted())
-                {
-                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
-                }
 
-                m_Status.SetPending();
-                m_StateIndex = 0;
-                m_ControlsLayer.interactable = false;
-                m_ControlsLayer.alpha = 0f;
-                m_ControlsLayer.blur = 1f;
-                m_Status.SetCompleted();
-            })();
         }
 
         public UniTask Show(CancellationToken cancellationToken = default)
         {
-            Stop();
-            m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
-            var task = UniTask.Create(async () =>
-            {
-                if (!m_Status.IsCompleted())
-                {
-                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
-                }
-
-                m_Status.SetPending();
-
-                try
-                {
-                    await UniTask.NextFrame(token).Chain(m_ShowTaskPool.GetRange(m_StateIndex, m_ShowTaskPool.length - m_StateIndex));
-                }
-                finally
-                {
-                    m_Status.SetCompleted();
-                }
-            });
-
-            return task;
+            return UniTask.CompletedTask;
         }
 
         public UniTask Hide(CancellationToken cancellationToken = default)
         {
-            Stop();
-            m_Cts = cancellationToken != default ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken) : new CancellationTokenSource();
-            var task = UniTask.Create(async () =>
-            {
-                if (!m_Status.IsCompleted())
-                {
-                    await UniTask.WaitUntil(() => m_Status.IsCompleted(), cancellationToken: token);
-                }
-
-                m_Status.SetPending();
-                var functions = m_HideTaskPool.GetRange(0, m_StateIndex + 1);
-                functions.Reverse();
-
-                try
-                {
-                    await UniTask.NextFrame(token).Chain(functions);
-                }
-                finally
-                {
-                    m_Status.SetCompleted();
-                }
-            });
-
-            return task;
+            return UniTask.CompletedTask;
         }
 
-        IEnumerator Start()
+        void Update()
         {
-            yield return new WaitForSeconds(0.5f);
-            Show(default(CancellationToken));
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                m_Player.playbackSpeed = 1f;
+                m_Player.Play();
+            }
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                m_Player.playbackSpeed = -1f;
+                m_Player.Play();
+            }
+            else if (Input.GetKeyDown(KeyCode.Q))
+            {
+                ShowImmediate();
+            }
+            else if (Input.GetKeyDown(KeyCode.E))
+            {
+                HideImmediate();
+            }
         }
-
-        // void Update()
-        // {
-        //     if (Input.GetKeyDown(KeyCode.Z))
-        //     {
-        //         Show(default(CancellationToken));
-        //     }
-        //     else if (Input.GetKeyDown(KeyCode.C))
-        //     {
-        //         Hide(default(CancellationToken));
-        //     }
-        // }
     }
 }

@@ -31,7 +31,7 @@ namespace UI.Boards
 
         public void Init()
         {
-            LayerManager.CreateLayer(m_DiamondFrameVta, "DiamondFrameLayer");
+            // LayerManager.CreateLayer(m_DiamondFrameVta, "DiamondFrameLayer");
         }
 
         public UniTask Show(CancellationToken cancellationToken = default)

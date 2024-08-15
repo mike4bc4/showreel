@@ -3,28 +3,39 @@ using System.Collections.Generic;
 using CustomControls;
 using UI;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 public class Test : MonoBehaviour
 {
-    [SerializeField] VisualTreeAsset m_EmptyVta;
+    [SerializeField] RenderTexture renderTexture;
+    [SerializeField] RenderTexture renderTexture2;
+    [SerializeField] Material postProcessingMaterial;
+    [SerializeField] Material postProcessingMaterial2;
+    [SerializeField] Material postProcessingMaterial3;
 
-    [ContextMenu("Test")]
-    void A()
+
+    [ContextMenu("TEST")]
+    void Foo()
     {
-        var layer = GetComponent<Layer>();
-        layer.Init();
-        // var maskFiler = new MaskFilter();
-        // layer.filter = maskFiler;
+        var camera = GetComponent<Camera>();
+        camera.RemoveAllCommandBuffers();
 
-        var title = layer.rootVisualElement.Q<DiamondTitle>("title");
-        var maskTexture = TextureEditor.CreateMask(layer.rootVisualElement.layout.size, invert: true, title.worldBound);
-        // maskFiler.alphaTexture = maskTexture;
+        var commandBuffer = new CommandBuffer();
+        commandBuffer.ClearRenderTarget(true, true, Color.clear);
 
-        var snapshotLayer = LayerManager.CreateLayer(m_EmptyVta, "SnapshotLayer");
-        // var snapshot = layer.CreateSnapshot(title);
-        // snapshotLayer.rootVisualElement.Add(snapshot);
-        // snapshotLayer.filter = new BlurFilter();
+        var rt = RenderTexture.GetTemporary(camera.pixelWidth, camera.pixelHeight);
+        commandBuffer.Blit(renderTexture, rt, postProcessingMaterial);
+        commandBuffer.Blit(renderTexture2, rt, postProcessingMaterial2);
+
+
+
+        commandBuffer.Blit(rt, Camera.main.targetTexture);
+
+
+        camera.AddCommandBuffer(CameraEvent.AfterEverything, commandBuffer);
+
+        RenderTexture.ReleaseTemporary(rt);
     }
 }

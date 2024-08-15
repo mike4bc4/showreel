@@ -19,12 +19,12 @@ namespace UI.Boards
 
     public class DialogBoard : Board, IBoard
     {
-        public const int DisplaySortOrder = InterfaceBoard.DisplayOrder + 1000; // In front of InterfaceBoard as Layer
-        public const int InputSortOrder = InterfaceBoard.SortingOrder + 1000; // In front of InterfaceBoard as UIDocument
+        public const int DisplaySortOrder = InterfaceBoard.DisplaySortOrder + 1000; // In front of InterfaceBoard as Layer
+        public const int InputSortOrder = InterfaceBoard.InputSortOrder + 1000; // In front of InterfaceBoard as UIDocument
 
         const string k_SingleButtonVariantButtonContainerUssClassName = "dialog__box__button-container--single-button";
         const float k_PopupScale = 0.95f;
-        static readonly Color s_EffectLayerColor = Color.white * 0.7f;
+        static readonly Color s_EffectLayerColor = new Color(0.85f, 0.85f, 0.85f, 1f);
         static readonly string s_EffectLayerName = $"EffectLayer({Guid.NewGuid().ToString("N")})";
 
         public event Action leftButtonClicked;
@@ -33,8 +33,9 @@ namespace UI.Boards
 
         [SerializeField] VisualTreeAsset m_DialogBoxVta;
 
-        Layer m_DialogBoxLayer;
-        EffectLayer m_EffectLayer;
+        Layer2 m_DialogBoxLayer;
+        PostProcessingLayer m_BackgroundPostProcessingLayer;
+        PostProcessingLayer m_PostProcessingLayer;
         ScrollBox m_ScrollBox;
         DiamondTitle m_Title;
         Button m_LeftButton;
@@ -45,8 +46,9 @@ namespace UI.Boards
         VisualElement m_BoxShadow;
         VisualElement m_ButtonContainer;
         ButtonsDisplay m_ButtonsDisplay;
-        KeyframeTrackPlayer m_ShowPlayer;
+        KeyframeTrackPlayer m_Player;
         KeyframeTrackPlayer m_HidePlayer;
+        KeyframeTrackPlayer m_TitlePlayer;
 
         string m_TitleText;
         string m_LeftButtonLabelText;
@@ -72,7 +74,7 @@ namespace UI.Boards
             set
             {
                 m_TitleText = value;
-                if (m_DialogBoxLayer != null && m_DialogBoxLayer.active)
+                if (m_DialogBoxLayer != null)
                 {
                     m_Title.text = m_TitleText;
                 }
@@ -85,7 +87,7 @@ namespace UI.Boards
             set
             {
                 m_LeftButtonLabelText = value;
-                if (m_DialogBoxLayer != null && m_DialogBoxLayer.active)
+                if (m_DialogBoxLayer != null)
                 {
                     m_LeftButtonLabel.text = m_LeftButtonLabelText;
                 }
@@ -98,7 +100,7 @@ namespace UI.Boards
             set
             {
                 m_RightButtonLabelText = value;
-                if (m_DialogBoxLayer != null && m_DialogBoxLayer.active)
+                if (m_DialogBoxLayer != null)
                 {
                     m_RightButtonLabel.text = m_RightButtonLabelText;
                 }
@@ -117,30 +119,26 @@ namespace UI.Boards
             m_RightButtonLabelText = "Cancel";
             m_ContentContainer = new VisualElement() { name = "dialog-content-container" };
 
-            m_ShowPlayer = new KeyframeTrackPlayer();
-            m_ShowPlayer.sampling = 60;
+            m_Player = new KeyframeTrackPlayer();
+            m_Player.sampling = 60;
 
-            m_ShowPlayer.AddEvent(0, () =>
+            m_Player.AddEvent(0, () =>
             {
-                m_DialogBoxLayer = LayerManager.CreateLayer(m_DialogBoxVta);
+                m_DialogBoxLayer = LayerManager2.CreateLayer(m_DialogBoxVta, displaySortOrder: DisplaySortOrder);
                 m_DialogBoxLayer.alpha = 0f;
-                m_DialogBoxLayer.displaySortOrder = DisplaySortOrder;
                 m_DialogBoxLayer.inputSortOrder = InputSortOrder;
                 m_DialogBoxLayer.interactable = false;
                 m_DialogBoxLayer.blocksRaycasts = true;
 
-                m_EffectLayer = LayerManager.CreateEffectLayer(s_EffectLayerName);
-                m_EffectLayer.color = Color.white;
-                m_EffectLayer.alpha = 1f;
-                m_EffectLayer.displaySortOrder = DisplaySortOrder - 1;
+                m_BackgroundPostProcessingLayer = LayerManager2.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder - 1);
 
                 m_ScrollBox = m_DialogBoxLayer.rootVisualElement.Q<ScrollBox>("scroll-box");
                 m_ScrollBox.Clear();
                 m_ScrollBox.Add(contentContainer);
 
                 m_Title = m_DialogBoxLayer.rootVisualElement.Q<DiamondTitle>("title");
-                m_Title.visible = false;
-                m_Title.label.visible = false;
+                m_Title.style.opacity = 0f;
+                m_Title.label.style.opacity = 0f;
                 m_Title.animationProgress = 0f;
                 m_Title.text = m_TitleText;
 
@@ -165,16 +163,38 @@ namespace UI.Boards
 
                 ApplyButtonsDisplaySettings();
             }, EventInvokeFlags.Forward);
+            m_Player.AddEvent(0, () =>
+            {
+                LayerManager2.RemoveLayer(m_DialogBoxLayer);
+                LayerManager2.RemoveLayer(m_BackgroundPostProcessingLayer);
+                m_TitlePlayer.frameIndex = 0;
+                if (m_PostProcessingLayer != null)
+                {
+                    LayerManager2.RemoveLayer(m_PostProcessingLayer);
+                }
+            }, EventInvokeFlags.Backward);
 
-            var t1 = m_ShowPlayer.AddKeyframeTrack((float t) => m_EffectLayer?.SetColor(Color.Lerp(Color.white, s_EffectLayerColor, t)));
+            var t1 = m_Player.AddKeyframeTrack((float t) =>
+            {
+                if (m_BackgroundPostProcessingLayer != null)
+                {
+                    m_BackgroundPostProcessingLayer.tint = Color.Lerp(Color.white, s_EffectLayerColor, t);
+                }
+            });
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(30, 1f);
 
-            var t2 = m_ShowPlayer.AddKeyframeTrack((float blur) => m_EffectLayer?.SetBlur(blur));
+            var t2 = m_Player.AddKeyframeTrack((float blurSize) =>
+            {
+                if (m_BackgroundPostProcessingLayer != null)
+                {
+                    m_BackgroundPostProcessingLayer.blurSize = blurSize;
+                }
+            });
             t2.AddKeyframe(0, 0f);
             t2.AddKeyframe(30, Layer.DefaultBlur);
 
-            var t3 = m_ShowPlayer.AddKeyframeTrack((float scaleMultiplier) =>
+            var t3 = m_Player.AddKeyframeTrack((float scaleMultiplier) =>
             {
                 if (m_BoxShadow != null)
                 {
@@ -184,105 +204,108 @@ namespace UI.Boards
             t3.AddKeyframe(20, k_PopupScale);
             t3.AddKeyframe(35, 1f);
 
-            var t4 = m_ShowPlayer.AddKeyframeTrack((float alpha) => m_DialogBoxLayer?.SetAlpha(alpha));
+            var t4 = m_Player.AddKeyframeTrack((float alpha) =>
+            {
+                if (m_DialogBoxLayer != null)
+                {
+                    m_DialogBoxLayer.alpha = alpha;
+                }
+            });
             t4.AddKeyframe(20, 0f);
             t4.AddKeyframe(35, 1f);
 
-            m_ShowPlayer.AddEvent(35, () =>
+            m_Player.AddEvent(35, () =>
             {
                 m_DialogBoxLayer.interactable = true;
-                var effectLayer = m_DialogBoxLayer.AddElementEffectLayer(m_Title);
-                effectLayer.blurSize = Layer.DefaultBlur;
-                effectLayer.overscan = new Overscan(8f);
-                m_Title.style.opacity = 0f;
-                m_Title.visible = true;
+                m_TitlePlayer.Play();
             }, EventInvokeFlags.Forward);
+            m_Player.AddEvent(35, () =>
+            {
+                m_DialogBoxLayer.interactable = false;
+                m_TitlePlayer.Pause();
+            }, EventInvokeFlags.Backward);
 
-            var t5 = m_ShowPlayer.AddKeyframeTrack((float opacity) =>
+            m_TitlePlayer = new KeyframeTrackPlayer();
+            m_TitlePlayer.sampling = 60;
+
+            m_TitlePlayer.AddEvent(0, () =>
+            {
+                m_PostProcessingLayer = LayerManager2.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder + 1);
+                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.maskElement = m_Title;
+                m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
+            }, EventInvokeFlags.Forward);
+            m_TitlePlayer.AddEvent(0, () =>
+            {
+                LayerManager2.RemoveLayer(m_PostProcessingLayer);
+            }, EventInvokeFlags.Backward);
+
+            var t5 = m_TitlePlayer.AddKeyframeTrack((float opacity) =>
             {
                 if (m_Title != null)
                 {
                     m_Title.style.opacity = opacity;
                 }
             });
-            t5.AddKeyframe(35, 0f);
-            t5.AddKeyframe(55, 1f);
+            t5.AddKeyframe(0, 0f);
+            t5.AddKeyframe(20, 1f);
 
-            var t6 = m_ShowPlayer.AddKeyframeTrack((float blur) => m_DialogBoxLayer?.GetElementEffectLayer(m_Title)?.SetBlurSize(blur));
-            t6.AddKeyframe(45, Layer.DefaultBlur);
-            t6.AddKeyframe(65, 0f);
-
-            m_ShowPlayer.AddEvent(65, () =>
+            var t6 = m_TitlePlayer.AddKeyframeTrack((float blurSize) =>
             {
-                m_DialogBoxLayer.RemoveElementEffectLayer(m_Title);
-            }, EventInvokeFlags.Forward);
+                if (m_PostProcessingLayer != null)
+                {
+                    m_PostProcessingLayer.blurSize = blurSize;
+                }
+            });
+            t6.AddKeyframe(10, BaseLayer.DefaultBlurSize);
+            t6.AddKeyframe(30, 0f);
 
-            var t7 = m_ShowPlayer.AddKeyframeTrack((float progress) => m_Title?.SetAnimationProgress(progress));
-            t7.AddKeyframe(65, 0f);
-            t7.AddKeyframe(125, 1f);
+            var t7 = m_TitlePlayer.AddKeyframeTrack((float animationProgress) => m_Title?.SetAnimationProgress(animationProgress));
+            t7.AddKeyframe(30, 0f);
+            t7.AddKeyframe(90, 1f);
 
-            m_ShowPlayer.AddEvent(125, () =>
+            m_TitlePlayer.AddEvent(90, () =>
             {
-                var effectLayer = m_DialogBoxLayer.AddElementEffectLayer(m_Title.label);
-                effectLayer.blurSize = Layer.DefaultBlur;
-                m_Title.label.style.opacity = 0f;
-                m_Title.label.visible = true;
+                m_PostProcessingLayer.maskElement = m_Title.label;
+                m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
+                m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
             }, EventInvokeFlags.Forward);
+            m_TitlePlayer.AddEvent(90, () =>
+            {
+                m_PostProcessingLayer.maskElement = m_Title;
+                m_PostProcessingLayer.overscan = 8f;
+            }, EventInvokeFlags.Backward);
 
-            var t8 = m_ShowPlayer.AddKeyframeTrack((float opacity) =>
+            var t8 = m_TitlePlayer.AddKeyframeTrack((float opacity) =>
             {
                 if (m_Title?.label != null)
                 {
                     m_Title.label.style.opacity = opacity;
                 }
             });
-            t8.AddKeyframe(125, 0f);
-            t8.AddKeyframe(145, 1f);
+            t8.AddKeyframe(90, 0f);
+            t8.AddKeyframe(110, 1f);
 
-            var t9 = m_ShowPlayer.AddKeyframeTrack((float blur) => m_DialogBoxLayer?.GetElementEffectLayer(m_Title.label)?.SetBlurSize(blur));
-            t9.AddKeyframe(135, Layer.DefaultBlur);
-            t9.AddKeyframe(155, 0f);
-
-            m_ShowPlayer.AddEvent(155, () =>
+            var t9 = m_TitlePlayer.AddKeyframeTrack((float blurSize) =>
             {
-                m_DialogBoxLayer.RemoveElementEffectLayer(m_Title.label);
-            }, EventInvokeFlags.Forward);
-
-            m_HidePlayer = new KeyframeTrackPlayer();
-            m_HidePlayer.sampling = 60;
-
-            m_HidePlayer.AddEvent(0, () =>
-            {
-                m_ShowPlayer.Pause();
-            }, EventInvokeFlags.Forward);
-
-            var t10 = m_HidePlayer.AddKeyframeTrack((float alpha) => m_DialogBoxLayer?.SetAlpha(alpha));
-            t10.AddKeyframe(0, 1f);
-            t10.AddKeyframe(15, 0f);
-
-            var t11 = m_HidePlayer.AddKeyframeTrack((float scaleMultiplier) =>
-            {
-                if (m_BoxShadow != null)
+                if (m_PostProcessingLayer != null)
                 {
-                    m_BoxShadow.style.scale = Vector2.one * scaleMultiplier;
+                    m_PostProcessingLayer.blurSize = blurSize;
                 }
             });
-            t11.AddKeyframe(0, 1f);
-            t11.AddKeyframe(15, k_PopupScale);
+            t9.AddKeyframe(100, BaseLayer.DefaultBlurSize);
+            t9.AddKeyframe(120, 0f);
 
-            var t12 = m_HidePlayer.AddKeyframeTrack((float t) => m_EffectLayer?.SetColor(Color.Lerp(Color.white, s_EffectLayerColor, t)));
-            t12.AddKeyframe(5, 1f);
-            t12.AddKeyframe(35, 0f);
-
-            var t13 = m_HidePlayer.AddKeyframeTrack((float blur) => m_EffectLayer?.SetBlur(blur));
-            t13.AddKeyframe(5, Layer.DefaultBlur);
-            t13.AddKeyframe(35, 0f);
-
-            m_HidePlayer.AddEvent(35, () =>
+            m_TitlePlayer.AddEvent(120, () =>
             {
-                LayerManager.RemoveLayer(m_DialogBoxLayer);
-                LayerManager.RemoveLayer(m_EffectLayer);
+                LayerManager2.RemoveLayer(m_PostProcessingLayer);
             }, EventInvokeFlags.Forward);
+            m_TitlePlayer.AddEvent(120, () =>
+            {
+                m_PostProcessingLayer = LayerManager2.CreatePostProcessingLayer(displaySortOrder: DisplaySortOrder + 1);
+                m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
+                m_PostProcessingLayer.maskElement = m_Title.label;
+            }, EventInvokeFlags.Backward);
         }
 
         void ApplyButtonsDisplaySettings()
@@ -324,15 +347,13 @@ namespace UI.Boards
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
-                m_ShowPlayer.frameIndex = 0;
-                m_ShowPlayer.playbackSpeed = 1f;
-                m_ShowPlayer.Play();
+                m_Player.playbackSpeed = 1f;
+                m_Player.Play();
             }
             else if (Input.GetKeyDown(KeyCode.D))
             {
-                m_HidePlayer.frameIndex = 0;
-                m_HidePlayer.playbackSpeed = 1f;
-                m_HidePlayer.Play();
+                m_Player.playbackSpeed = -1f;
+                m_Player.Play();
             }
             else if (Input.GetKeyDown(KeyCode.Q))
             {

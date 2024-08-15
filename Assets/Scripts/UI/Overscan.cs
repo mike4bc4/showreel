@@ -33,5 +33,6 @@ namespace UI
         }
 
         public static implicit operator Vector4(Overscan os) => new Vector4(os.north, os.east, os.south, os.west);
+        public static implicit operator Overscan(float value) => new Overscan(value);
     }
 }

@@ -21,14 +21,17 @@ public class ListBoard : Board, IBoard
     public const string TitleSnapshotLayerName = "TitleSnapshotLayer";
     public const string TitleLabelSnapshotLayerName = "TitleLabelSnapshotLayer";
     public const string ScrollBoxSnapshotLayerName = "ScrollBoxSnapshotLayer";
-    public const string VideoPlayerName = "VideoPlayer";
     public const string ListElementSnapshotLayerName = "ListElementSnapshotLayerName";
+
+    const int k_DisplaySortOrder = 0;
+    const string k_VideoPlayerName = "VideoPlayer";
 
     [SerializeField] VisualTreeAsset m_ListBoard;
     [SerializeField] VideoClip m_VideoClip;
     [SerializeField] int m_ListElementCount;
 
-    Layer m_ListBoardLayer;
+    Layer2 m_ListBoardLayer;
+    PostProcessingLayer m_PostProcessingLayer;
     KeyframeTrackPlayer m_Player;
 
     VisualElement m_FrameViewport;
@@ -47,150 +50,131 @@ public class ListBoard : Board, IBoard
         m_ListElements = new List<ListElement>();
         m_Player = new KeyframeTrackPlayer();
         m_Player.sampling = 60;
-        Application.targetFrameRate = 120;
 
         m_Player.AddEvent(0, () =>
         {
-            m_ListBoardLayer = LayerManager.CreateLayer(m_ListBoard, "ListBoardLayer");
-            m_ListBoardLayer.alpha = 0f;
+            m_ListBoardLayer = LayerManager2.CreateLayer(m_ListBoard, displaySortOrder: k_DisplaySortOrder);
             m_ListBoardLayer.blocksRaycasts = true;
             m_ListBoardLayer.interactable = false;
 
             m_FrameViewport = m_ListBoardLayer.rootVisualElement.Q("frame-viewport");
             m_TitleViewport = m_ListBoardLayer.rootVisualElement.Q("title-viewport");
-
             m_ListViewport = m_ListBoardLayer.rootVisualElement.Q("list-viewport");
-            m_ListViewport.visible = false;
+
+            m_Frame = m_FrameViewport.Q<DiamondFrameVertical>();
+            m_Frame.animationProgress = 0f;
+            m_Frame.style.opacity = 0f;
+            m_Frame.contentContainer.style.opacity = 0f;
+            m_VideoElement = m_Frame.contentContainer.Q("video");
 
             m_FrameSpacer = m_FrameViewport.Q("spacer-left");
             m_FrameSpacer.style.flexGrow = 0.5f;
 
-            m_Frame = m_FrameViewport.Q<DiamondFrameVertical>();
-            m_Frame.animationProgress = 0f;
-            m_Frame.contentContainer.visible = false;
-            m_VideoElement = m_Frame.contentContainer.Q("video");
-
             m_Title = m_TitleViewport.Q<DiamondTitle>();
             m_Title.animationProgress = 0f;
-            m_Title.label.visible = false;
+            m_Title.style.opacity = 0f;
+            m_Title.label.style.opacity = 0f;
 
             m_ScrollBox = m_ListViewport.Query<ScrollBox>();
-            m_ScrollBox.visible = false;
+            m_ScrollBox.style.opacity = 0f;
 
             m_ListElements = m_ListViewport.Query<ListElement>().ToList();
             foreach (var element in m_ListElements)
             {
                 element.bullet.animationProgress = 0f;
                 element.bullet.visible = false;
-                element.button.visible = false;
+                element.button.style.opacity = 0f;
             }
+
+            m_PostProcessingLayer = LayerManager2.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
+            m_PostProcessingLayer.maskElement = m_Frame;
+            m_PostProcessingLayer.overscan = 8f;
+            m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
         }, EventInvokeFlags.Forward);
         m_Player.AddEvent(0, () =>
         {
-            m_ListBoardLayer.MaskElements(m_Title, m_Frame);
-            m_ListBoardLayer.alpha = 1f;
-            var layer = m_ListBoardLayer.CreateSnapshotLayer(m_Frame, FrameSnapshotLayerName);
-            layer.alpha = 0f;
-            layer.blur = Layer.DefaultBlur;
-        }, EventInvokeFlags.Forward, 1);
-
-        m_Player.AddEvent(0, () =>
-        {
-            LayerManager.RemoveLayer(m_ListBoardLayer);
-        }, EventInvokeFlags.Backward, 1);
-        m_Player.AddEvent(0, () =>
-        {
-            m_ListBoardLayer.UnmaskElements();
-            m_ListBoardLayer.alpha = 0f;
-            LayerManager.RemoveLayer(FrameSnapshotLayerName);
+            LayerManager2.RemoveLayer(m_ListBoardLayer);
+            LayerManager2.RemoveLayer(m_PostProcessingLayer);
         }, EventInvokeFlags.Backward);
 
-        var t1 = m_Player.AddKeyframeTrack((float alpha) => LayerManager.GetLayer(FrameSnapshotLayerName)?.SetAlpha(alpha));
+        var t1 = m_Player.AddKeyframeTrack((float opacity) =>
+        {
+            if (m_Frame != null)
+            {
+                m_Frame.style.opacity = opacity;
+            }
+        });
         t1.AddKeyframe(0, 0f);
         t1.AddKeyframe(20, 1f);
 
-        var t2 = m_Player.AddKeyframeTrack((float blur) => LayerManager.GetLayer(FrameSnapshotLayerName)?.SetBlur(blur));
-        t2.AddKeyframe(10, Layer.DefaultBlur);
+        var t2 = m_Player.AddKeyframeTrack((float blurSize) =>
+        {
+            if (m_PostProcessingLayer != null)
+            {
+                m_PostProcessingLayer.blurSize = blurSize;
+            }
+        });
+        t2.AddKeyframe(10, PostProcessingLayer.DefaultBlurSize);
         t2.AddKeyframe(30, 0f);
 
         m_Player.AddEvent(30, () =>
         {
-            LayerManager.RemoveLayer(FrameSnapshotLayerName);
-            m_ListBoardLayer.UnmaskElements(m_Frame);
+            m_PostProcessingLayer.maskElement = null;
         }, EventInvokeFlags.Forward);
-
         m_Player.AddEvent(30, () =>
         {
-            m_ListBoardLayer.CreateSnapshotLayer(m_Frame, FrameSnapshotLayerName);
+            m_PostProcessingLayer.maskElement = m_Frame;
         }, EventInvokeFlags.Backward);
-        m_Player.AddEvent(30, () =>
-        {
-            m_ListBoardLayer.MaskElements(m_Frame);
-        }, EventInvokeFlags.Backward, 1);
 
-        var t3 = m_Player.AddKeyframeTrack((float progress) => m_Frame?.SetAnimationProgress(progress));
+        var t3 = m_Player.AddKeyframeTrack((float animationProgress) =>
+        {
+            if (m_Frame != null)
+            {
+                m_Frame.animationProgress = animationProgress;
+            }
+        });
         t3.AddKeyframe(30, 0f);
         t3.AddKeyframe(120, 1f);
 
         m_Player.AddEvent(120, () =>
         {
-            m_ListBoardLayer.MaskElements(m_Frame.contentContainer);
-            m_Frame.contentContainer.visible = true;
+            var videoPlayer = VideoPlayerManager.CreatePlayer(m_VideoClip, k_VideoPlayerName);
+            videoPlayer.Play();
+            m_VideoElement.style.backgroundImage = Background.FromRenderTexture(videoPlayer.targetTexture);
+
+            m_PostProcessingLayer.maskElement = m_VideoElement;
+            m_PostProcessingLayer.overscan = 8f;
+            m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
         }, EventInvokeFlags.Forward);
         m_Player.AddEvent(120, () =>
         {
-            var layer = m_ListBoardLayer.CreateSnapshotLayer(m_Frame.contentContainer, FrameContentContainerSnapshotLayerName);
-            layer.alpha = 0f;
-            layer.blur = Layer.DefaultBlur;
-        }, EventInvokeFlags.Forward, 1);
-        m_Player.AddEvent(120, () =>
-        {
-            var videoPlayer = VideoPlayerManager.CreatePlayer(m_VideoClip, VideoPlayerName);
-            videoPlayer.Play();
-            var layer = (Layer)LayerManager.GetLayer(FrameContentContainerSnapshotLayerName);
-            var snapshot = layer.rootVisualElement.Q("snapshot");
-            snapshot.style.backgroundImage = Background.FromRenderTexture(videoPlayer.targetTexture);
-        }, EventInvokeFlags.Forward, 2);
+            VideoPlayerManager.RemovePlayer(k_VideoPlayerName);
+            m_VideoElement.style.backgroundImage = null;
 
-        m_Player.AddEvent(120, () =>
-        {
-            m_ListBoardLayer.UnmaskElements(m_Frame.contentContainer);
-        }, EventInvokeFlags.Backward, 1);
-        m_Player.AddEvent(120, () =>
-        {
-            VideoPlayerManager.RemovePlayer(VideoPlayerName);
-            LayerManager.RemoveLayer(FrameContentContainerSnapshotLayerName);
-            m_Frame.contentContainer.visible = false;
+            m_PostProcessingLayer.maskElement = null;
+            m_PostProcessingLayer.overscan = 8f;
+            m_PostProcessingLayer.blurSize = 0f;
         }, EventInvokeFlags.Backward);
 
-        var t4 = m_Player.AddKeyframeTrack((float alpha) => LayerManager.GetLayer(FrameContentContainerSnapshotLayerName)?.SetAlpha(alpha));
+        var t4 = m_Player.AddKeyframeTrack((float opacity) =>
+        {
+            if (m_Frame != null)
+            {
+                m_Frame.contentContainer.style.opacity = opacity;
+            }
+        });
         t4.AddKeyframe(120, 0f);
         t4.AddKeyframe(140, 1f);
 
-        var t5 = m_Player.AddKeyframeTrack((float blur) => LayerManager.GetLayer(FrameContentContainerSnapshotLayerName)?.SetBlur(blur));
-        t5.AddKeyframe(130, Layer.DefaultBlur);
+        var t5 = m_Player.AddKeyframeTrack((float blurSize) =>
+        {
+            if (m_PostProcessingLayer != null)
+            {
+                m_PostProcessingLayer.blurSize = blurSize;
+            }
+        });
+        t5.AddKeyframe(130, PostProcessingLayer.DefaultBlurSize);
         t5.AddKeyframe(150, 0f);
-
-        m_Player.AddEvent(150, () =>
-        {
-            var videoPlayer = VideoPlayerManager.GetPlayer(VideoPlayerName);
-            m_VideoElement.style.backgroundImage = Background.FromRenderTexture(videoPlayer.targetTexture);
-        }, EventInvokeFlags.Forward);
-        m_Player.AddEvent(150, () =>
-        {
-            LayerManager.RemoveLayer(FrameContentContainerSnapshotLayerName);
-            m_ListBoardLayer.UnmaskElements(m_Frame.contentContainer);
-        }, EventInvokeFlags.Forward, 1);
-
-        m_Player.AddEvent(150, () =>
-        {
-            m_ListBoardLayer.MaskElements(m_Frame.contentContainer);
-            m_VideoElement.style.backgroundImage = null;
-        }, EventInvokeFlags.Backward, 1);
-        m_Player.AddEvent(150, () =>
-        {
-            m_ListBoardLayer.CreateSnapshotLayer(m_Frame.contentContainer, FrameContentContainerSnapshotLayerName);
-        }, EventInvokeFlags.Backward);
 
         var t6 = m_Player.AddKeyframeTrack((float flexGrow) =>
         {
@@ -204,209 +188,196 @@ public class ListBoard : Board, IBoard
 
         m_Player.AddEvent(195, () =>
         {
-            m_ScrollBox.visible = true;
-            m_ListBoardLayer.MaskElements(m_ScrollBox);
+            m_PostProcessingLayer.maskElement = m_ScrollBox;
+            m_PostProcessingLayer.overscan = 8f;
+            m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
         }, EventInvokeFlags.Forward);
         m_Player.AddEvent(195, () =>
         {
-            var layer = m_ListBoardLayer.CreateSnapshotLayer(m_ScrollBox, ScrollBoxSnapshotLayerName);
-            layer.alpha = 0f;
-            layer.blur = Layer.DefaultBlur;
-        }, EventInvokeFlags.Forward, 1);
-
-        m_Player.AddEvent(195, () =>
-        {
-            LayerManager.RemoveLayer(ScrollBoxSnapshotLayerName);
-            m_ListBoardLayer.UnmaskElements(m_ScrollBox);
-        }, EventInvokeFlags.Backward, 1);
-        m_Player.AddEvent(195, () =>
-        {
-            m_ScrollBox.visible = false;
+            m_PostProcessingLayer.maskElement = m_VideoElement;
+            m_PostProcessingLayer.overscan = 8f;
+            m_PostProcessingLayer.blurSize = 0f;
         }, EventInvokeFlags.Backward);
 
-        var t7 = m_Player.AddKeyframeTrack((float alpha) => LayerManager.GetLayer(ScrollBoxSnapshotLayerName)?.SetAlpha(alpha));
+        var t7 = m_Player.AddKeyframeTrack((float opacity) =>
+        {
+            if (m_ScrollBox != null)
+            {
+                m_ScrollBox.style.opacity = opacity;
+            }
+        });
         t7.AddKeyframe(195, 0f);
         t7.AddKeyframe(215, 1f);
 
-        var t8 = m_Player.AddKeyframeTrack((float blur) => LayerManager.GetLayer(ScrollBoxSnapshotLayerName)?.SetBlur(blur));
-        t8.AddKeyframe(205, Layer.DefaultBlur);
+        var t8 = m_Player.AddKeyframeTrack((float blurSize) =>
+        {
+            if (m_PostProcessingLayer != null)
+            {
+                m_PostProcessingLayer.blurSize = blurSize;
+            }
+        });
+        t8.AddKeyframe(205, PostProcessingLayer.DefaultBlurSize);
         t8.AddKeyframe(225, 0f);
 
-        m_Player.AddEvent(225, () =>
-        {
-            LayerManager.RemoveLayer(ScrollBoxSnapshotLayerName);
-            m_ListBoardLayer.UnmaskElements(m_ScrollBox);
-        }, EventInvokeFlags.Forward);
-
-        m_Player.AddEvent(225, () =>
-        {
-            m_ListBoardLayer.MaskElements(m_ScrollBox);
-        }, EventInvokeFlags.Backward, 2);
-        m_Player.AddEvent(225, () =>
-        {
-            m_ListBoardLayer.CreateSnapshotLayer(m_ScrollBox, ScrollBoxSnapshotLayerName);
-        }, EventInvokeFlags.Backward, 1);
-
-        var bulletAnimationStartFrameIndex = 225;
-        var bulletAnimationDuration = 75;
-        var bulletAnimationDelay = 20;
-        var fadeDelay = 45;
-        var fadeDuration = 30;
+        int startFrameIndex = 225;
+        int bulletAnimationDelay = 20;
+        int bulletAnimationDuration = 75;
+        int fadeDelay = 45;
         for (int i = 0; i < m_ListElementCount; i++)
         {
-            var idx = i;
-            var startFrameIndex = bulletAnimationDelay * i + bulletAnimationStartFrameIndex;
-
-            // Actions related to manipulation of list element snapshots could be batched into
-            // one event, but this would be very inefficient because of multiple mask/unmask and
-            // create/remove snapshot layer calls per frame, thus we are separating it here into 
-            // multiple events.
-            m_Player.AddEvent(startFrameIndex, () =>
+            int index = i;
+            int bulletAnimationStartFrameIndex = startFrameIndex + i * bulletAnimationDelay;
+            m_Player.AddEvent(bulletAnimationStartFrameIndex, () =>
             {
-                m_ListElements[idx].button.visible = true;
-                m_ListElements[idx].bullet.visible = true;
-                m_ListBoardLayer.MaskElements(m_ListElements[idx].button);
+                m_ListElements[index].bullet.visible = true;
             }, EventInvokeFlags.Forward);
-            m_Player.AddEvent(startFrameIndex, () =>
+            m_Player.AddEvent(bulletAnimationStartFrameIndex, () =>
             {
-                var layer = m_ListBoardLayer.CreateSnapshotLayer(m_ListElements[idx].button, ListElementSnapshotLayerName + idx);
-                layer.alpha = 0f;
-                layer.blur = Layer.DefaultBlur;
-            }, EventInvokeFlags.Forward, 1);
-
-            m_Player.AddEvent(startFrameIndex, () =>
-            {
-                LayerManager.RemoveLayer(ListElementSnapshotLayerName + idx);
-                m_ListBoardLayer.UnmaskElements(m_ListElements[idx].button);
-            }, EventInvokeFlags.Backward, 1);
-            m_Player.AddEvent(startFrameIndex, () =>
-            {
-                m_ListElements[idx].button.visible = false;
-                m_ListElements[idx].bullet.visible = false;
+                m_ListElements[index].bullet.visible = false;
             }, EventInvokeFlags.Backward);
 
-            var track = m_Player.AddKeyframeTrack((float progress) => m_ListElements.ElementAtOrDefault(idx)?.bullet?.SetAnimationProgress(progress));
-            track.AddKeyframe(startFrameIndex, 0f);
-            track.AddKeyframe(startFrameIndex + bulletAnimationDuration, 1f);
+            var tt1 = m_Player.AddKeyframeTrack((float animationProgress) =>
+            {
+                if (m_ListElements.ElementAtOrDefault(index) != null)
+                {
+                    m_ListElements[index].bullet.animationProgress = animationProgress;
+                }
+            });
+            tt1.AddKeyframe(bulletAnimationStartFrameIndex, 0f);
+            tt1.AddKeyframe(bulletAnimationStartFrameIndex + bulletAnimationDuration, 1);
 
-            var track2 = m_Player.AddKeyframeTrack((float alpha) => LayerManager.GetLayer(ListElementSnapshotLayerName + idx)?.SetAlpha(alpha));
-            track2.AddKeyframe(startFrameIndex + fadeDelay, 0f);
-            track2.AddKeyframe(startFrameIndex + fadeDelay + (int)(fadeDuration * 0.666f), 1f);
+            int buttonAnimationStartFrameIndex = bulletAnimationStartFrameIndex + fadeDelay;
+            m_Player.AddEvent(buttonAnimationStartFrameIndex, () =>
+            {
+                m_PostProcessingLayer.maskElement = m_ListElements[index].button;
+                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
+            }, EventInvokeFlags.Forward);
+            m_Player.AddEvent(buttonAnimationStartFrameIndex, () =>
+            {
+                m_PostProcessingLayer.maskElement = index > 0 ? m_ListElements[index - 1].button : m_ScrollBox;
+                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.blurSize = 0f;
+            }, EventInvokeFlags.Backward);
 
-            var track3 = m_Player.AddKeyframeTrack((float blur) => LayerManager.GetLayer(ListElementSnapshotLayerName + idx)?.SetBlur(blur));
-            track3.AddKeyframe(startFrameIndex + fadeDelay + (int)(fadeDuration * 0.333f), Layer.DefaultBlur);
-            track3.AddKeyframe(startFrameIndex + fadeDelay + fadeDuration, 0f);
+            var tt2 = m_Player.AddKeyframeTrack((float opacity) =>
+            {
+                if (m_ListElements.ElementAtOrDefault(index) != null)
+                {
+                    m_ListElements[index].button.style.opacity = opacity;
+                }
+            });
+            tt2.AddKeyframe(buttonAnimationStartFrameIndex, 0f);
+            tt2.AddKeyframe(buttonAnimationStartFrameIndex + 20, 1);
+
+            var tt3 = m_Player.AddKeyframeTrack((float blurSize) =>
+            {
+                if (m_PostProcessingLayer != null)
+                {
+                    m_PostProcessingLayer.blurSize = blurSize;
+                }
+            });
+            tt3.AddKeyframe(buttonAnimationStartFrameIndex + 10, PostProcessingLayer.DefaultBlurSize);
+            tt3.AddKeyframe(buttonAnimationStartFrameIndex + 30, 0f);
         }
 
-        var i0 = bulletAnimationDelay * m_ListElementCount + bulletAnimationStartFrameIndex + fadeDelay + fadeDuration;
-        m_Player.AddEvent(i0, () =>
+        int titleAnimationStartFrameIndex = startFrameIndex + (m_ListElementCount - 1) * bulletAnimationDelay + fadeDelay + 30;
+        m_Player.AddEvent(titleAnimationStartFrameIndex, () =>
         {
             m_ListBoardLayer.interactable = true;
-            for (int i = 0; i < m_ListElements.Count; i++)
-            {
-                LayerManager.RemoveLayer(ListElementSnapshotLayerName + i);
-                m_ListBoardLayer.UnmaskElements(m_ListElements[i].button);
-            }
+            m_PostProcessingLayer.maskElement = m_Title;
+            m_PostProcessingLayer.overscan = 8f;
+            m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
         }, EventInvokeFlags.Forward);
-
-        m_Player.AddEvent(i0, () =>
-        {
-            for (int i = 0; i < m_ListElements.Count; i++)
-            {
-                m_ListBoardLayer.MaskElements(m_ListElements[i].button);
-            }
-        }, EventInvokeFlags.Backward, 1);
-        m_Player.AddEvent(i0, () =>
+        m_Player.AddEvent(titleAnimationStartFrameIndex, () =>
         {
             m_ListBoardLayer.interactable = false;
-            for (int i = 0; i < m_ListElements.Count; i++)
+            m_PostProcessingLayer.maskElement = m_ListElements[m_ListElementCount - 1].button;
+            m_PostProcessingLayer.overscan = 8f;
+            m_PostProcessingLayer.blurSize = 0f;
+        }, EventInvokeFlags.Backward);
+
+        var t9 = m_Player.AddKeyframeTrack((float opacity) =>
+        {
+            if (m_Title != null)
             {
-                m_ListBoardLayer.CreateSnapshotLayer(m_ListElements[i].button, ListElementSnapshotLayerName + i);
+                m_Title.style.opacity = opacity;
             }
+        });
+        t9.AddKeyframe(titleAnimationStartFrameIndex, 0f);
+        t9.AddKeyframe(titleAnimationStartFrameIndex + 20, 1f);
+
+        var t10 = m_Player.AddKeyframeTrack((float blurSize) =>
+        {
+            if (m_PostProcessingLayer != null)
+            {
+                m_PostProcessingLayer.blurSize = blurSize;
+            }
+        });
+        t10.AddKeyframe(titleAnimationStartFrameIndex + 10, PostProcessingLayer.DefaultBlurSize);
+        t10.AddKeyframe(titleAnimationStartFrameIndex + 30, 0f);
+
+        m_Player.AddEvent(titleAnimationStartFrameIndex + 30, () =>
+        {
+            m_PostProcessingLayer.maskElement = null;
+        }, EventInvokeFlags.Forward);
+        m_Player.AddEvent(titleAnimationStartFrameIndex + 30, () =>
+        {
+            m_PostProcessingLayer.maskElement = m_Title;
         }, EventInvokeFlags.Backward);
 
-        // Title label animation
-        m_Player.AddEvent(i0, () =>
+        var t11 = m_Player.AddKeyframeTrack((float animationProgress) =>
         {
-            var layer = m_ListBoardLayer.CreateSnapshotLayer(m_Title, TitleSnapshotLayerName);
-            layer.alpha = 0f;
-            layer.blur = Layer.DefaultBlur;
+            if (m_Title != null)
+            {
+                m_Title.animationProgress = animationProgress;
+            }
+        });
+        t11.AddKeyframe(titleAnimationStartFrameIndex + 30, 0f);
+        t11.AddKeyframe(titleAnimationStartFrameIndex + 90, 1f);
+
+        m_Player.AddEvent(titleAnimationStartFrameIndex + 90, () =>
+        {
+            m_PostProcessingLayer.maskElement = m_Title.label;
+            m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
+            m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
         }, EventInvokeFlags.Forward);
-        m_Player.AddEvent(i0, () =>
+        m_Player.AddEvent(titleAnimationStartFrameIndex + 90, () =>
         {
-            LayerManager.RemoveLayer(TitleSnapshotLayerName);
+            m_PostProcessingLayer.maskElement = null;
+            m_PostProcessingLayer.overscan = 8f;
+            m_PostProcessingLayer.blurSize = 0f;
         }, EventInvokeFlags.Backward);
 
-        var t9 = m_Player.AddKeyframeTrack((float alpha) => LayerManager.GetLayer(TitleSnapshotLayerName)?.SetAlpha(alpha));
-        t9.AddKeyframe(i0, 0f);
-        t9.AddKeyframe(i0 + 20, 1f);
-
-        var t10 = m_Player.AddKeyframeTrack((float blur) => LayerManager.GetLayer(TitleSnapshotLayerName)?.SetBlur(blur));
-        t10.AddKeyframe(i0 + 10, Layer.DefaultBlur);
-        t10.AddKeyframe(i0 + 30, 0f);
-
-        m_Player.AddEvent(i0 + 30, () =>
+        var t12 = m_Player.AddKeyframeTrack((float opacity) =>
         {
-            LayerManager.RemoveLayer(TitleSnapshotLayerName);
-            m_ListBoardLayer.UnmaskElements(m_Title);
+            if (m_Title != null)
+            {
+                m_Title.label.style.opacity = opacity;
+            }
+        });
+        t12.AddKeyframe(titleAnimationStartFrameIndex + 90, 0f);
+        t12.AddKeyframe(titleAnimationStartFrameIndex + 110, 1f);
+
+        var t13 = m_Player.AddKeyframeTrack((float blurSize) =>
+        {
+            if (m_PostProcessingLayer != null)
+            {
+                m_PostProcessingLayer.blurSize = blurSize;
+            }
+        });
+        t13.AddKeyframe(titleAnimationStartFrameIndex + 100, PostProcessingLayer.DefaultBlurSize);
+        t13.AddKeyframe(titleAnimationStartFrameIndex + 120, 0f);
+
+        m_Player.AddEvent(titleAnimationStartFrameIndex + 120, () =>
+        {
+            LayerManager2.RemoveLayer(m_PostProcessingLayer);
         }, EventInvokeFlags.Forward);
-
-        m_Player.AddEvent(i0 + 30, () =>
+        m_Player.AddEvent(titleAnimationStartFrameIndex + 120, () =>
         {
-            m_ListBoardLayer.MaskElements(m_Title);
-        }, EventInvokeFlags.Backward, 1);
-        m_Player.AddEvent(i0 + 30, () =>
-        {
-            m_ListBoardLayer.CreateSnapshotLayer(m_Title, TitleSnapshotLayerName);
-        }, EventInvokeFlags.Backward);
-
-        var t11 = m_Player.AddKeyframeTrack((float progress) => m_Title?.SetAnimationProgress(progress));
-        t11.AddKeyframe(i0 + 30, 0f);
-        t11.AddKeyframe(i0 + 90, 1f);
-
-        m_Player.AddEvent(i0 + 90, () =>
-        {
-            m_Title.label.visible = true;
-            m_ListBoardLayer.MaskElements(m_Title.label);
-        }, EventInvokeFlags.Forward);
-        m_Player.AddEvent(i0 + 90, () =>
-        {
-            var layer = m_ListBoardLayer.CreateSnapshotLayer(m_Title.label, TitleLabelSnapshotLayerName);
-            layer.alpha = 0f;
-            layer.blur = Layer.DefaultBlur;
-        }, EventInvokeFlags.Forward, 1);
-
-        m_Player.AddEvent(i0 + 90, () =>
-        {
-            LayerManager.RemoveLayer(TitleLabelSnapshotLayerName);
-            m_ListBoardLayer.UnmaskElements(m_Title.label);
-        }, EventInvokeFlags.Backward, 1);
-        m_Player.AddEvent(i0 + 90, () =>
-        {
-            m_Title.label.visible = false;
-        }, EventInvokeFlags.Backward);
-
-        var t12 = m_Player.AddKeyframeTrack((float alpha) => LayerManager.GetLayer(TitleLabelSnapshotLayerName)?.SetAlpha(alpha));
-        t12.AddKeyframe(i0 + 90, 0f);
-        t12.AddKeyframe(i0 + 110, 1f);
-
-        var t13 = m_Player.AddKeyframeTrack((float blur) => LayerManager.GetLayer(TitleLabelSnapshotLayerName)?.SetBlur(blur));
-        t13.AddKeyframe(i0 + 100, Layer.DefaultBlur);
-        t13.AddKeyframe(i0 + 120, 0f);
-
-        m_Player.AddEvent(i0 + 120, () =>
-        {
-            LayerManager.RemoveLayer(TitleLabelSnapshotLayerName);
-            m_ListBoardLayer.UnmaskElements(m_Title.label);
-        }, EventInvokeFlags.Forward);
-
-        m_Player.AddEvent(i0 + 120, () =>
-        {
-            m_ListBoardLayer.MaskElements(m_Title.label);
-        }, EventInvokeFlags.Backward, 1);
-        m_Player.AddEvent(i0 + 120, () =>
-        {
-            var layer = m_ListBoardLayer.CreateSnapshotLayer(m_Title.label, TitleLabelSnapshotLayerName);
+            m_PostProcessingLayer = LayerManager2.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
+            m_PostProcessingLayer.maskElement = m_Title.label;
+            m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
         }, EventInvokeFlags.Backward);
     }
 
