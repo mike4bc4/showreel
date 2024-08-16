@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace UI.Boards
 {
@@ -16,6 +17,8 @@ namespace UI.Boards
         State m_InitialState;
         InterfaceBoard m_InterfaceBoard;
         DialogBoard m_DialogBoard;
+
+        InputActions m_InputActions;
 
         public static InterfaceBoard InterfaceBoard
         {
@@ -68,6 +71,14 @@ namespace UI.Boards
             // m_StateMachine.SetState(s_InitialStateID);
 
             m_Boards = GetComponentsInChildren<Board>(true).ToList();
+
+            m_InputActions = new InputActions();
+            m_InputActions.UI.Enable();
+            m_InputActions.UI.Left.performed += OnLeft;
+            m_InputActions.UI.Right.performed += OnRight;
+            m_InputActions.UI.Confirm.performed += OnConfirm;
+            m_InputActions.UI.Cancel.performed += OnCancel;
+            m_InputActions.UI.Any.performed += OnAny;
         }
 
         void Start()
@@ -93,6 +104,31 @@ namespace UI.Boards
             }
 
             return default(T);
+        }
+
+        void OnLeft(InputAction.CallbackContext callbackContext)
+        {
+            Debug.Log("OnLeft");
+        }
+
+        void OnRight(InputAction.CallbackContext callbackContext)
+        {
+            Debug.Log("OnRight");
+        }
+
+        void OnConfirm(InputAction.CallbackContext callbackContext)
+        {
+            Debug.Log("OnConfirm");
+        }
+
+        void OnCancel(InputAction.CallbackContext callbackContext)
+        {
+            Debug.Log("OnCancel");
+        }
+
+        void OnAny(InputAction.CallbackContext callbackContext)
+        {
+            Debug.Log("OnAny");
         }
     }
 }
