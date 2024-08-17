@@ -108,27 +108,27 @@ namespace UI.Boards
 
         void OnLeft(InputAction.CallbackContext callbackContext)
         {
-            Debug.Log("OnLeft");
+            // Debug.Log("OnLeft");
         }
 
         void OnRight(InputAction.CallbackContext callbackContext)
         {
-            Debug.Log("OnRight");
+            // Debug.Log("OnRight");
         }
 
         void OnConfirm(InputAction.CallbackContext callbackContext)
         {
-            Debug.Log("OnConfirm");
+            // Debug.Log("OnConfirm");
         }
 
         void OnCancel(InputAction.CallbackContext callbackContext)
         {
-            Debug.Log("OnCancel");
+            // Debug.Log("OnCancel");
         }
 
         void OnAny(InputAction.CallbackContext callbackContext)
         {
-            Debug.Log("OnAny");
+            // Debug.Log("OnAny");
         }
     }
 }

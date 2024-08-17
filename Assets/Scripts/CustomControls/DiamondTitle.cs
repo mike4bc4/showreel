@@ -50,19 +50,18 @@ namespace CustomControls
         TaskPool m_FoldFunctions;
         CancellationTokenSource m_Cts;
         TaskStatus m_Status;
-        KeyframeTrackPlayer m_Player;
-        // IKeyframe<float> m_FinalKeyframe;
+        AnimationPlayer m_Player;
 
         public float animationProgress
         {
-            get => m_Player.time / m_Player.duration;
+            get => m_Player.animationTime / m_Player.duration;
             set
             {
                 var previousFrameIndex = m_Player.frameIndex;
-                m_Player.time = m_Player.duration * Mathf.Clamp01(value);
+                m_Player.animationTime = m_Player.duration * Mathf.Clamp01(value);
                 if (m_Player.frameIndex != previousFrameIndex)
                 {
-                    m_Player.Update();
+                    m_Player.Sample();
                 }
             }
         }
@@ -94,7 +93,12 @@ namespace CustomControls
 
         public DiamondTitle()
         {
-            m_Player = new KeyframeTrackPlayer();
+            m_Player = new AnimationPlayer();
+            m_Player.sampling = 60;
+            var animation = new KeyframeSystem.KeyframeAnimation();
+            m_Player.AddAnimation(animation, "Animation");
+            m_Player.animation = animation;
+
             AddToClassList(k_UssClassName);
 
             m_DiamondLeft = new Diamond();
@@ -221,11 +225,11 @@ namespace CustomControls
                 }
             });
 
-            var t1 = m_Player.AddKeyframeTrack((float animationProgress) => m_DiamondRight.animationProgress = m_DiamondLeft.animationProgress = animationProgress);
+            var t1 = animation.AddTrack((float animationProgress) => m_DiamondRight.animationProgress = m_DiamondLeft.animationProgress = animationProgress);
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(60, 1f);
 
-            var t2 = m_Player.AddKeyframeTrack((float widthScale) =>
+            var t2 = animation.AddTrack((float widthScale) =>
             {
                 if (!unfoldedWidth.IsNan())
                 {

@@ -14,10 +14,16 @@ namespace KeyframeSystem
         EaseInCubic,
         EaseOutCubic,
         EaseInOutCubic,
+        StepOut,
     }
 
     public static class EasingExtensions
     {
+        static float StepOut(float x)
+        {
+            return x < 1f ? 0 : 1f;
+        }
+
         static float EaseOutSine(float x)
         {
             return Mathf.Sin((x * Mathf.PI) * 0.5f);
@@ -65,6 +71,8 @@ namespace KeyframeSystem
         {
             switch (handle)
             {
+                case Easing.StepOut:
+                    return StepOut(x);
                 case Easing.Ease:
                     return EaseInOut(x);
                 case Easing.EaseInSine:

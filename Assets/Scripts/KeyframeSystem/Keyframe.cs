@@ -5,30 +5,38 @@ using UnityEngine.UIElements;
 
 namespace KeyframeSystem
 {
-    public interface IKeyframe
+    public class Keyframe
     {
-        public float time { get; set; }
-        public int frameIndex { get; set; }
-        public IKeyframeTrack track { get; }
-        public float value { get; set; }
-        public Easing easing { get; set; }
-    }
+        public static readonly KeyframeComparer Comparer = new KeyframeComparer();
 
-    public partial class KeyframeTrackPlayer
-    {
-        class Keyframe : IKeyframe
+        public class KeyframeComparer : IComparer<Keyframe>
         {
-            public float time { get; set; }
-            public KeyframeTrack track { get; set; }
-            public float value { get; set; }
-            public Easing easing { get; set; }
-            IKeyframeTrack IKeyframe.track => this.track;
-
-            public int frameIndex
+            public int Compare(Keyframe x, Keyframe y)
             {
-                get => Mathf.RoundToInt(time * track.player.sampling);
-                set => time = value / (float)track.player.sampling;
+                return x.frameIndex.CompareTo(y.frameIndex);
             }
+        }
+
+        int m_FrameIndex;
+        float m_Value;
+        Easing m_Easing;
+
+        public int frameIndex
+        {
+            get => m_FrameIndex;
+            set => m_FrameIndex = value;
+        }
+
+        public float value
+        {
+            get => m_Value;
+            set => m_Value = value;
+        }
+
+        public Easing easing
+        {
+            get => m_Easing;
+            set => m_Easing = value;
         }
     }
 }

@@ -48,18 +48,18 @@ namespace CustomControls
         float m_EdgeWidth;
         float m_Spread;
         float m_Fill;
-        KeyframeTrackPlayer m_Player;
+        AnimationPlayer m_Player;
 
         public float animationProgress
         {
-            get => m_Player.time / m_Player.duration;
+            get => m_Player.animationTime / m_Player.duration;
             set
             {
                 var previousFrameIndex = m_Player.frameIndex;
-                m_Player.time = m_Player.duration * Mathf.Clamp01(value);
+                m_Player.animationTime = m_Player.duration * Mathf.Clamp01(value);
                 if (m_Player.frameIndex != previousFrameIndex)
                 {
-                    m_Player.Update();
+                    m_Player.Sample();
                 }
             }
         }
@@ -121,7 +121,12 @@ namespace CustomControls
 
         public DiamondSpreading()
         {
-            m_Player = new KeyframeTrackPlayer();
+            m_Player = new AnimationPlayer();
+            m_Player.sampling = 60;
+            var animation = new KeyframeSystem.KeyframeAnimation();
+            m_Player.AddAnimation(animation, "Animation");
+            m_Player.animation = animation;
+
             m_CornerBodies = new List<VisualElement>();
 
             AddToClassList(k_UssClassName);
@@ -176,15 +181,15 @@ namespace CustomControls
             spread = 0f;
             edgeWidth = targetEdgeWidth * 0.5f;
 
-            var t1 = m_Player.AddKeyframeTrack((float spread) => this.spread = spread);
+            var t1 = animation.AddTrack((float spread) => this.spread = spread);
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(20, 1f);
 
-            var t2 = m_Player.AddKeyframeTrack((float edgeWidth) => this.edgeWidth = edgeWidth);
+            var t2 = animation.AddTrack((float edgeWidth) => this.edgeWidth = edgeWidth);
             t2.AddKeyframe(0, targetEdgeWidth * 0.5f);
             t2.AddKeyframe(20, targetEdgeWidth);
 
-            var t3 = m_Player.AddKeyframeTrack((float fill) => this.fill = fill);
+            var t3 = animation.AddTrack((float fill) => this.fill = fill);
             t3.AddKeyframe(20, 0f);
             t3.AddKeyframe(40, 1f);
         }

@@ -3,54 +3,48 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Cysharp.Threading.Tasks;
+// using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 
 namespace KeyframeSystem
 {
-    public interface ITrackEvent
+    public class TrackEvent
     {
-        public float time { get; set; }
-        public int delay { get; set; }
-        public Action action { get; set; }
-        public KeyframeTrackPlayer player { get; }
-    }
+        string m_ID;
+        int m_CurrentDelay;
+        int m_Delay;
+        int m_FrameIndex;
+        Action m_Action;
 
-    public partial class KeyframeTrackPlayer
-    {
-        class TrackEvent : ITrackEvent
+        internal string id
         {
-            public int m_Delay;
-            public float m_Time;
+            get => m_ID;
+            set => m_ID = value;
+        }
 
-            public KeyframeTrackPlayer player { get; set; }
-            public int currentFrameDelay { get; set; }
-            public Action action { get; set; }
-            public string batchId { get; set; }
+        internal int currentDelay
+        {
+            get => m_CurrentDelay;
+            set => m_CurrentDelay = value;
+        }
 
-            public int delay
-            {
-                get => m_Delay;
-                set => m_Delay = Mathf.Max(0, value);
-            }
+        public int delay
+        {
+            get => m_Delay;
+            set => m_Delay = Mathf.Max(0, value);
+        }
 
-            public float time
-            {
-                get => m_Time;
-                set => m_Time = Mathf.Max(0f, value);
-            }
+        public int frameIndex
+        {
+            get => m_FrameIndex;
+            set => m_FrameIndex = value;
+        }
 
-            public int frameIndex
-            {
-                get => Mathf.CeilToInt(time * player.sampling);
-                set
-                {
-                    time = value / (float)player.sampling;
-                }
-            }
-
-            public TrackEvent() { }
+        public Action action
+        {
+            get => m_Action;
+            set => m_Action = value;
         }
     }
 }

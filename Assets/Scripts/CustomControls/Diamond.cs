@@ -33,18 +33,19 @@ namespace CustomControls
         VisualElement m_HalfRight;
         CancellationTokenSource m_Cts;
         TaskStatus m_Status;
-        KeyframeTrackPlayer m_Player;
+        // KeyframeTrackPlayer m_Player;
+        AnimationPlayer m_Player;
 
         public float animationProgress
         {
-            get => m_Player.time / m_Player.duration;
+            get => m_Player.animationTime / m_Player.duration;
             set
             {
                 var previousFrameIndex = m_Player.frameIndex;
-                m_Player.time = m_Player.duration * Mathf.Clamp01(value);
+                m_Player.animationTime = m_Player.duration * Mathf.Clamp01(value);
                 if (previousFrameIndex != m_Player.frameIndex)
                 {
-                    m_Player.Update();
+                    m_Player.Sample();
                 }
             }
         }
@@ -56,7 +57,14 @@ namespace CustomControls
 
         public Diamond()
         {
-            m_Player = new KeyframeTrackPlayer();
+            // m_Player = new KeyframeTrackPlayer();
+            m_Player = new AnimationPlayer();
+            m_Player.sampling = 60;
+
+            var animation = new KeyframeSystem.KeyframeAnimation();
+            m_Player.AddAnimation(animation, "Animation");
+            m_Player.animation = animation;
+
             AddToClassList(k_UssClassName);
 
             m_HalfLeft = new VisualElement();
@@ -69,7 +77,7 @@ namespace CustomControls
             m_HalfRight.AddToClassList(k_HalfUssClassName);
             Add(m_HalfRight);
 
-            var t1 = m_Player.AddKeyframeTrack((float scaleX) => m_HalfLeft.style.scale = new Vector2(scaleX, 1f));
+            var t1 = animation.AddTrack((float scaleX) => m_HalfLeft.style.scale = new Vector2(scaleX, 1f));
             t1.AddKeyframe(0, 1f, Easing.EaseInOutSine);
             t1.AddKeyframe(60, -1f);
         }

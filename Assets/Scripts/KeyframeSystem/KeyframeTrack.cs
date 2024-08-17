@@ -5,142 +5,112 @@ using UnityEngine;
 
 namespace KeyframeSystem
 {
-    public interface IKeyframeTrack
+    public class KeyframeTrack
     {
-        public Action<float> setter { get; set; }
-        public int keyframeCount { get; }
-        public IKeyframe this[int index] { get; }
-        public IKeyframe AddKeyframe(float time, float value, Easing easing = Easing.Ease);
-        public IKeyframe AddKeyframe(int frameIndex, float value, Easing easing = Easing.Ease);
-    }
+        List<Keyframe> m_Keyframes;
+        Action<float> m_Setter;
+        // float m_PreviousValue;
 
-    public partial class KeyframeTrackPlayer
-    {
-        class KeyframeTrack : IKeyframeTrack
+        internal List<Keyframe> keyframes
         {
-            List<Keyframe> m_Keyframes;
-            float m_PreviousValue;
+            get => m_Keyframes;
+        }
 
-            public KeyframeTrackPlayer player { get; set; }
-            public Action<float> setter { get; set; }
-            public int keyframeCount => m_Keyframes.Count;
-            IKeyframe IKeyframeTrack.this[int index] => (IKeyframe)this[index];
+        public Action<float> setter
+        {
+            get => m_Setter;
+            set => m_Setter = value;
+        }
 
-            public IKeyframe this[int index]
+        public KeyframeTrack()
+        {
+            m_Keyframes = new List<Keyframe>();
+            // m_PreviousValue = float.NaN;
+        }
+
+        public Keyframe AddKeyframe(int frameIndex, float value, Easing easing = Easing.Ease)
+        {
+            var keyframe = new Keyframe();
+            keyframe.frameIndex = frameIndex;
+
+            int idx = m_Keyframes.BinarySearch(keyframe, Keyframe.Comparer);
+            if (idx >= 0)
             {
-                get
-                {
-                    if (index < 0 || index > m_Keyframes.Count - 1)
-                    {
-                        return null;
-                    }
-
-                    return m_Keyframes[index];
-                }
+                keyframe = m_Keyframes[idx];
             }
 
-            public KeyframeTrack()
-            {
-                m_Keyframes = new List<Keyframe>();
-                m_PreviousValue = float.NaN;
-            }
+            keyframe.value = value;
+            keyframe.easing = easing;
+            m_Keyframes.Add(keyframe);
+            m_Keyframes.Sort(Keyframe.Comparer);
+            return keyframe;
+        }
 
-            public IKeyframe AddKeyframe(int frameIndex, float value, Easing easing = Easing.Ease)
+        Keyframe GetPreviousKeyframe(int index)
+        {
+            Keyframe previousKeyframe = null;
+            foreach (var keyframe in m_Keyframes)
             {
-                var keyframe = new Keyframe()
+                if (keyframe.frameIndex >= index)
                 {
-                    time = frameIndex / (float)player.sampling,
-                    value = value,
-                    easing = easing,
-                };
-
-                AddKeyframe(keyframe);
-                return keyframe;
-            }
-
-            public IKeyframe AddKeyframe(float time, float value, Easing easing = Easing.Ease)
-            {
-                var keyframe = new Keyframe()
-                {
-                    time = time,
-                    value = value,
-                    easing = easing,
-                };
-
-                AddKeyframe(keyframe);
-                return keyframe;
-            }
-
-            public void AddKeyframe(Keyframe keyframe)
-            {
-                m_Keyframes.Add(keyframe);
-                keyframe.track = this;
-                m_Keyframes.Sort((k1, k2) => k1.frameIndex.CompareTo(k2.frameIndex));
-            }
-
-            Keyframe GetPreviousKeyframe(int index)
-            {
-                Keyframe previousKeyframe = null;
-                foreach (var keyframe in m_Keyframes)
-                {
-                    if (keyframe.frameIndex >= index)
-                    {
-                        break;
-                    }
-
-                    previousKeyframe = keyframe;
+                    break;
                 }
 
-                return previousKeyframe;
+                previousKeyframe = keyframe;
             }
 
-            Keyframe GetNextKeyframe(int index)
+            return previousKeyframe;
+        }
+
+        Keyframe GetNextKeyframe(int index)
+        {
+            Keyframe nextKeyframe = null;
+            for (int i = m_Keyframes.Count - 1; i >= 0; i--)
             {
-                Keyframe nextKeyframe = null;
-                for (int i = m_Keyframes.Count - 1; i >= 0; i--)
+                if (m_Keyframes[i].frameIndex < index)
                 {
-                    if (m_Keyframes[i].frameIndex < index)
-                    {
-                        break;
-                    }
-
-                    nextKeyframe = m_Keyframes[i];
+                    break;
                 }
 
-                return nextKeyframe;
+                nextKeyframe = m_Keyframes[i];
             }
 
-            public void Update(int frameIndex, bool force = false)
+            return nextKeyframe;
+        }
+
+        internal void Sample(int frameIndex, bool force = false)
+        {
+            var previousKeyframe = GetPreviousKeyframe(frameIndex);
+            var nextKeyframe = GetNextKeyframe(frameIndex);
+
+            if (previousKeyframe == null && nextKeyframe == null)
             {
-                var previousKeyframe = GetPreviousKeyframe(frameIndex);
-                var nextKeyframe = GetNextKeyframe(frameIndex);
-                if (previousKeyframe == null && nextKeyframe == null)
-                {
-                    return;
-                }
-
-                float val;
-                if (previousKeyframe == null)
-                {
-                    val = nextKeyframe.value;
-                }
-                else if (nextKeyframe == null)
-                {
-                    val = previousKeyframe.value;
-                }
-                else
-                {
-                    float x = (frameIndex - previousKeyframe.frameIndex) / (float)(nextKeyframe.frameIndex - previousKeyframe.frameIndex);
-                    float t = previousKeyframe.easing.Evaluate(x);
-                    val = Mathf.Lerp(previousKeyframe.value, nextKeyframe.value, t);
-                }
-
-                if (force || val != m_PreviousValue)
-                {
-                    setter?.Invoke(val);
-                    m_PreviousValue = val;
-                }
+                return;
             }
+
+            float val;
+            if (previousKeyframe == null)
+            {
+                val = nextKeyframe.value;
+            }
+            else if (nextKeyframe == null)
+            {
+                val = previousKeyframe.value;
+            }
+            else
+            {
+                float x = (frameIndex - previousKeyframe.frameIndex) / (float)(nextKeyframe.frameIndex - previousKeyframe.frameIndex);
+                float t = previousKeyframe.easing.Evaluate(x);
+                val = Mathf.Lerp(previousKeyframe.value, nextKeyframe.value, t);
+            }
+
+            setter?.Invoke(val);
+
+            // if (force || val != m_PreviousValue)
+            // {
+            //     setter?.Invoke(val);
+            //     m_PreviousValue = val;
+            // }
         }
     }
 }

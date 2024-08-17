@@ -6,7 +6,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 
-public class Animation
+public class Animation2
 {
     public event Action onFinished;
 
@@ -52,7 +52,7 @@ public class Animation
         set => m_ElapsedTime = value;
     }
 
-    public Animation(object obj, string property, UniTask task, Reference<CancellationTokenSource> cst, Reference<bool> finished)
+    public Animation2(object obj, string property, UniTask task, Reference<CancellationTokenSource> cst, Reference<bool> finished)
     {
         m_Object = obj;
         m_Property = property;

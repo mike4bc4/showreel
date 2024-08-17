@@ -41,25 +41,29 @@ namespace CustomControls
         VisualElement m_Line;
         DiamondSpreading m_Diamond;
         VisualElement m_Spacer;
-        KeyframeTrackPlayer m_Player;
+        AnimationPlayer m_Player;
 
         public float animationProgress
         {
-            get => m_Player.time / m_Player.duration;
+            get => m_Player.animationTime / m_Player.duration;
             set
             {
                 var previousFrameIndex = m_Player.frameIndex;
-                m_Player.time = m_Player.duration * Mathf.Clamp01(value);
+                m_Player.animationTime = m_Player.duration * Mathf.Clamp01(value);
                 if (m_Player.frameIndex != previousFrameIndex)
                 {
-                    m_Player.Update();
+                    m_Player.Sample();
                 }
             }
         }
 
         public DiamondBullet()
         {
-            m_Player = new KeyframeTrackPlayer();
+            m_Player = new AnimationPlayer();
+            var animation = new KeyframeSystem.KeyframeAnimation();
+            m_Player.AddAnimation(animation, "Animation");
+            m_Player.animation = animation;
+
             AddToClassList(k_UssClassName);
 
             m_Spacer = new VisualElement() { name = "spacer" };
@@ -76,19 +80,19 @@ namespace CustomControls
 
             m_Diamond.style.scale = Vector2.one * 0.5f;
 
-            var t1 = m_Player.AddKeyframeTrack((float scale) => m_Diamond.style.scale = Vector2.one * scale);
+            var t1 = animation.AddTrack((float scale) => m_Diamond.style.scale = Vector2.one * scale);
             t1.AddKeyframe(0, 0.5f);
             t1.AddKeyframe(30, 1f);
 
-            var t2 = m_Player.AddKeyframeTrack((float flexGrow) => m_Spacer.style.flexGrow = flexGrow);
+            var t2 = animation.AddTrack((float flexGrow) => m_Spacer.style.flexGrow = flexGrow);
             t2.AddKeyframe(0, 0f);
             t2.AddKeyframe(30, 1f);
 
-            var t3 = m_Player.AddKeyframeTrack((float width) => m_Line.style.width = Length.Percent(width * 100f));
+            var t3 = animation.AddTrack((float width) => m_Line.style.width = Length.Percent(width * 100f));
             t3.AddKeyframe(20, 1f);
             t3.AddKeyframe(50, 0f);
 
-            var t4 = m_Player.AddKeyframeTrack((float progress) => m_Diamond.animationProgress = progress);
+            var t4 = animation.AddTrack((float progress) => m_Diamond.animationProgress = progress);
             t4.AddKeyframe(50, 0f);
             t4.AddKeyframe(95, 1f);
         }

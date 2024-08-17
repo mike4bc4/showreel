@@ -53,18 +53,18 @@ namespace CustomControls
         Color m_Color;
         float m_Fill;
         int m_CornerRadius;
-        KeyframeTrackPlayer m_Player;
+        AnimationPlayer m_Player;
 
         public float animationProgress
         {
-            get => m_Player.time / m_Player.duration;
+            get => m_Player.animationTime / m_Player.duration;
             set
             {
                 var previousFrameIndex = m_Player.frameIndex;
-                m_Player.time = m_Player.duration * Mathf.Clamp01(value);
+                m_Player.animationTime = m_Player.duration * Mathf.Clamp01(value);
                 if (m_Player.frameIndex != previousFrameIndex)
                 {
-                    m_Player.Update();
+                    m_Player.Sample();
                 }
             }
         }
@@ -98,7 +98,10 @@ namespace CustomControls
 
         public DiamondFrameVertical()
         {
-            m_Player = new KeyframeTrackPlayer();
+            m_Player = new AnimationPlayer();
+            var animation = new KeyframeSystem.KeyframeAnimation();
+            m_Player.AddAnimation(animation, "Animation");
+            m_Player.animation = animation;
 
             AddToClassList(k_UssClassName);
 
@@ -135,18 +138,18 @@ namespace CustomControls
             m_ContentContainer.RegisterCallback<GeometryChangedEvent>(evt =>
             {
                 m_ResizingElement.style.width = m_ContentContainer.resolvedStyle.width;
-                m_Player.Update(force: true);
+                m_Player.Sample();
             });
 
-            var t1 = m_Player.AddKeyframeTrack((float progress) => m_DiamondBottom.animationProgress = m_DiamondTop.animationProgress = progress);
-            t1.AddKeyframe(0f, 0f);
-            t1.AddKeyframe(1f, 1f);
+            var t1 = animation.AddTrack((float progress) => m_DiamondBottom.animationProgress = m_DiamondTop.animationProgress = progress);
+            t1.AddKeyframe(0, 0f);
+            t1.AddKeyframe(60, 1f);
 
-            var t2 = m_Player.AddKeyframeTrack((float fill) => m_RoundedFrameLeft.fill = m_RoundedFrameRight.fill = fill);
-            t2.AddKeyframe(1f, 0f);
-            t2.AddKeyframe(2f, 1f);
+            var t2 = animation.AddTrack((float fill) => m_RoundedFrameLeft.fill = m_RoundedFrameRight.fill = fill);
+            t2.AddKeyframe(60, 0f);
+            t2.AddKeyframe(120, 1f);
 
-            var t3 = m_Player.AddKeyframeTrack((float heightMultiplier) =>
+            var t3 = animation.AddTrack((float heightMultiplier) =>
             {
                 if (!m_ContentContainer.resolvedStyle.height.IsNan())
                 {
@@ -163,8 +166,8 @@ namespace CustomControls
                     m_ContentContainer.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
                 }
             });
-            t3.AddKeyframe(2f, 0f);
-            t3.AddKeyframe(3f, 1f);
+            t3.AddKeyframe(120, 0f);
+            t3.AddKeyframe(180, 1f);
         }
 
         public void SetAnimationProgress(float animationProgress)

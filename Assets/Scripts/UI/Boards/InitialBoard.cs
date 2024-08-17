@@ -21,11 +21,14 @@ namespace UI.Boards
         const int k_DisplaySortOrder = 1;
         const string k_TitleElementName = "title";
         const string k_SubtitleElementName = "subtitle";
+        const string k_MainAnimationName = "MainAnimation";
+        const string k_HideSmoothAnimationName = "HideSmooth";
+        const string k_SubtitleAnimationName = "SubtitleAnimation";
 
         [SerializeField] VisualTreeAsset m_InitialBoardVisualTreeAsset;
 
-        KeyframeTrackPlayer m_Player;
-        KeyframeTrackPlayer m_SubtitleAnimationPlayer;
+        AnimationPlayer m_Player;
+        AnimationPlayer m_SubtitleAnimationPlayer;
 
         Layer m_InitialBoardLayer;
         PostProcessingLayer m_PostProcessingLayer;
@@ -34,14 +37,18 @@ namespace UI.Boards
 
         public void Init()
         {
-            m_Player = new KeyframeTrackPlayer();
-            m_Player.sampling = 60;
+            m_Player = new AnimationPlayer();
+            var anim = new KeyframeAnimation();
+            m_Player.AddAnimation(anim, k_MainAnimationName);
+            m_Player.AddAnimation(CreateHideSmoothAnimation(), k_HideSmoothAnimationName);
+            m_Player.animation = anim;
 
-            m_SubtitleAnimationPlayer = new KeyframeTrackPlayer();
-            m_SubtitleAnimationPlayer.sampling = 60;
+            m_SubtitleAnimationPlayer = new AnimationPlayer();
             m_SubtitleAnimationPlayer.wrapMode = KeyframeSystem.WrapMode.Loop;
+            m_SubtitleAnimationPlayer.AddAnimation(CreateSubtitleAnimation(), k_SubtitleAnimationName);
+            m_SubtitleAnimationPlayer.animation = m_SubtitleAnimationPlayer[k_SubtitleAnimationName];
 
-            m_Player.AddEvent(0, () =>
+            anim.AddEvent(0, () =>
             {
                 if (m_Player.playbackSpeed > 0)
                 {
@@ -68,7 +75,7 @@ namespace UI.Boards
                 }
             });
 
-            var t1 = m_Player.AddKeyframeTrack((float opacity) =>
+            var t1 = anim.AddTrack((float opacity) =>
             {
                 if (m_Title != null)
                 {
@@ -78,17 +85,17 @@ namespace UI.Boards
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(20, 1f);
 
-            var t2 = m_Player.AddKeyframeTrack((float blurSize) =>
+            var blurTrack1 = anim.AddTrack((float blurSize) =>
             {
                 if (m_PostProcessingLayer != null)
                 {
                     m_PostProcessingLayer.blurSize = blurSize;
                 }
             });
-            t2.AddKeyframe(10, Layer.DefaultBlurSize);
-            t2.AddKeyframe(30, 0f);
+            blurTrack1.AddKeyframe(10, Layer.DefaultBlurSize);
+            blurTrack1.AddKeyframe(30, 0f, Easing.StepOut);
 
-            m_Player.AddEvent(30, () =>
+            anim.AddEvent(30, () =>
             {
                 if (m_Player.playbackSpeed > 0)
                 {
@@ -101,7 +108,7 @@ namespace UI.Boards
                 }
             });
 
-            var t3 = m_Player.AddKeyframeTrack((float animationProgress) =>
+            var t3 = anim.AddTrack((float animationProgress) =>
             {
                 if (m_Title != null)
                 {
@@ -111,7 +118,7 @@ namespace UI.Boards
             t3.AddKeyframe(30, 0f);
             t3.AddKeyframe(90, 1f);
 
-            m_Player.AddEvent(90, () =>
+            anim.AddEvent(90, () =>
             {
                 if (m_Player.playbackSpeed > 0)
                 {
@@ -126,7 +133,7 @@ namespace UI.Boards
                 }
             });
 
-            var t4 = m_Player.AddKeyframeTrack((float opacity) =>
+            var t4 = anim.AddTrack((float opacity) =>
             {
                 if (m_Title?.label != null)
                 {
@@ -136,17 +143,11 @@ namespace UI.Boards
             t4.AddKeyframe(90, 0f);
             t4.AddKeyframe(110, 1f);
 
-            var t5 = m_Player.AddKeyframeTrack((float blurSize) =>
-            {
-                if (m_PostProcessingLayer != null)
-                {
-                    m_PostProcessingLayer.blurSize = blurSize;
-                }
-            });
-            t5.AddKeyframe(100, Layer.DefaultBlurSize);
-            t5.AddKeyframe(120, 0f);
+            blurTrack1.AddKeyframe(90, Layer.DefaultBlurSize);
+            blurTrack1.AddKeyframe(100, Layer.DefaultBlurSize);
+            blurTrack1.AddKeyframe(120, 0f, Easing.StepOut);
 
-            m_Player.AddEvent(120, () =>
+            anim.AddEvent(120, () =>
             {
                 if (m_Player.playbackSpeed > 0)
                 {
@@ -162,7 +163,7 @@ namespace UI.Boards
                 }
             });
 
-            var t6 = m_Player.AddKeyframeTrack((float opacity) =>
+            var t6 = anim.AddTrack((float opacity) =>
             {
                 if (m_Subtitle != null)
                 {
@@ -172,17 +173,11 @@ namespace UI.Boards
             t6.AddKeyframe(120, 0f);
             t6.AddKeyframe(140, 1f);
 
-            var t7 = m_Player.AddKeyframeTrack((float blurSize) =>
-            {
-                if (m_PostProcessingLayer != null)
-                {
-                    m_PostProcessingLayer.blurSize = blurSize;
-                }
-            });
-            t7.AddKeyframe(130, Layer.DefaultBlurSize);
-            t7.AddKeyframe(150, 0f);
+            blurTrack1.AddKeyframe(121, Layer.DefaultBlurSize);
+            blurTrack1.AddKeyframe(130, Layer.DefaultBlurSize);
+            blurTrack1.AddKeyframe(150, 0f, Easing.StepOut);
 
-            m_Player.AddEvent(150, () =>
+            anim.AddEvent(150, () =>
             {
                 if (m_Player.playbackSpeed > 0)
                 {
@@ -197,70 +192,111 @@ namespace UI.Boards
                     m_SubtitleAnimationPlayer.Stop();
                 }
             });
+        }
 
-            var t8 = m_SubtitleAnimationPlayer.AddKeyframeTrack((float progress) => m_Subtitle?.SetAnimationProgress(progress));
-            t8.AddKeyframe(0, 0f);
-            t8.AddKeyframe(120, 1f);
-            t8.AddKeyframe(180, 1f);
+        void Clear()
+        {
+            LayerManager.RemoveLayer(m_InitialBoardLayer);
+            LayerManager.RemoveLayer(m_PostProcessingLayer);
+
+            m_Title = null;
+            m_Subtitle = null;
+        }
+
+        KeyframeAnimation CreateSubtitleAnimation()
+        {
+            var animation = new KeyframeAnimation();
+
+            var t1 = animation.AddTrack((float animationProgress) =>
+            {
+                if (m_Subtitle != null)
+                {
+                    m_Subtitle.animationProgress = animationProgress;
+                }
+            });
+            t1.AddKeyframe(0, 0f);
+            t1.AddKeyframe(120, 1f);
+            t1.AddKeyframe(180, 1f);    // Add one second of idle time.
+
+            return animation;
+        }
+
+        KeyframeAnimation CreateHideSmoothAnimation()
+        {
+            var animation = new KeyframeAnimation();
+
+            var t1 = animation.AddTrack((float blurSize) =>
+            {
+                if (m_InitialBoardLayer != null)
+                {
+                    m_InitialBoardLayer.blurSize = blurSize;
+                }
+            });
+            t1.AddKeyframe(0, 0f);
+            t1.AddKeyframe(20, Layer.DefaultBlurSize);
+
+            var t2 = animation.AddTrack((float alpha) =>
+            {
+                if (m_InitialBoardLayer != null)
+                {
+                    m_InitialBoardLayer.alpha = alpha;
+                }
+            });
+            t2.AddKeyframe(10, 1f);
+            t2.AddKeyframe(30, 0f);
+
+            animation.AddEvent(30, () =>
+            {
+                Clear();
+                m_SubtitleAnimationPlayer.Stop();
+            });
+
+            return animation;
         }
 
         public void ShowImmediate()
         {
             m_Player.Stop();
-            m_Player.time = m_Player.duration;
 
+            LayerManager.RemoveLayer(m_PostProcessingLayer);
             if (m_InitialBoardLayer == null)
             {
                 m_InitialBoardLayer = LayerManager.CreateLayer(m_InitialBoardVisualTreeAsset, displaySortOrder: k_DisplaySortOrder);
             }
 
-            if (m_PostProcessingLayer != null)
-            {
-                LayerManager.RemoveLayer(m_PostProcessingLayer);
-            }
+            m_InitialBoardLayer.blurSize = 0f;
+            m_InitialBoardLayer.alpha = 1f;
 
             m_Title = m_InitialBoardLayer.rootVisualElement.Q<DiamondTitle>(k_TitleElementName);
+            m_Title.style.opacity = 1f;
+            m_Title.label.style.opacity = 1f;
+
             m_Subtitle = m_InitialBoardLayer.rootVisualElement.Q<Subtitle>(k_SubtitleElementName);
-            m_Player.Update();
+            m_Subtitle.style.opacity = 1f;
 
-            if (m_SubtitleAnimationPlayer.isPlaying)
-            {
-                m_SubtitleAnimationPlayer.Stop();
-            }
-
+            m_SubtitleAnimationPlayer.animationTime = 0f;
+            m_SubtitleAnimationPlayer.playbackSpeed = 1f;
             m_SubtitleAnimationPlayer.Play();
-        }
-
-        public void HideImmediate()
-        {
-            m_Player.Stop();
-            m_Player.time = 0;
-
-            if (m_InitialBoardLayer != null)
-            {
-                LayerManager.RemoveLayer(m_InitialBoardLayer);
-            }
-
-            if (m_PostProcessingLayer != null)
-            {
-                LayerManager.RemoveLayer(m_PostProcessingLayer);
-            }
-
-            if (m_SubtitleAnimationPlayer.isPlaying)
-            {
-                m_SubtitleAnimationPlayer.Stop();
-            }
         }
 
         public void Show()
         {
+            m_Player.animation = m_Player[k_MainAnimationName];
             m_Player.playbackSpeed = 1f;
             m_Player.Play();
         }
 
         public void Hide()
         {
+            m_Player.animation = m_Player[k_MainAnimationName];
             m_Player.playbackSpeed = -1;
+            m_Player.Play();
+        }
+
+        public void HideSmooth()
+        {
+            m_Player.animation = m_Player[k_HideSmoothAnimationName];
+            m_Player.playbackSpeed = 1f;
             m_Player.Play();
         }
 
@@ -280,7 +316,7 @@ namespace UI.Boards
             }
             else if (Input.GetKeyDown(KeyCode.E))
             {
-                HideImmediate();
+                HideSmooth();
             }
         }
     }

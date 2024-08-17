@@ -12,7 +12,7 @@ public class AnimationManager
 
     class AnimationEntry
     {
-        public Animation animation;
+        public Animation2 animation;
         public Reference<CancellationTokenSource> cst;
     }
 
@@ -51,7 +51,7 @@ public class AnimationManager
         }
     }
 
-    public static void StopAnimation(Animation animation)
+    public static void StopAnimation(Animation2 animation)
     {
         StopAnimation(animation.obj, animation.property);
     }
@@ -106,7 +106,7 @@ public class AnimationManager
         return propertyInfo;
     }
 
-    public static Animation Animate<T>(object obj, AnimationDescriptor<T> animationDescriptor)
+    public static Animation2 Animate<T>(object obj, AnimationDescriptor<T> animationDescriptor)
     {
         var animation = Animate(obj, animationDescriptor.property, animationDescriptor.targetValue);
         animation.time = animationDescriptor.time;
@@ -114,7 +114,7 @@ public class AnimationManager
     }
 
 
-    public static Animation Animate<T>(object obj, string property, T targetValue)
+    public static Animation2 Animate<T>(object obj, string property, T targetValue)
     {
         if (obj == null)
         {
@@ -134,7 +134,7 @@ public class AnimationManager
         var finished = (Reference<bool>)false;
 
         AnimationEntry animationEntry = new AnimationEntry() { cst = cst };
-        Animation animation = null;
+        Animation2 animation = null;
         
         float elapsedTime = 0f;
         T initialValue = (T)propertyInfo.GetValue(obj);
@@ -168,7 +168,7 @@ public class AnimationManager
             }
         }
 
-        animation = new Animation(obj, property, Action(), cst, finished);
+        animation = new Animation2(obj, property, Action(), cst, finished);
         animationEntry.animation = animation;
         m_AnimationRegistry.Add(animationEntry);
 

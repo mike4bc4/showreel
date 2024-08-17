@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace KeyframeSystem
 {
-    public class KeyframeTrackPlayerRunner : MonoBehaviour
+    class AnimationPlayerRunner : MonoBehaviour
     {
-        static KeyframeTrackPlayerRunner s_Instance;
+        static AnimationPlayerRunner s_Instance;
 
         event Action m_OnUpdate;
 
@@ -17,14 +17,14 @@ namespace KeyframeSystem
             remove => instance.m_OnUpdate -= value;
         }
 
-        public static KeyframeTrackPlayerRunner instance
+        public static AnimationPlayerRunner instance
         {
             get
             {
                 if (s_Instance == null)
                 {
-                    var go = new GameObject("KeyframeTrackPlayerRunner");
-                    s_Instance = go.AddComponent<KeyframeTrackPlayerRunner>();
+                    var go = new GameObject("AnimationPlayerRunner");
+                    s_Instance = go.AddComponent<AnimationPlayerRunner>();
                     go.hideFlags |= HideFlags.NotEditable;
                     DontDestroyOnLoad(go);
                 }

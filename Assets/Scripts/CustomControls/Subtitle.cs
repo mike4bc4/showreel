@@ -40,18 +40,18 @@ namespace CustomControls
         Label m_Label;
         VisualElement m_Border;
         float m_BorderScale;
-        KeyframeTrackPlayer m_Player;
+        AnimationPlayer m_Player;
 
         public float animationProgress
         {
-            get => m_Player.time / m_Player.duration;
+            get => m_Player.animationTime / m_Player.duration;
             set
             {
                 var previousFrameIndex = m_Player.frameIndex;
-                m_Player.time = m_Player.duration * Mathf.Clamp01(value);
+                m_Player.animationTime = m_Player.duration * Mathf.Clamp01(value);
                 if (m_Player.frameIndex != previousFrameIndex)
                 {
-                    m_Player.Update();
+                    m_Player.Sample();
                 }
             }
         }
@@ -74,7 +74,12 @@ namespace CustomControls
 
         public Subtitle()
         {
-            m_Player = new KeyframeTrackPlayer();
+            m_Player = new AnimationPlayer();
+            m_Player.sampling = 60;
+            var animation = new KeyframeAnimation();
+            m_Player.AddAnimation(animation, "Animation");
+            m_Player.animation = animation;
+
             AddToClassList(ussClassName);
 
             m_Label = new Label() { name = "label" };
@@ -85,11 +90,11 @@ namespace CustomControls
             m_Border.AddToClassList(borderUssClassName);
             Add(m_Border);
 
-            var t1 = m_Player.AddKeyframeTrack((float translation) => m_Border.style.translate = new Translate(Length.Percent(translation), 0f));
+            var t1 = animation.AddTrack((float translation) => m_Border.style.translate = new Translate(Length.Percent(translation), 0f));
             t1.AddKeyframe(0, -100f, Easing.EaseOutSine);
             t1.AddKeyframe(60, 100f);
 
-            var t2 = m_Player.AddKeyframeTrack((float origin) => m_Border.style.transformOrigin = new TransformOrigin(Length.Percent(origin), 0f));
+            var t2 = animation.AddTrack((float origin) => m_Border.style.transformOrigin = new TransformOrigin(Length.Percent(origin), 0f));
             t2.AddKeyframe(0, 100f, Easing.EaseOutSine);
             t2.AddKeyframe(60, 0);
         }
