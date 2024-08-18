@@ -14,7 +14,7 @@ namespace KeyframeSystem
 
     public class AnimationPlayer
     {
-        enum Status
+        public enum Status
         {
             Stopped,
             Paused,
@@ -26,10 +26,15 @@ namespace KeyframeSystem
         KeyframeAnimation m_Animation;
         float m_PlaybackSpeed;
         float m_AnimationTime;
-        int m_PreviousFrameIndex = 0;
+        int m_PreviousFrameIndex;
         List<TrackEvent> m_ScheduledEvents;
         WrapMode m_WrapMode;
         Status m_Status;
+
+        public Status status
+        {
+            get => m_Status;
+        }
 
         public WrapMode wrapMode
         {
@@ -53,7 +58,14 @@ namespace KeyframeSystem
         public float animationTime
         {
             get => m_AnimationTime;
-            set => m_AnimationTime = value;
+            set
+            {
+                m_AnimationTime = value;
+
+                // Fix previous frame index when jumping in animation time to avoid scheduling events
+                // placed on skipped frames.
+                m_PreviousFrameIndex = m_PlaybackSpeed >= 0 ? frameIndex - 1 : frameIndex + 1;
+            }
         }
 
         public int frameIndex
@@ -226,11 +238,8 @@ namespace KeyframeSystem
 
             foreach (var kv in m_Animations.Where(kvp => kvp.Value == animation).ToList())
             {
-                if (kv.Value == animation)
-                {
-                    m_Animations.Remove(kv.Key);
-                    animation.player = null;
-                }
+                m_Animations.Remove(kv.Key);
+                animation.player = null;
             }
         }
 
