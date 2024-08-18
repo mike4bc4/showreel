@@ -78,7 +78,6 @@ namespace UI
             layer.displaySortOrder = displaySortOrder;
             layer.Init(new Material(layerShader));
             layers.Add(layer);
-            layers.Sort(BaseLayer.Comparer);
 
             RebuildCommandBuffer();
 
@@ -104,7 +103,6 @@ namespace UI
             layer.displaySortOrder = displaySortOrder;
             layer.Init(new Material(layerShader), uiDocument);
             layers.Add(layer);
-            layers.Sort(BaseLayer.Comparer);
 
             RebuildCommandBuffer();
 
@@ -172,6 +170,7 @@ namespace UI
             // coords if UNITY_UV_STARTS_AT_TOP keyword is enabled.
             commandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, outputTexID, blitCopyMaterial);
 
+            layers.Sort(BaseLayer.Comparer);
             for (int i = 0; i < layers.Count; i++)
             {
                 if (!layers[i].visible)
