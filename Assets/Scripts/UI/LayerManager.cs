@@ -22,6 +22,7 @@ namespace UI
 
         List<BaseLayer> m_Layers;
         CommandBuffer m_CommandBuffer;
+        bool m_CommandBufferDirty;
 
         public static int layerCount => layers.Count;
 
@@ -30,6 +31,12 @@ namespace UI
         static List<BaseLayer> layers => s_Instance.m_Layers;
         static new Transform transform => ((Component)s_Instance).transform;
         static Material blitCopyMaterial => s_Instance.m_BlitCopyMaterial;
+
+        static bool commandBufferDirty
+        {
+            get => s_Instance.m_CommandBufferDirty;
+            set => s_Instance.m_CommandBufferDirty = value;
+        }
 
         static CommandBuffer commandBuffer
         {
@@ -48,6 +55,19 @@ namespace UI
             m_Layers = new List<BaseLayer>();
         }
 
+        void LateUpdate()
+        {
+            if (m_CommandBufferDirty)
+            {
+                RebuildCommandBuffer();
+            }
+        }
+
+        public static void MarkCommandBufferDirty()
+        {
+            commandBufferDirty = true;
+        }
+
         public static PostProcessingLayer CreatePostProcessingLayer(string name = "PostProcessingLayer", int displaySortOrder = 0)
         {
             var gameObject = new GameObject(name);
@@ -56,7 +76,6 @@ namespace UI
             var layer = gameObject.AddComponent<PostProcessingLayer>();
             layer.name = name;
             layer.displaySortOrder = displaySortOrder;
-            layer.onDisplaySortOrderChanged += RebuildCommandBuffer;
             layer.Init(new Material(layerShader));
             layers.Add(layer);
             layers.Sort(BaseLayer.Comparer);
@@ -83,7 +102,6 @@ namespace UI
             var layer = gameObject.AddComponent<Layer>();
             layer.name = name;
             layer.displaySortOrder = displaySortOrder;
-            layer.onDisplaySortOrderChanged += RebuildCommandBuffer;
             layer.Init(new Material(layerShader), uiDocument);
             layers.Add(layer);
             layers.Sort(BaseLayer.Comparer);
@@ -131,6 +149,7 @@ namespace UI
 
         static void RebuildCommandBuffer()
         {
+            commandBufferDirty = false;
             if (commandBuffer != null)
             {
                 Camera.main.RemoveCommandBuffer(k_CameraEvent, commandBuffer);
@@ -155,6 +174,11 @@ namespace UI
 
             for (int i = 0; i < layers.Count; i++)
             {
+                if (!layers[i].visible)
+                {
+                    continue;
+                }
+
                 if (layers[i] is Layer layer)
                 {
                     commandBuffer.Blit(layer.uiDocument.panelSettings.targetTexture, outputTexID, layer.material);

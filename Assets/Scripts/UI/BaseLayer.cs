@@ -27,8 +27,6 @@ namespace UI
             }
         }
 
-        public event Action onDisplaySortOrderChanged;
-
         protected bool m_Initialized;
         protected Material m_Material;
 
@@ -38,6 +36,27 @@ namespace UI
         VisualElement m_MaskElement;
         float m_BlurSize;
         Overscan m_Overscan;
+        bool m_Visible;
+        bool m_Active;
+
+        public bool active
+        {
+            get => m_Active;
+            set => m_Active = value;
+        }
+
+        public bool visible
+        {
+            get => m_Visible;
+            set
+            {
+                if (value != m_Visible)
+                {
+                    m_Visible = value;
+                    LayerManager.MarkCommandBufferDirty();
+                }
+            }
+        }
 
         public Material material
         {
@@ -49,8 +68,11 @@ namespace UI
             get => m_DisplaySortOrder;
             set
             {
-                m_DisplaySortOrder = value;
-                onDisplaySortOrderChanged?.Invoke();
+                if (value != m_DisplaySortOrder)
+                {
+                    m_DisplaySortOrder = value;
+                    LayerManager.MarkCommandBufferDirty();
+                }
             }
         }
 
@@ -130,6 +152,8 @@ namespace UI
                 throw new Exception("Cannot initialize multiple times.");
             }
 
+            m_Active = true;
+            m_Visible = true;
             m_Material = material;
             blurSize = 0;
             tint = Color.white;
@@ -140,6 +164,11 @@ namespace UI
 
         void Update()
         {
+            if (!m_Active)
+            {
+                return;
+            }
+
             UpdateTrackedElement();
         }
 
