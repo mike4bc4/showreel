@@ -9,6 +9,7 @@ using Cysharp.Threading.Tasks;
 using KeyframeSystem;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using Utils;
 
@@ -16,7 +17,7 @@ namespace UI.Boards
 {
     public class InitialBoard : Board, IBoard
     {
-        public static readonly string StateID = Guid.NewGuid().ToString();
+        public static readonly string StateName = Guid.NewGuid().ToString("N");
 
         const int k_DisplaySortOrder = 1;
         const string k_TitleElementName = "title";
@@ -37,6 +38,11 @@ namespace UI.Boards
 
         public void Init()
         {
+            var state = BoardManager.StateMachine.AddState(StateName);
+            BoardManager.InputActions.InitialBoard.Any.performed += OnAny;
+            BoardManager.InputActions.InitialBoard.Cancel.performed += OnCancel;
+            BoardManager.InputActions.InitialBoard.Confirm.performed += OnConfirm;
+
             m_Player = new AnimationPlayer();
             var anim = new KeyframeAnimation();
             m_Player.AddAnimation(anim, k_MainAnimationName);
@@ -268,6 +274,7 @@ namespace UI.Boards
             m_InitialBoardLayer.alpha = 1f;
 
             m_Title = m_InitialBoardLayer.rootVisualElement.Q<DiamondTitle>(k_TitleElementName);
+            m_Title.animationProgress = 1f;
             m_Title.style.opacity = 1f;
             m_Title.label.style.opacity = 1f;
 
@@ -300,23 +307,66 @@ namespace UI.Boards
             m_Player.Play();
         }
 
+        public void OnAny(InputAction.CallbackContext ctx)
+        {
+            if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                return;
+            }
+
+            if (m_Player.animation == m_Player[k_MainAnimationName] && m_Player.status.IsPlaying())
+            {
+                ShowImmediate();
+            }
+            else
+            {
+                Debug.Log("Continue");
+            }
+        }
+
+        public void OnCancel(InputAction.CallbackContext ctx)
+        {
+            // TODO: Display quit dialog board.
+            // Dialog box created via new?
+            Debug.Log("OnCancel");
+        }
+
+        public void OnConfirm(InputAction.CallbackContext ctx)
+        {
+            Debug.Log("OnConfirm");
+        }
+
+
+        void OnDestroy()
+        {
+            dialogBoxWrapper?.Dispose();
+        }
+
+        DialogBoxWrapper dialogBoxWrapper;
         void Update()
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
-                Show();
+                dialogBoxWrapper ??= new DialogBoxWrapper();
+                dialogBoxWrapper.Show();
+
+                // UniTask.Create(async () =>
+                // {
+                //     await UniTask.WaitForSeconds(2f);
+                //     dialogBox.Dispose();
+                // });
             }
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-                Hide();
-            }
+            // else if (Input.GetKeyDown(KeyCode.D))
+            // {
+            //     Hide();
+            // }
             else if (Input.GetKeyDown(KeyCode.Q))
             {
-                ShowImmediate();
+                dialogBoxWrapper.Hide();
             }
             else if (Input.GetKeyDown(KeyCode.E))
             {
-                HideSmooth();
+                dialogBoxWrapper.HideImmediate();
             }
         }
     }

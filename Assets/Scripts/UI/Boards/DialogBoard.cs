@@ -26,6 +26,8 @@ namespace UI.Boards
         // const float k_PopupScale = 0.95f;
         // static readonly Color s_EffectLayerColor = new Color(0.85f, 0.85f, 0.85f, 1f);
         // static readonly string s_EffectLayerName = $"EffectLayer({Guid.NewGuid().ToString("N")})";
+        // const string k_MainAnimationName = "MainAnimation";
+        // const string k_TitleAnimationName = "TitleAnimation";
 
         // public event Action leftButtonClicked;
         // public event Action rightButtonClicked;
@@ -46,9 +48,9 @@ namespace UI.Boards
         // VisualElement m_BoxShadow;
         // VisualElement m_ButtonContainer;
         // ButtonsDisplay m_ButtonsDisplay;
-        // KeyframeTrackPlayer m_Player;
-        // KeyframeTrackPlayer m_HidePlayer;
-        // KeyframeTrackPlayer m_TitlePlayer;
+        // AnimationPlayer m_Player;
+        // AnimationPlayer m_HidePlayer;
+        // AnimationPlayer m_TitlePlayer;
 
         // string m_TitleText;
         // string m_LeftButtonLabelText;
@@ -119,10 +121,19 @@ namespace UI.Boards
         //     m_RightButtonLabelText = "Cancel";
         //     m_ContentContainer = new VisualElement() { name = "dialog-content-container" };
 
-        //     m_Player = new KeyframeTrackPlayer();
-        //     m_Player.sampling = 60;
+        //     m_Player = new AnimationPlayer();
+        //     m_Player.AddAnimation(CreateMainAnimation(), k_MainAnimationName);
+        //     m_Player.animation = m_Player[k_MainAnimationName];
 
-        //     m_Player.AddEvent(0, () =>
+        //     m_TitlePlayer = new AnimationPlayer();
+        //     m_TitlePlayer.AddAnimation(CreateTitleAnimation(), k_TitleAnimationName);
+        //     m_TitlePlayer.animation = m_TitlePlayer[k_TitleAnimationName];
+        // }
+
+        // KeyframeAnimation CreateMainAnimation()
+        // {
+        //     var animation = new KeyframeAnimation();
+        //     animation.AddEvent(0, () =>
         //     {
         //         if (m_Player.playbackSpeed > 0)
         //         {
@@ -169,7 +180,7 @@ namespace UI.Boards
         //         {
         //             LayerManager.RemoveLayer(m_DialogBoxLayer);
         //             LayerManager.RemoveLayer(m_BackgroundPostProcessingLayer);
-        //             m_TitlePlayer.frameIndex = 0;
+        //             m_TitlePlayer.animationTime = 0f;
         //             if (m_PostProcessingLayer != null)
         //             {
         //                 LayerManager.RemoveLayer(m_PostProcessingLayer);
@@ -177,7 +188,7 @@ namespace UI.Boards
         //         }
         //     });
 
-        //     var t1 = m_Player.AddKeyframeTrack((float t) =>
+        //     var t1 = animation.AddTrack((float t) =>
         //     {
         //         if (m_BackgroundPostProcessingLayer != null)
         //         {
@@ -187,7 +198,7 @@ namespace UI.Boards
         //     t1.AddKeyframe(0, 0f);
         //     t1.AddKeyframe(30, 1f);
 
-        //     var t2 = m_Player.AddKeyframeTrack((float blurSize) =>
+        //     var t2 = animation.AddTrack((float blurSize) =>
         //     {
         //         if (m_BackgroundPostProcessingLayer != null)
         //         {
@@ -197,7 +208,7 @@ namespace UI.Boards
         //     t2.AddKeyframe(0, 0f);
         //     t2.AddKeyframe(30, Layer.DefaultBlurSize);
 
-        //     var t3 = m_Player.AddKeyframeTrack((float scaleMultiplier) =>
+        //     var t3 = animation.AddTrack((float scaleMultiplier) =>
         //     {
         //         if (m_BoxShadow != null)
         //         {
@@ -207,7 +218,7 @@ namespace UI.Boards
         //     t3.AddKeyframe(20, k_PopupScale);
         //     t3.AddKeyframe(35, 1f);
 
-        //     var t4 = m_Player.AddKeyframeTrack((float alpha) =>
+        //     var t4 = animation.AddTrack((float alpha) =>
         //     {
         //         if (m_DialogBoxLayer != null)
         //         {
@@ -217,7 +228,7 @@ namespace UI.Boards
         //     t4.AddKeyframe(20, 0f);
         //     t4.AddKeyframe(35, 1f);
 
-        //     m_Player.AddEvent(35, () =>
+        //     animation.AddEvent(35, () =>
         //     {
         //         if (m_Player.playbackSpeed > 0)
         //         {
@@ -231,10 +242,13 @@ namespace UI.Boards
         //         }
         //     });
 
-        //     m_TitlePlayer = new KeyframeTrackPlayer();
-        //     m_TitlePlayer.sampling = 60;
+        //     return animation;
+        // }
 
-        //     m_TitlePlayer.AddEvent(0, () =>
+        // KeyframeAnimation CreateTitleAnimation()
+        // {
+        //     var animation = new KeyframeAnimation();
+        //     animation.AddEvent(0, () =>
         //     {
         //         if (m_Player.playbackSpeed > 0)
         //         {
@@ -242,6 +256,7 @@ namespace UI.Boards
         //             m_PostProcessingLayer.overscan = 8f;
         //             m_PostProcessingLayer.maskElement = m_Title;
         //             m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
+
         //         }
         //         else
         //         {
@@ -249,31 +264,31 @@ namespace UI.Boards
         //         }
         //     });
 
-        //     var t5 = m_TitlePlayer.AddKeyframeTrack((float opacity) =>
+        //     var t1 = animation.AddTrack((float opacity) =>
         //     {
         //         if (m_Title != null)
         //         {
         //             m_Title.style.opacity = opacity;
         //         }
         //     });
-        //     t5.AddKeyframe(0, 0f);
-        //     t5.AddKeyframe(20, 1f);
+        //     t1.AddKeyframe(0, 0f);
+        //     t1.AddKeyframe(20, 1f);
 
-        //     var t6 = m_TitlePlayer.AddKeyframeTrack((float blurSize) =>
+        //     var blurTrack = animation.AddTrack((float blurSize) =>
         //     {
         //         if (m_PostProcessingLayer != null)
         //         {
         //             m_PostProcessingLayer.blurSize = blurSize;
         //         }
         //     });
-        //     t6.AddKeyframe(10, BaseLayer.DefaultBlurSize);
-        //     t6.AddKeyframe(30, 0f);
+        //     blurTrack.AddKeyframe(10, BaseLayer.DefaultBlurSize);
+        //     blurTrack.AddKeyframe(30, 0f, Easing.StepOut);
 
-        //     var t7 = m_TitlePlayer.AddKeyframeTrack((float animationProgress) => m_Title?.SetAnimationProgress(animationProgress));
-        //     t7.AddKeyframe(30, 0f);
-        //     t7.AddKeyframe(90, 1f);
+        //     var t3 = animation.AddTrack((float animationProgress) => m_Title?.SetAnimationProgress(animationProgress));
+        //     t3.AddKeyframe(30, 0f);
+        //     t3.AddKeyframe(90, 1f);
 
-        //     m_TitlePlayer.AddEvent(90, () =>
+        //     animation.AddEvent(90, () =>
         //     {
         //         if (m_Player.playbackSpeed > 0)
         //         {
@@ -288,27 +303,20 @@ namespace UI.Boards
         //         }
         //     });
 
-        //     var t8 = m_TitlePlayer.AddKeyframeTrack((float opacity) =>
+        //     var t4 = animation.AddTrack((float opacity) =>
         //     {
         //         if (m_Title?.label != null)
         //         {
         //             m_Title.label.style.opacity = opacity;
         //         }
         //     });
-        //     t8.AddKeyframe(90, 0f);
-        //     t8.AddKeyframe(110, 1f);
+        //     t4.AddKeyframe(90, 0f);
+        //     t4.AddKeyframe(110, 1f);
 
-        //     var t9 = m_TitlePlayer.AddKeyframeTrack((float blurSize) =>
-        //     {
-        //         if (m_PostProcessingLayer != null)
-        //         {
-        //             m_PostProcessingLayer.blurSize = blurSize;
-        //         }
-        //     });
-        //     t9.AddKeyframe(100, BaseLayer.DefaultBlurSize);
-        //     t9.AddKeyframe(120, 0f);
+        //     blurTrack.AddKeyframe(90, BaseLayer.DefaultBlurSize);
+        //     blurTrack.AddKeyframe(120, 0f);
 
-        //     m_TitlePlayer.AddEvent(120, () =>
+        //     animation.AddEvent(120, () =>
         //     {
         //         if (m_Player.playbackSpeed > 0)
         //         {
@@ -321,6 +329,8 @@ namespace UI.Boards
         //             m_PostProcessingLayer.maskElement = m_Title.label;
         //         }
         //     });
+
+        //     return animation;
         // }
 
         // void ApplyButtonsDisplaySettings()
@@ -358,14 +368,35 @@ namespace UI.Boards
         //     return UniTask.CompletedTask;
         // }
 
+
+        // List<DialogBox> m_DialogBoxes = new List<DialogBox>();
+
+        // struct DialogBoxEntry
+        // {
+        //     public DialogBox dialogBox;
+        //     public Layer dialogBoxLayer;
+        //     public PostProcessingLayer dialogBoxBackgroundLayer;
+        // }
+
+        // // public DialogBox CreateDialogBox()
+        // // {
+        // //     var dialogBox = new DialogBox();
+
+        // //     var dialogBoxLayer = LayerManager.CreateLayer();
+        // //     dialogBoxLayer.rootVisualElement.Add(dialogBox);
+
+        // //     m_DialogBoxes.Add(dialogBox);
+        // //     return dialogBox;
+        // // }
+
         // void Update()
         // {
-        //     if (Input.GetKeyDown(KeyCode.A))
+        //     if (Input.GetKeyDown(KeyCode.Z))
         //     {
         //         m_Player.playbackSpeed = 1f;
         //         m_Player.Play();
         //     }
-        //     else if (Input.GetKeyDown(KeyCode.D))
+        //     else if (Input.GetKeyDown(KeyCode.C))
         //     {
         //         m_Player.playbackSpeed = -1f;
         //         m_Player.Play();
@@ -379,9 +410,10 @@ namespace UI.Boards
         //         HideImmediate();
         //     }
         // }
+
         public void Init()
         {
-            // throw new NotImplementedException();
+
         }
     }
 }

@@ -11,8 +11,8 @@ namespace UI.Boards
 {
     public class InterfaceBoard : Board, IBoard
     {
-        // public const int InputSortOrder = 1000;   // Sorting order affects UI element picking.
-        // public const int DisplaySortOrder = 1000;   // Display order affects Layer sorting
+        public const int InputSortOrder = 1000;   // Sorting order affects UI element picking.
+        public const int DisplaySortOrder = 1000;   // Display order affects Layer sorting
 
         // [SerializeField] VisualTreeAsset m_ControlsVta;
 

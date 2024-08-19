@@ -1,24 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
-    <ui:VisualElement name="box-container" class="dialog__box-container">
-        <ui:VisualElement name="box-shadow" class="dialog__box-shadow">
-            <ui:VisualElement name="box" class="dialog__box">
-                <CustomControls.DiamondTitle name="title" style="flex-shrink: 0;" />
-                <CustomControls.ScrollBox scroll-mode="Smooth" name="scroll-box" style="display: flex; align-self: stretch; margin-top: 48px; margin-bottom: 48px; flex-grow: 1;">
-                    <ui:Label tabindex="-1" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean maximus porttitor enim, vel consequat nulla sodales vel. Suspendisse interdum iaculis eros et aliquam. Nunc risus ex, imperdiet vitae tincidunt ut, vehicula id leo. In tincidunt tempor ante ac ornare. Quisque aliquam auctor mi, eget bibendum sapien pulvinar eget. Aliquam ut odio felis. Curabitur viverra ipsum eget lacus bibendum, vel imperdiet ligula pretium. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut cursus turpis a odio consectetur, a vulputate ante suscipit. Phasellus a commodo ex, ut malesuada quam. Phasellus ut nunc at dolor rutrum imperdiet. Vivamus eu nisl eu metus sagittis vehicula. Vivamus ultricies, erat eu tempus tincidunt, ex nibh vulputate nisl, at porta augue justo ornare magna. In hac habitasse platea dictumst. Maecenas sit amet massa sem. Aliquam sit amet nisl lacus.&#10;" parse-escape-sequences="true" display-tooltip-when-elided="true" name="label" style="-unity-font-definition: url(&quot;project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&amp;guid=e902f648eb4a5e341813fb76a8cf3ba5&amp;type=2#ModernSans-Light SDF&quot;); color: rgb(51, 51, 51); -unity-text-align: upper-left; white-space: normal; display: flex;" />
-                    <ui:Label tabindex="-1" text="Sed at hendrerit purus. Pellentesque eget nisl et purus tristique rutrum. Cras vitae mattis eros. Mauris fringilla justo eu lobortis posuere. Nullam ac urna at sapien condimentum pulvinar et ut eros. Nullam tempus maximus nisl nec sodales. Mauris efficitur ante mi. Morbi ultrices, odio a scelerisque finibus, augue lacus egestas sapien, eu egestas est tellus non eros. In feugiat nisi nulla, at lobortis libero placerat quis. Nam tempus ac nunc ut mollis. Sed egestas nibh in metus posuere, vitae accumsan diam malesuada. Quisque non pharetra quam. Sed pharetra mi id quam tempus euismod. " parse-escape-sequences="true" display-tooltip-when-elided="true" name="label" style="-unity-font-definition: url(&quot;project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&amp;guid=e902f648eb4a5e341813fb76a8cf3ba5&amp;type=2#ModernSans-Light SDF&quot;); color: rgb(51, 51, 51); -unity-text-align: upper-left; white-space: normal; display: flex;" />
-                </CustomControls.ScrollBox>
-                <ui:VisualElement name="button-container" class="dialog__box__button-container">
-                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="left-button" class="interface__button" style="flex-shrink: 0; display: flex;">
-                        <ui:Label tabindex="-1" text="Confirm" parse-escape-sequences="true" display-tooltip-when-elided="true" name="text" />
-                        <ui:VisualElement name="border" />
-                    </ui:Button>
-                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="right-button" class="interface__button" style="flex-shrink: 0;">
-                        <ui:Label tabindex="-1" text="Cancel" parse-escape-sequences="true" display-tooltip-when-elided="true" name="text" />
-                        <ui:VisualElement name="border" />
-                    </ui:Button>
-                </ui:VisualElement>
-            </ui:VisualElement>
-        </ui:VisualElement>
-    </ui:VisualElement>
+    <UI.Controls.DialogBox />
 </ui:UXML>

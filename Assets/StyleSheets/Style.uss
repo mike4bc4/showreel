@@ -35,7 +35,7 @@
 .diamond-title {
     flex-direction: row;
     align-items: flex-end;
-    justify-content: space-between;
+    justify-content: center;
     -unity-font-style: normal;
 }
 
@@ -446,6 +446,7 @@
     transition-duration: 0.2s, 0.1s, 0.2s;
     scale: 1 1;
     overflow: hidden;
+    align-self: center;
 }
 
 .interface__button:hover {
@@ -522,7 +523,6 @@
 
 .dialog__box {
     background-color: var(--color-background);
-    align-items: center;
     border-top-width: 1px;
     border-right-width: 1px;
     border-bottom-width: 1px;
@@ -712,4 +712,55 @@
     height: 2px;
     translate: -100% 0;
     transform-origin: right;
+}
+
+.dialog-box {
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.dialog-box__box {
+    flex-grow: 1;
+    background-color: var(--color-background);
+    padding-top: 48px;
+    padding-right: 48px;
+    padding-bottom: 48px;
+    padding-left: 48px;
+    width: 768px;
+    max-height: 768px;
+    min-height: 384px;
+}
+
+.dialog-box__scroll-box {
+    padding-top: 48px;
+    padding-bottom: 48px;
+    flex-grow: 1;
+}
+
+.dialog-box__button-container {
+    flex-direction: row;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.dialog-box__button-container--right {
+    justify-content: flex-end;
+}
+
+.dialog-box__button-container--center {
+    justify-content: center;
+}
+
+.dialog-box__shadow {
+    background-image: url("project://database/Assets/Textures/Shadow.png?fileID=2800000&guid=e531b988d4f50f64faddbe8662b6731f&type=3#Shadow");
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
+    -unity-slice-left: 10;
+    -unity-slice-top: 10;
+    -unity-slice-right: 10;
+    -unity-slice-bottom: 10;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
 }

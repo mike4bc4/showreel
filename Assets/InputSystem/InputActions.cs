@@ -130,6 +130,74 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""InitialBoard"",
+            ""id"": ""6b0ab165-a6ba-48bf-887c-2040071f6f03"",
+            ""actions"": [
+                {
+                    ""name"": ""Any"",
+                    ""type"": ""Button"",
+                    ""id"": ""08f7b6a1-ff66-4068-a901-7079c6f819b3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""68f6d7de-542c-4930-a0a7-3fb39ebc5219"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Confirm"",
+                    ""type"": ""Button"",
+                    ""id"": ""a2dca9a3-563b-4d3c-9e48-07ac711de16e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""f4031f9f-04f4-4911-bcb3-676d748282e5"",
+                    ""path"": ""<Keyboard>/anyKey"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Any"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6ed1f953-9b2b-4e23-bf96-9b122fc7adbc"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6d811b38-39ef-47da-8ea6-fd90f9558c1b"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -141,6 +209,11 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_UI_Confirm = m_UI.FindAction("Confirm", throwIfNotFound: true);
         m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
         m_UI_Any = m_UI.FindAction("Any", throwIfNotFound: true);
+        // InitialBoard
+        m_InitialBoard = asset.FindActionMap("InitialBoard", throwIfNotFound: true);
+        m_InitialBoard_Any = m_InitialBoard.FindAction("Any", throwIfNotFound: true);
+        m_InitialBoard_Cancel = m_InitialBoard.FindAction("Cancel", throwIfNotFound: true);
+        m_InitialBoard_Confirm = m_InitialBoard.FindAction("Confirm", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -276,6 +349,68 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
+
+    // InitialBoard
+    private readonly InputActionMap m_InitialBoard;
+    private List<IInitialBoardActions> m_InitialBoardActionsCallbackInterfaces = new List<IInitialBoardActions>();
+    private readonly InputAction m_InitialBoard_Any;
+    private readonly InputAction m_InitialBoard_Cancel;
+    private readonly InputAction m_InitialBoard_Confirm;
+    public struct InitialBoardActions
+    {
+        private @InputActions m_Wrapper;
+        public InitialBoardActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Any => m_Wrapper.m_InitialBoard_Any;
+        public InputAction @Cancel => m_Wrapper.m_InitialBoard_Cancel;
+        public InputAction @Confirm => m_Wrapper.m_InitialBoard_Confirm;
+        public InputActionMap Get() { return m_Wrapper.m_InitialBoard; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(InitialBoardActions set) { return set.Get(); }
+        public void AddCallbacks(IInitialBoardActions instance)
+        {
+            if (instance == null || m_Wrapper.m_InitialBoardActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_InitialBoardActionsCallbackInterfaces.Add(instance);
+            @Any.started += instance.OnAny;
+            @Any.performed += instance.OnAny;
+            @Any.canceled += instance.OnAny;
+            @Cancel.started += instance.OnCancel;
+            @Cancel.performed += instance.OnCancel;
+            @Cancel.canceled += instance.OnCancel;
+            @Confirm.started += instance.OnConfirm;
+            @Confirm.performed += instance.OnConfirm;
+            @Confirm.canceled += instance.OnConfirm;
+        }
+
+        private void UnregisterCallbacks(IInitialBoardActions instance)
+        {
+            @Any.started -= instance.OnAny;
+            @Any.performed -= instance.OnAny;
+            @Any.canceled -= instance.OnAny;
+            @Cancel.started -= instance.OnCancel;
+            @Cancel.performed -= instance.OnCancel;
+            @Cancel.canceled -= instance.OnCancel;
+            @Confirm.started -= instance.OnConfirm;
+            @Confirm.performed -= instance.OnConfirm;
+            @Confirm.canceled -= instance.OnConfirm;
+        }
+
+        public void RemoveCallbacks(IInitialBoardActions instance)
+        {
+            if (m_Wrapper.m_InitialBoardActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IInitialBoardActions instance)
+        {
+            foreach (var item in m_Wrapper.m_InitialBoardActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_InitialBoardActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public InitialBoardActions @InitialBoard => new InitialBoardActions(this);
     public interface IUIActions
     {
         void OnLeft(InputAction.CallbackContext context);
@@ -283,5 +418,11 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         void OnConfirm(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
         void OnAny(InputAction.CallbackContext context);
+    }
+    public interface IInitialBoardActions
+    {
+        void OnAny(InputAction.CallbackContext context);
+        void OnCancel(InputAction.CallbackContext context);
+        void OnConfirm(InputAction.CallbackContext context);
     }
 }
