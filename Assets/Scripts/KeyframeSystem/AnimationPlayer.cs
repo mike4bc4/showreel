@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace KeyframeSystem
 {
@@ -174,6 +175,14 @@ namespace KeyframeSystem
                     if (evt.currentDelay == 0)
                     {
                         evt.action?.Invoke();
+
+                        // Because event may call Pause or Stop method we should check whether
+                        // player have to be stopped immediately.
+                        if (m_Status != Status.Playing)
+                        {
+                            return;
+                        }
+
                         m_ScheduledEvents.RemoveAt(i);
                     }
                     else
