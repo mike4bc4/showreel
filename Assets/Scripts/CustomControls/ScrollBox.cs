@@ -136,6 +136,10 @@ namespace CustomControls
             RegisterCallback<WheelEvent>(OnWheel);
             m_Viewport.RegisterCallback<GeometryChangedEvent>(OnGeometryChangedEvent);
             contentContainer.RegisterCallback<GeometryChangedEvent>(OnGeometryChangedEvent);
+
+            scrolledLines = 3;
+            lineHeight = 24;
+            deceleration = 8f;
         }
 
         void OnWheel(WheelEvent evt)
