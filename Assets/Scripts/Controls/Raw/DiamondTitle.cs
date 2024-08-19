@@ -18,12 +18,14 @@ namespace Controls.Raw
         const string k_LabelUssClassName = k_UssClassName + "__label";
         const string k_MeasurementVariantLabelUssClassName = k_LabelUssClassName + "--measurement";
         const string k_LabelContainerUssClassName = k_UssClassName + "__label-container";
+        const string k_UnfoldAnimationName = "UnfoldAnimation";
+        const string k_DefaultText = "Label";
 
         public new class UxmlFactory : UxmlFactory<DiamondTitle, UxmlTraits> { }
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            UxmlStringAttributeDescription m_Text = new UxmlStringAttributeDescription() { name = "text", defaultValue = "Label" };
+            UxmlStringAttributeDescription m_Text = new UxmlStringAttributeDescription() { name = "text", defaultValue = k_DefaultText };
             UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
@@ -81,10 +83,8 @@ namespace Controls.Raw
         public DiamondTitle()
         {
             m_Player = new AnimationPlayer();
-            m_Player.sampling = 60;
-            var animation = new KeyframeSystem.KeyframeAnimation();
-            m_Player.AddAnimation(animation, "Animation");
-            m_Player.animation = animation;
+            m_Player.AddAnimation(CreateUnfoldAnimation(), k_UnfoldAnimationName);
+            m_Player.animation = m_Player[k_UnfoldAnimationName];
 
             AddToClassList(k_UssClassName);
 
@@ -121,6 +121,13 @@ namespace Controls.Raw
             m_DiamondRight.AddToClassList(k_DiamondRightUssClassName);
             Add(m_DiamondRight);
 
+            text = k_DefaultText;
+        }
+
+        KeyframeAnimation CreateUnfoldAnimation()
+        {
+            var animation = new KeyframeAnimation();
+
             var t1 = animation.AddTrack((float animationProgress) => m_DiamondRight.animationProgress = m_DiamondLeft.animationProgress = animationProgress);
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(60, 1f);
@@ -144,6 +151,8 @@ namespace Controls.Raw
             });
             t2.AddKeyframe(60, 0f);
             t2.AddKeyframe(120, 1f);
+
+            return animation;
         }
     }
 }
