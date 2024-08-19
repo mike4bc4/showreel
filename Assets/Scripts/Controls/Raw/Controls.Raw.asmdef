@@ -1,0 +1,17 @@
+{
+    "name": "Controls.Raw",
+    "rootNamespace": "",
+    "references": [
+        "GUID:047a95ed6a032f740aa9e990856565d1",
+        "GUID:0a149036d35609a48ac4602ee2a15a23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using CustomControls;
+// using CustomControls;
 using UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -127,22 +127,21 @@ public class TextureEditor : MonoBehaviour
         GL.PopMatrix();
     }
 
-    [ContextMenu("Test")]
-    void Test()
-    {
-        Debug.Log(m_TestRT.graphicsFormat);
+    // [ContextMenu("Test")]
+    // void Test()
+    // {
+    //     Debug.Log(m_TestRT.graphicsFormat);
 
-        var element = m_TestUIDocument.rootVisualElement.Q<ListElement>().Q("text-container");
-        m_Texture = CreateMask(m_TestUIDocument.rootVisualElement.layout.size, element.worldBound);
+    //     var element = m_TestUIDocument.rootVisualElement.Q<ListElement>().Q("text-container");
+    //     m_Texture = CreateMask(m_TestUIDocument.rootVisualElement.layout.size, element.worldBound);
 
-        var listViewport = m_TestUIDocument.rootVisualElement.Q<VisualElement>("list-viewport");
-        listViewport.style.backgroundImage = m_Texture;
-        listViewport.style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 0.5f);
+    //     var listViewport = m_TestUIDocument.rootVisualElement.Q<VisualElement>("list-viewport");
+    //     listViewport.style.backgroundImage = m_Texture;
+    //     listViewport.style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 0.5f);
 
-        var rt = m_TestUIDocument.panelSettings.targetTexture;
-        var tex = Crop(rt, element.worldBound);
-        m_Texture = tex;
-
-    }
+    //     var rt = m_TestUIDocument.panelSettings.targetTexture;
+    //     var tex = Crop(rt, element.worldBound);
+    //     m_Texture = tex;
+    // }
 
 }

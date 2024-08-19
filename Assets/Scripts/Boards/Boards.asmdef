@@ -1,0 +1,23 @@
+{
+    "name": "Boards",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:047a95ed6a032f740aa9e990856565d1",
+        "GUID:48af7fee0de5b68429d5abb43800f5ec",
+        "GUID:f32f7d8ffc480604f91c0d776d16737d",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:4ff1019482fa7e44fa3938aa07335f87",
+        "GUID:bc24da3223fb43a478fa11b6329afd6c",
+        "GUID:2128b31df46012b48864dcde81499d57"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
