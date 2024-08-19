@@ -77,7 +77,7 @@ namespace Layers
             layer.Init(new Material(layerShader));
             layers.Add(layer);
 
-            RebuildCommandBuffer();
+            MarkCommandBufferDirty();
 
             return layer;
         }
@@ -102,7 +102,7 @@ namespace Layers
             layer.Init(new Material(layerShader), uiDocument);
             layers.Add(layer);
 
-            RebuildCommandBuffer();
+            MarkCommandBufferDirty();
 
             return layer;
         }
@@ -118,7 +118,7 @@ namespace Layers
             layers.Remove(baseLayer);
             DestroyImmediate(baseLayer.gameObject);
 
-            RebuildCommandBuffer();
+            MarkCommandBufferDirty();
         }
 
         public static void RemoveLayer(string name)
