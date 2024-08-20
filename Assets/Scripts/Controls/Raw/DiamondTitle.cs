@@ -121,7 +121,14 @@ namespace Controls.Raw
             m_DiamondRight.AddToClassList(k_DiamondRightUssClassName);
             Add(m_DiamondRight);
 
+            m_MeasurementLabel.RegisterCallback<GeometryChangedEvent>(OnMeasurementLabelGeometryChanged);
+
             text = k_DefaultText;
+        }
+
+        void OnMeasurementLabelGeometryChanged(GeometryChangedEvent evt)
+        {
+            m_Player.Sample();
         }
 
         KeyframeAnimation CreateUnfoldAnimation()
@@ -132,23 +139,7 @@ namespace Controls.Raw
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(60, 1f);
 
-            var t2 = animation.AddTrack((float widthScale) =>
-            {
-                if (!unfoldedWidth.IsNaN())
-                {
-                    m_LabelContainer.style.width = unfoldedWidth * widthScale;
-                }
-                else
-                {
-                    void OnGeometryChanged(GeometryChangedEvent evt)
-                    {
-                        m_LabelContainer.style.width = unfoldedWidth * widthScale;
-                        m_MeasurementLabel.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-                    }
-
-                    m_MeasurementLabel.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-                }
-            });
+            var t2 = animation.AddTrack((float widthScale) => m_LabelContainer.style.width = unfoldedWidth * widthScale);
             t2.AddKeyframe(60, 0f);
             t2.AddKeyframe(120, 1f);
 
