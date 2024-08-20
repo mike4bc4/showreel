@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Video;
 
-namespace UI.Boards
+namespace Boards
 {
     public class TestBoard : Board, IBoard
     {
@@ -27,11 +27,6 @@ namespace UI.Boards
         public void HideImmediate()
         {
             throw new NotImplementedException();
-        }
-
-        public void Init()
-        {
-            // LayerManager.CreateLayer(m_DiamondFrameVta, "DiamondFrameLayer");
         }
 
         public UniTask Show(CancellationToken cancellationToken = default)

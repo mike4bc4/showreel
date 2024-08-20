@@ -5,9 +5,8 @@ using Cysharp.Threading.Tasks;
 using KeyframeSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
-// using Utils;
 
-namespace UI.Boards
+namespace Boards
 {
     public class InterfaceBoard : Board, IBoard
     {
@@ -115,9 +114,5 @@ namespace UI.Boards
         //         HideImmediate();
         //     }
         // }
-        public void Init()
-        {
-            // throw new System.NotImplementedException();
-        }
     }
 }

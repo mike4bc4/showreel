@@ -2,14 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-// using CustomControls;
 using Cysharp.Threading.Tasks;
 using KeyframeSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
-// using Utils;
 
-namespace UI.Boards
+namespace Boards
 {
     public enum ButtonsDisplay
     {
@@ -411,9 +409,9 @@ namespace UI.Boards
         //     }
         // }
 
-        public void Init()
-        {
+        // public void Init()
+        // {
 
-        }
+        // }
     }
 }

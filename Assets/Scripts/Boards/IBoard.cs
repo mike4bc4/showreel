@@ -4,7 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace UI.Boards
+namespace Boards
 {
     public interface IBoard
     {
@@ -12,6 +12,7 @@ namespace UI.Boards
         // public UniTask Hide(CancellationToken cancellationToken = default);
         // public void ShowImmediate();
         // public void HideImmediate();
-        public void Init();
+        // public void EarlyInit() { }
+        // public void Init();
     }
 }
