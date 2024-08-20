@@ -5,7 +5,7 @@ using Controls.Raw;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-[assembly:InternalsVisibleTo("Controls")]
+[assembly: InternalsVisibleTo("Controls")]
 
 namespace Controls.Raw
 {
@@ -93,6 +93,16 @@ namespace Controls.Raw
                 m_RightButton.SetEnabled(enableRightButton);
                 m_RightButton.style.display = enableRightButton ? DisplayStyle.Flex : DisplayStyle.None;
             }
+        }
+
+        public Button rightButton
+        {
+            get => m_RightButton;
+        }
+
+        public Button leftButton
+        {
+            get => m_LeftButton;
         }
 
         public override VisualElement contentContainer
