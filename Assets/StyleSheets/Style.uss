@@ -764,3 +764,9 @@
     padding-bottom: 10px;
     padding-left: 10px;
 }
+
+.dialog-box__label--quit {
+    margin-top: 32px;
+    margin-bottom: 32px;
+    -unity-text-align: middle-center;
+}

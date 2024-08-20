@@ -6,17 +6,15 @@ using KeyframeSystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
-// using Utils;
 using Layers;
 using Controls.Raw;
 using Controls;
+using FSM;
 
-namespace UI.Boards
+namespace Boards
 {
     public class InitialBoard : Board, IBoard
     {
-        public static readonly string StateName = Guid.NewGuid().ToString("N");
-
         const int k_DisplaySortOrder = 1;
         const string k_TitleElementName = "title";
         const string k_SubtitleElementName = "subtitle";
@@ -33,13 +31,18 @@ namespace UI.Boards
         PostProcessingLayer m_PostProcessingLayer;
         DiamondTitle m_Title;
         Subtitle m_Subtitle;
+        DialogBox m_QuitDialogBox;
 
-        public void Init()
+        public InputActions.ActionMapsWrapper.InitialBoardActions inputActions
         {
-            var state = BoardManager.StateMachine.AddState(StateName);
-            BoardManager.ActionGroup.InitialBoard.Any.performed += OnAny;
-            BoardManager.ActionGroup.InitialBoard.Cancel.performed += OnCancel;
-            BoardManager.ActionGroup.InitialBoard.Confirm.performed += OnConfirm;
+            get => BoardManager.ActionMapsWrapper.InitialBoard;
+        }
+
+        public override void Init()
+        {
+            inputActions.Any.performed += OnAny;
+            inputActions.Cancel.performed += OnCancel;
+            inputActions.Confirm.performed += OnConfirm;
 
             m_Player = new AnimationPlayer();
             var anim = new KeyframeAnimation();
@@ -307,7 +310,7 @@ namespace UI.Boards
 
         public void OnAny(InputAction.CallbackContext ctx)
         {
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (Keyboard.current.escapeKey.wasPressedThisFrame || m_QuitDialogBox != null)
             {
                 return;
             }
@@ -324,48 +327,47 @@ namespace UI.Boards
 
         public void OnCancel(InputAction.CallbackContext ctx)
         {
-            // TODO: Display quit dialog board.
-            // Dialog box created via new?
-            // Debug.Log("OnCancel");
-            
+            if (m_QuitDialogBox == null)
+            {
+                m_QuitDialogBox = DialogBox.CreateQuitDialogBox();
+                m_QuitDialogBox.onHide += m_QuitDialogBox.Dispose;
+                m_QuitDialogBox.onRightButtonClicked += OnQuitDialogBoxBackgroundOrRightButtonClicked;
+                m_QuitDialogBox.onBackgroundClicked += OnQuitDialogBoxBackgroundOrRightButtonClicked;
+                m_QuitDialogBox.onLeftButtonClicked += OnQuitDialogBoxLeftButtonClicked;
+                m_QuitDialogBox.Show();
+            }
+            else
+            {
+                m_QuitDialogBox.Hide();
+            }
+        }
+
+        void OnQuitDialogBoxBackgroundOrRightButtonClicked()
+        {
+            m_QuitDialogBox.Hide();
+        }
+
+        void OnQuitDialogBoxLeftButtonClicked()
+        {
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
         }
 
         public void OnConfirm(InputAction.CallbackContext ctx)
         {
-            Debug.Log("OnConfirm");
+            if (m_QuitDialogBox != null)
+            {
+                OnQuitDialogBoxLeftButtonClicked();
+            }
         }
-
 
         void OnDestroy()
         {
-            dialogBoxWrapper?.Dispose();
-        }
-
-        DialogBox dialogBoxWrapper;
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.A))
+            if (m_QuitDialogBox != null)
             {
-                dialogBoxWrapper ??= new DialogBox();
-                dialogBoxWrapper.Show();
-
-                // UniTask.Create(async () =>
-                // {
-                //     await UniTask.WaitForSeconds(2f);
-                //     dialogBox.Dispose();
-                // });
-            }
-            // else if (Input.GetKeyDown(KeyCode.D))
-            // {
-            //     Hide();
-            // }
-            else if (Input.GetKeyDown(KeyCode.Q))
-            {
-                dialogBoxWrapper.Hide();
-            }
-            else if (Input.GetKeyDown(KeyCode.E))
-            {
-                dialogBoxWrapper.HideImmediate();
+                m_QuitDialogBox.Dispose();
             }
         }
     }

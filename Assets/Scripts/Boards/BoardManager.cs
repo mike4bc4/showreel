@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Controls;
 using FSM;
 using InputActions;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
-namespace UI.Boards
+namespace Boards
 {
     public class BoardManager : MonoBehaviour
     {
@@ -17,7 +19,7 @@ namespace UI.Boards
         StateMachine m_StateMachine;
         InterfaceBoard m_InterfaceBoard;
         DialogBoard m_DialogBoard;
-        ActionGroup m_ActionGroup;
+        ActionMapsWrapper m_ActionMapsWrapper;
 
         public static InterfaceBoard InterfaceBoard
         {
@@ -46,7 +48,7 @@ namespace UI.Boards
         }
 
         public static StateMachine StateMachine => s_Instance.m_StateMachine;
-        public static ActionGroup ActionGroup => s_Instance.m_ActionGroup;
+        public static ActionMapsWrapper ActionMapsWrapper => s_Instance.m_ActionMapsWrapper;
 
         void Awake()
         {
@@ -57,26 +59,25 @@ namespace UI.Boards
             }
 
             s_Instance = this;
-            m_ActionGroup = new ActionGroup();
-            m_StateMachine = new StateMachine();
+            m_ActionMapsWrapper = new ActionMapsWrapper();
             m_Boards = GetComponentsInChildren<Board>(true).ToList();
         }
 
         void Start()
         {
-            foreach (IBoard board in m_Boards)
+            foreach (Board board in m_Boards)
+            {
+                board.EarlyInit();
+            }
+
+            foreach (Board board in m_Boards)
             {
                 board.Init();
             }
 
-            // m_StateMachine.initialState.AddTransition(InitialBoard.StateName, () =>
-            // {
-            //     var board = GetBoard<InitialBoard>();
-            //     board.Show();
-            //     InputActions.InitialBoard.Enable();
-            // });
-
-            // m_StateMachine.state = m_StateMachine[InitialBoard.StateName];
+            var initialBoard = GetBoard<InitialBoard>();
+            initialBoard.Show();
+            initialBoard.inputActions.Enable();
             GetBoard<BackgroundBoard>().ShowImmediate();
         }
 
