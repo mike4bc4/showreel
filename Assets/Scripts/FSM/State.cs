@@ -42,6 +42,11 @@ namespace FSM
             m_Transitions = new Dictionary<string, Transition>();
         }
 
+        public Transition AddTransition(State state, Action action = null)
+        {
+            return AddTransition(state.name, action);
+        }
+
         public Transition AddTransition(string toName, Action action = null)
         {
             var target = m_StateMachine[toName];

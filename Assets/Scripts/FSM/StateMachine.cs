@@ -54,9 +54,17 @@ namespace FSM
             }
         }
 
-        public State AddState(string name)
+        /// <summary>
+        /// Adds new state to state machine with give name. If name parameter is default, state will
+        /// be initialized with GUID as a name.
+        /// </summary>
+        public State AddState(string name = default)
         {
-            if (m_States.ContainsKey(name))
+            if (string.IsNullOrEmpty(name))
+            {
+                name = Guid.NewGuid().ToString("N");
+            }
+            else if (m_States.ContainsKey(name))
             {
                 throw new Exception($"State named '{name}' already exist.");
             }
