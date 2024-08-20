@@ -7,21 +7,27 @@ using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Layers;
+using Templates;
 
 namespace Controls
 {
-    public class DialogBox : IDisposable
+    public class DialogBox : DisposableObject
     {
         const int k_DefaultDisplaySortOrder = 100;
         const string k_ShowHideAnimationName = "ShowHideAnimation";
         const string k_TitleAnimationName = "TitleAnimation";
         const float k_PopupScale = 0.95f;
+        const string k_DialogBoxLabelQuitVariantUssClassName = "dialog-box__label--quit";
         static readonly Color s_BackgroundLayerColor = new Color(0.85f, 0.85f, 0.85f, 1f);
+
+        public event Action onHide;
+        public event Action onRightButtonClicked;
+        public event Action onLeftButtonClicked;
+        public event Action onBackgroundClicked;
 
         Layer m_Layer;
         PostProcessingLayer m_BackgroundPostProcessingLayer;
         PostProcessingLayer m_PostProcessingLayer;
-        bool m_Disposed;
         Controls.Raw.DialogBox m_DialogBox;
         AnimationPlayer m_ShowHideAnimationPlayer;
         AnimationPlayer m_TitleAnimationPlayer;
@@ -74,6 +80,16 @@ namespace Controls
             displaySortOrder = k_DefaultDisplaySortOrder;
 
             m_DialogBox = new Controls.Raw.DialogBox();
+            m_DialogBox.rightButton.clicked += () => onRightButtonClicked?.Invoke();
+            m_DialogBox.leftButton.clicked += () => onLeftButtonClicked?.Invoke();
+            m_DialogBox.RegisterCallback<ClickEvent>(evt =>
+            {
+                if (evt.target == m_DialogBox)
+                {
+                    onBackgroundClicked?.Invoke();
+                }
+            });
+
             m_Layer.rootVisualElement.Add(m_DialogBox);
 
             m_ShowHideAnimationPlayer = new AnimationPlayer();
@@ -83,8 +99,6 @@ namespace Controls
             m_TitleAnimationPlayer = new AnimationPlayer();
             m_TitleAnimationPlayer.AddAnimation(CreateTitleAnimation(), k_TitleAnimationName);
             m_TitleAnimationPlayer.animation = m_TitleAnimationPlayer[k_TitleAnimationName];
-
-            var go = new GameObject();
 
             HideImmediate();
         }
@@ -117,6 +131,8 @@ namespace Controls
 
                     m_PostProcessingLayer.visible = false;
                     m_TitleAnimationPlayer.animationTime = 0f;
+
+                    onHide?.Invoke();
                 }
             });
             var t1 = animation.AddTrack((float t) => m_BackgroundPostProcessingLayer.tint = Color.Lerp(Color.white, s_BackgroundLayerColor, t));
@@ -124,8 +140,8 @@ namespace Controls
             t1.AddKeyframe(30, 1f);
 
             var t2 = animation.AddTrack((float blurSize) => m_BackgroundPostProcessingLayer.blurSize = blurSize);
-            t2.AddKeyframe(0, PostProcessingLayer.DefaultBlurSize);
-            t2.AddKeyframe(30, 0f);
+            t2.AddKeyframe(0, 0f);
+            t2.AddKeyframe(30, PostProcessingLayer.DefaultBlurSize);
 
             var t3 = animation.AddTrack((float scaleMultiplier) => m_DialogBox.shadow.style.scale = Vector2.one * scaleMultiplier);
             t3.AddKeyframe(20, k_PopupScale);
@@ -222,13 +238,7 @@ namespace Controls
             m_ShowHideAnimationPlayer.Play();
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (m_Disposed)
             {
@@ -243,6 +253,22 @@ namespace Controls
             LayerManager.RemoveLayer(m_PostProcessingLayer);
 
             m_Disposed = true;
+        }
+
+        public static DialogBox CreateQuitDialogBox()
+        {
+            var dialogBox = new DialogBox();
+
+            dialogBox.titleLabel = "Quit?";
+            dialogBox.rightButtonLabel = "Cancel";
+            dialogBox.leftButtonLabel = "Yes";
+
+            var label = new Label();
+            label.text = "Do you want to close application?";
+            label.AddToClassList(k_DialogBoxLabelQuitVariantUssClassName);
+            dialogBox.contentContainer.Add(label);
+
+            return dialogBox;
         }
     }
 }
