@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Utils
+namespace Utils2
 {
     public static class VisualElementUtils
     {

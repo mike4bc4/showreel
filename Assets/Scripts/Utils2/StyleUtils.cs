@@ -8,7 +8,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Utils
+namespace Utils2
 {
     public class StyleTransition
     {

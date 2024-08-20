@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Utils
+namespace Utils2
 {
     public static class UniTaskUtils
     {

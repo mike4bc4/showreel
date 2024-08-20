@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Utils
+namespace Utils2
 {
     public static class ResolvedStyleUtils
     {
