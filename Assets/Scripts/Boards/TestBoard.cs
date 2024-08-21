@@ -12,59 +12,59 @@ namespace Boards
 {
     public class TestBoard : Board, IBoard
     {
-        public static readonly string StateID = Guid.NewGuid().ToString();
+        // public static readonly string StateID = Guid.NewGuid().ToString();
 
-        [SerializeField] VisualTreeAsset m_BackgroundVta;
-        [SerializeField] VisualTreeAsset m_DiamondFrameVta;
-        [SerializeField] VisualTreeAsset m_EmptyVta;
-        [SerializeField] VideoClip m_VideoClip;
+        // [SerializeField] VisualTreeAsset m_BackgroundVta;
+        // [SerializeField] VisualTreeAsset m_DiamondFrameVta;
+        // [SerializeField] VisualTreeAsset m_EmptyVta;
+        // [SerializeField] VideoClip m_VideoClip;
 
-        public UniTask Hide(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        // public UniTask Hide(CancellationToken cancellationToken = default)
+        // {
+        //     throw new NotImplementedException();
+        // }
 
-        public void HideImmediate()
-        {
-            throw new NotImplementedException();
-        }
+        // public override void HideImmediate()
+        // {
+        //     throw new NotImplementedException();
+        // }
 
-        public UniTask Show(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        // public UniTask Show(CancellationToken cancellationToken = default)
+        // {
+        //     throw new NotImplementedException();
+        // }
 
-        public void ShowImmediate()
-        {
-            throw new NotImplementedException();
-        }
+        // public override void ShowImmediate()
+        // {
+        //     throw new NotImplementedException();
+        // }
 
-        void Update()
-        {
-            // if (Input.GetKeyDown(KeyCode.A))
-            // {
-            //     var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
-            //     var element = layer.rootVisualElement.Q<DiamondBullet>();
-            //     element.Unfold();
-            // }
-            // else if (Input.GetKeyDown(KeyCode.D))
-            // {
-            //     var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
-            //     var element = layer.rootVisualElement.Q<DiamondBullet>();
-            //     element.Fold();
-            // }
-            // else if (Input.GetKeyDown(KeyCode.Q))
-            // {
-            //     var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
-            //     var element = layer.rootVisualElement.Q<DiamondBullet>();
-            //     element.UnfoldImmediate();
-            // }
-            // else if (Input.GetKeyDown(KeyCode.E))
-            // {
-            //     var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
-            //     var element = layer.rootVisualElement.Q<DiamondBullet>();
-            //     element.FoldImmediate();
-            // }
-        }
+        // void Update()
+        // {
+        //     // if (Input.GetKeyDown(KeyCode.A))
+        //     // {
+        //     //     var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
+        //     //     var element = layer.rootVisualElement.Q<DiamondBullet>();
+        //     //     element.Unfold();
+        //     // }
+        //     // else if (Input.GetKeyDown(KeyCode.D))
+        //     // {
+        //     //     var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
+        //     //     var element = layer.rootVisualElement.Q<DiamondBullet>();
+        //     //     element.Fold();
+        //     // }
+        //     // else if (Input.GetKeyDown(KeyCode.Q))
+        //     // {
+        //     //     var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
+        //     //     var element = layer.rootVisualElement.Q<DiamondBullet>();
+        //     //     element.UnfoldImmediate();
+        //     // }
+        //     // else if (Input.GetKeyDown(KeyCode.E))
+        //     // {
+        //     //     var layer = (Layer)LayerManager.GetLayer("DiamondFrameLayer");
+        //     //     var element = layer.rootVisualElement.Q<DiamondBullet>();
+        //     //     element.FoldImmediate();
+        //     // }
+        // }
     }
 }
