@@ -38,15 +38,15 @@ namespace Layers
         Overscan m_Overscan;
         bool m_Visible;
         bool m_Active;
-        string m_Name;
+        string m_LayerName;
 
         public new string name
         {
-            get => m_Name;
+            get => m_LayerName;
             set
             {
-                m_Name = value;
-                gameObject.name = $"{GetType().Name}({m_Name})";
+                m_LayerName = value;
+                gameObject.name = $"{GetType().Name}({m_LayerName})";
             }
         }
 
