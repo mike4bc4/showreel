@@ -83,7 +83,7 @@ namespace Boards
 
         public static T GetBoard<T>()
         {
-            foreach (IBoard board in s_Instance.m_Boards)
+            foreach (Board board in s_Instance.m_Boards)
             {
                 if (board is T b)
                 {
