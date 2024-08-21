@@ -192,15 +192,19 @@ namespace KeyframeSystem
                 }
             }
 
-            if (((m_PlaybackSpeed >= 0 && frameIndex >= m_Animation.lastFrameIndex) || (m_PlaybackSpeed < 0 && m_AnimationTime <= 0f)) && m_ScheduledEvents.Count == 0)
+            if (((m_PlaybackSpeed >= 0 && m_AnimationTime >= duration) || (m_PlaybackSpeed < 0 && m_AnimationTime <= 0f)) && m_ScheduledEvents.Count == 0)
             {
+                // Because of 'random' values of delta time it's possible that animation time exceeds
+                // zero if playing backwards or duration if playing forwards, so let's just clamp it
+                // for additional safety.
+                m_AnimationTime = Mathf.Clamp(m_AnimationTime, 0f, duration);
                 switch (m_WrapMode)
                 {
                     case WrapMode.Once:
                         Pause();
                         break;
                     case WrapMode.Loop:
-                        m_AnimationTime = m_PlaybackSpeed >= 0f ? 0f : m_Animation.lastFrameIndex / (float)sampling;
+                        m_AnimationTime = m_PlaybackSpeed >= 0f ? 0f : duration;
                         break;
                 }
             }
