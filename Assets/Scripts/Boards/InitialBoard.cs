@@ -16,18 +16,16 @@ namespace Boards
     public class InitialBoard : Board, IBoard
     {
         const int k_DisplaySortOrder = 1;
-        const string k_TitleElementName = "title";
-        const string k_SubtitleElementName = "subtitle";
-        const string k_MainAnimationName = "MainAnimation";
-        const string k_HideSmoothAnimationName = "HideSmooth";
+        const string k_ShowHideAnimationName = "ShowHideAnimation";
+        const string k_HideAnimationName = "HideAnimation";
         const string k_SubtitleAnimationName = "SubtitleAnimation";
 
         [SerializeField] VisualTreeAsset m_InitialBoardVisualTreeAsset;
 
-        AnimationPlayer m_Player;
+        AnimationPlayer m_AnimationPlayer;
         AnimationPlayer m_SubtitleAnimationPlayer;
 
-        Layer m_InitialBoardLayer;
+        Layer m_Layer;
         PostProcessingLayer m_PostProcessingLayer;
         DiamondTitle m_Title;
         Subtitle m_Subtitle;
@@ -44,70 +42,62 @@ namespace Boards
             inputActions.Cancel.performed += OnCancel;
             inputActions.Confirm.performed += OnConfirm;
 
-            m_Player = new AnimationPlayer();
-            var anim = new KeyframeAnimation();
-            m_Player.AddAnimation(anim, k_MainAnimationName);
-            m_Player.AddAnimation(CreateHideSmoothAnimation(), k_HideSmoothAnimationName);
-            m_Player.animation = anim;
+            m_Layer = LayerManager.CreateLayer("Initial");
+            m_Layer.displaySortOrder = k_DisplaySortOrder;
+            m_Layer.AddTemplateFromVisualTreeAsset(m_InitialBoardVisualTreeAsset);
+            m_Layer.blocksRaycasts = false;
+            m_Layer.interactable = false;
+
+            m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer("Initial");
+            m_PostProcessingLayer.displaySortOrder = k_DisplaySortOrder + 1;
+
+            m_Title = m_Layer.rootVisualElement.Q<DiamondTitle>("title");
+            m_Subtitle = m_Layer.rootVisualElement.Q<Subtitle>("subtitle");
+
+            m_AnimationPlayer = new AnimationPlayer();
+            m_AnimationPlayer.AddAnimation(CreateShowHideAnimation(), k_ShowHideAnimationName);
+            m_AnimationPlayer.AddAnimation(CreateHideAnimation(), k_HideAnimationName);
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_ShowHideAnimationName];
 
             m_SubtitleAnimationPlayer = new AnimationPlayer();
             m_SubtitleAnimationPlayer.wrapMode = KeyframeSystem.WrapMode.Loop;
             m_SubtitleAnimationPlayer.AddAnimation(CreateSubtitleAnimation(), k_SubtitleAnimationName);
             m_SubtitleAnimationPlayer.animation = m_SubtitleAnimationPlayer[k_SubtitleAnimationName];
 
-            anim.AddEvent(0, () =>
+            HideImmediate();
+        }
+
+        KeyframeAnimation CreateShowHideAnimation()
+        {
+            var animation = new KeyframeAnimation();
+
+            animation.AddEvent(0, () =>
             {
-                if (m_Player.playbackSpeed > 0)
+                if (animation.player.isPlayingForward)
                 {
-                    m_InitialBoardLayer = LayerManager.CreateLayer("Initial");
-                    m_InitialBoardLayer.displaySortOrder = k_DisplaySortOrder;
-                    m_InitialBoardLayer.AddTemplateFromVisualTreeAsset(m_InitialBoardVisualTreeAsset);
-
-                    m_Title = m_InitialBoardLayer.rootVisualElement.Q<DiamondTitle>(k_TitleElementName);
-                    m_Title.style.opacity = 0f;
-                    m_Title.label.style.opacity = 0f;
-                    m_Title.animationProgress = 0f;
-
-                    m_Subtitle = m_InitialBoardLayer.rootVisualElement.Q<Subtitle>(k_SubtitleElementName);
-                    m_Subtitle.style.opacity = 0f;
-                    m_Subtitle.animationProgress = 0f;
-
-                    m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer("Initial");
-                    m_PostProcessingLayer.displaySortOrder = k_DisplaySortOrder + 1;
-                    m_PostProcessingLayer.overscan = 8f;
+                    m_Layer.visible = true;
+                    m_PostProcessingLayer.visible = true;
                     m_PostProcessingLayer.maskElement = m_Title;
-                    m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
+                    m_PostProcessingLayer.overscan = 8f;
                 }
                 else
                 {
-                    LayerManager.RemoveLayer(m_InitialBoardLayer);
-                    LayerManager.RemoveLayer(m_PostProcessingLayer);
+                    m_Layer.visible = false;
+                    m_PostProcessingLayer.visible = false;
                 }
             });
 
-            var t1 = anim.AddTrack((float opacity) =>
-            {
-                if (m_Title != null)
-                {
-                    m_Title.style.opacity = opacity;
-                }
-            });
+            var t1 = animation.AddTrack(opacity => m_Title.style.opacity = opacity);
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(20, 1f);
 
-            var blurTrack1 = anim.AddTrack((float blurSize) =>
-            {
-                if (m_PostProcessingLayer != null)
-                {
-                    m_PostProcessingLayer.blurSize = blurSize;
-                }
-            });
-            blurTrack1.AddKeyframe(10, Layer.DefaultBlurSize);
-            blurTrack1.AddKeyframe(30, 0f, Easing.StepOut);
+            var blurTrack = animation.AddTrack(blurSize => m_PostProcessingLayer.blurSize = blurSize);
+            blurTrack.AddKeyframe(10, Layer.DefaultBlurSize);
+            blurTrack.AddKeyframe(30, 0f, Easing.StepOut);
 
-            anim.AddEvent(30, () =>
+            animation.AddEvent(30, () =>
             {
-                if (m_Player.playbackSpeed > 0)
+                if (animation.player.isPlayingForward)
                 {
                     m_PostProcessingLayer.maskElement = null;
                 }
@@ -118,113 +108,75 @@ namespace Boards
                 }
             });
 
-            var t3 = anim.AddTrack((float animationProgress) =>
-            {
-                if (m_Title != null)
-                {
-                    m_Title.animationProgress = animationProgress;
-                }
-            });
-            t3.AddKeyframe(30, 0f);
-            t3.AddKeyframe(90, 1f);
+            var t2 = animation.AddTrack(animationProgress => m_Title.animationProgress = animationProgress);
+            t2.AddKeyframe(30, 0f);
+            t2.AddKeyframe(90, 1f);
 
-            anim.AddEvent(90, () =>
+            animation.AddEvent(90, () =>
             {
-                if (m_Player.playbackSpeed > 0)
+                if (animation.player.isPlayingForward)
                 {
-                    m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
+                    m_PostProcessingLayer.overscan = new Overscan(8f, 8f, 0f, 8f);
                     m_PostProcessingLayer.maskElement = m_Title.label;
-                    m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
                 }
                 else
                 {
                     m_PostProcessingLayer.maskElement = null;
-                    m_PostProcessingLayer.blurSize = 0f;
                 }
             });
 
-            var t4 = anim.AddTrack((float opacity) =>
-            {
-                if (m_Title?.label != null)
-                {
-                    m_Title.label.style.opacity = opacity;
-                }
-            });
-            t4.AddKeyframe(90, 0f);
-            t4.AddKeyframe(110, 1f);
+            var t3 = animation.AddTrack(opacity => m_Title.label.style.opacity = opacity);
+            t3.AddKeyframe(90, 0f);
+            t3.AddKeyframe(110, 1f);
 
-            blurTrack1.AddKeyframe(90, Layer.DefaultBlurSize);
-            blurTrack1.AddKeyframe(100, Layer.DefaultBlurSize);
-            blurTrack1.AddKeyframe(120, 0f, Easing.StepOut);
+            blurTrack.AddKeyframe(90, Layer.DefaultBlurSize);
+            blurTrack.AddKeyframe(100, Layer.DefaultBlurSize);
+            blurTrack.AddKeyframe(120, 0f, Easing.StepOut);
 
-            anim.AddEvent(120, () =>
+            animation.AddEvent(120, () =>
             {
-                if (m_Player.playbackSpeed > 0)
+                if (animation.player.isPlayingForward)
                 {
                     m_PostProcessingLayer.overscan = 8f;
                     m_PostProcessingLayer.maskElement = m_Subtitle;
-                    m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
                 }
                 else
                 {
-                    m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
+                    m_PostProcessingLayer.overscan = new Overscan(8f, 8f, 0f, 8f);
                     m_PostProcessingLayer.maskElement = m_Title.label;
-                    m_PostProcessingLayer.blurSize = 0f;
                 }
             });
 
-            var t6 = anim.AddTrack((float opacity) =>
-            {
-                if (m_Subtitle != null)
-                {
-                    m_Subtitle.style.opacity = opacity;
-                }
-            });
-            t6.AddKeyframe(120, 0f);
-            t6.AddKeyframe(140, 1f);
+            var t4 = animation.AddTrack(opacity => m_Subtitle.style.opacity = opacity);
+            t4.AddKeyframe(120, 0f);
+            t4.AddKeyframe(140, 1f);
 
-            blurTrack1.AddKeyframe(121, Layer.DefaultBlurSize);
-            blurTrack1.AddKeyframe(130, Layer.DefaultBlurSize);
-            blurTrack1.AddKeyframe(150, 0f, Easing.StepOut);
+            blurTrack.AddKeyframe(121, Layer.DefaultBlurSize);
+            blurTrack.AddKeyframe(130, Layer.DefaultBlurSize);
+            blurTrack.AddKeyframe(150, 0f, Easing.StepOut);
 
-            anim.AddEvent(150, () =>
+            animation.AddEvent(150, () =>
             {
-                if (m_Player.playbackSpeed > 0)
+                if (animation.player.isPlayingForward)
                 {
-                    LayerManager.RemoveLayer(m_PostProcessingLayer);
+                    m_PostProcessingLayer.visible = false;
                     m_SubtitleAnimationPlayer.Play();
                 }
                 else
                 {
-                    m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer("Initial");
-                    m_PostProcessingLayer.displaySortOrder = k_DisplaySortOrder + 1;
-                    m_PostProcessingLayer.overscan = 8f;
-                    m_PostProcessingLayer.maskElement = m_Subtitle;
+                    m_PostProcessingLayer.visible = true;
                     m_SubtitleAnimationPlayer.Stop();
                 }
             });
-        }
 
-        void Clear()
-        {
-            LayerManager.RemoveLayer(m_InitialBoardLayer);
-            LayerManager.RemoveLayer(m_PostProcessingLayer);
-
-            m_Title = null;
-            m_Subtitle = null;
+            return animation;
         }
 
         KeyframeAnimation CreateSubtitleAnimation()
         {
             var animation = new KeyframeAnimation();
 
-            var t1 = animation.AddTrack((float animationProgress) =>
-            {
-                if (m_Subtitle != null)
-                {
-                    m_Subtitle.animationProgress = animationProgress;
-                }
-            });
+            var t1 = animation.AddTrack(animationProgress => m_Subtitle.animationProgress = animationProgress);
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(120, 1f);
             t1.AddKeyframe(180, 1f);    // Add one second of idle time.
@@ -232,86 +184,71 @@ namespace Boards
             return animation;
         }
 
-        KeyframeAnimation CreateHideSmoothAnimation()
+        KeyframeAnimation CreateHideAnimation()
         {
             var animation = new KeyframeAnimation();
 
-            var t1 = animation.AddTrack((float blurSize) =>
-            {
-                if (m_InitialBoardLayer != null)
-                {
-                    m_InitialBoardLayer.blurSize = blurSize;
-                }
-            });
+            var t1 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(20, Layer.DefaultBlurSize);
 
-            var t2 = animation.AddTrack((float alpha) =>
-            {
-                if (m_InitialBoardLayer != null)
-                {
-                    m_InitialBoardLayer.alpha = alpha;
-                }
-            });
+            var t2 = animation.AddTrack(alpha => m_Layer.alpha = alpha);
             t2.AddKeyframe(10, 1f);
             t2.AddKeyframe(30, 0f);
 
             animation.AddEvent(30, () =>
             {
-                Clear();
                 m_SubtitleAnimationPlayer.Stop();
+                
+                m_Layer.visible = false;
+                m_PostProcessingLayer.visible = false;
             });
 
             return animation;
         }
 
+        public override void Show()
+        {
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_ShowHideAnimationName];
+            m_AnimationPlayer.playbackSpeed = 1f;
+            m_AnimationPlayer.Play();
+        }
+
         public override void ShowImmediate()
         {
-            m_Player.Stop();
+            m_AnimationPlayer.Stop();
 
-            LayerManager.RemoveLayer(m_PostProcessingLayer);
-            if (m_InitialBoardLayer == null)
-            {
-                m_InitialBoardLayer = LayerManager.CreateLayer("Initial");
-                m_InitialBoardLayer.displaySortOrder = k_DisplaySortOrder;
-                m_InitialBoardLayer.AddTemplateFromVisualTreeAsset(m_InitialBoardVisualTreeAsset);
-            }
+            m_PostProcessingLayer.visible = false;
+            m_Layer.blurSize = 0f;
+            m_Layer.alpha = 1f;
 
-            m_InitialBoardLayer.blurSize = 0f;
-            m_InitialBoardLayer.alpha = 1f;
-
-            m_Title = m_InitialBoardLayer.rootVisualElement.Q<DiamondTitle>(k_TitleElementName);
             m_Title.animationProgress = 1f;
             m_Title.style.opacity = 1f;
             m_Title.label.style.opacity = 1f;
 
-            m_Subtitle = m_InitialBoardLayer.rootVisualElement.Q<Subtitle>(k_SubtitleElementName);
             m_Subtitle.style.opacity = 1f;
 
-            m_SubtitleAnimationPlayer.animationTime = 0f;
-            m_SubtitleAnimationPlayer.playbackSpeed = 1f;
+            m_SubtitleAnimationPlayer.Stop();
             m_SubtitleAnimationPlayer.Play();
-        }
-
-        public override void Show()
-        {
-            m_Player.animation = m_Player[k_MainAnimationName];
-            m_Player.playbackSpeed = 1f;
-            m_Player.Play();
         }
 
         public override void Hide()
         {
-            m_Player.animation = m_Player[k_MainAnimationName];
-            m_Player.playbackSpeed = -1;
-            m_Player.Play();
+            // m_Player.animation = m_Player[k_MainAnimationName];
+            // m_Player.playbackSpeed = -1;
+            // m_Player.Play();
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_HideAnimationName];
+            m_AnimationPlayer.playbackSpeed = 1f;
+            m_AnimationPlayer.Play();
         }
 
-        public void HideSmooth()
+        public override void HideImmediate()
         {
-            m_Player.animation = m_Player[k_HideSmoothAnimationName];
-            m_Player.playbackSpeed = 1f;
-            m_Player.Play();
+            m_AnimationPlayer.Stop();
+            m_SubtitleAnimationPlayer.Stop();
+
+            m_Layer.visible = false;
+            m_PostProcessingLayer.visible = false;
         }
 
         public void OnAny(InputAction.CallbackContext ctx)
@@ -321,7 +258,7 @@ namespace Boards
                 return;
             }
 
-            if (m_Player.animation == m_Player[k_MainAnimationName] && m_Player.status.IsPlaying())
+            if (m_AnimationPlayer.animation == m_AnimationPlayer[k_ShowHideAnimationName] && m_AnimationPlayer.status.IsPlaying())
             {
                 ShowImmediate();
             }
