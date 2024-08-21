@@ -99,7 +99,6 @@ namespace Controls
         }
 
         Layer m_Layer;
-        PostProcessingLayer m_PostProcessingLayer;
         AnimationPlayer m_HideShowAnimationPlayer;
         AnimationPlayer m_ActiveIndexAnimationPlayer;
         Raw.DiamondBar m_Bar;
@@ -109,11 +108,7 @@ namespace Controls
         public int displaySortOrder
         {
             get => m_Layer.displaySortOrder;
-            set
-            {
-                m_Layer.displaySortOrder = value;
-                m_PostProcessingLayer.displaySortOrder = value + 1;
-            }
+            set => m_Layer.displaySortOrder = value;
         }
 
         public int size
@@ -168,13 +163,10 @@ namespace Controls
             m_BarElementHandlers = new List<ElementHandler>();
 
             m_Layer = LayerManager.CreateLayer();
-            m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer();
-            m_PostProcessingLayer.overscan = 8f;
             displaySortOrder = k_DefaultDisplaySortOrder;
 
             m_Bar = new Raw.DiamondBar();
             m_Layer.rootVisualElement.Add(m_Bar);
-            m_PostProcessingLayer.maskElement = m_Bar;
 
             m_HideShowAnimationPlayer = new AnimationPlayer();
             m_HideShowAnimationPlayer.AddAnimation(CreateHideShowAnimation(), k_HideShowAnimationName);
@@ -242,7 +234,6 @@ namespace Controls
         {
             m_HideShowAnimationPlayer.Stop();
             m_Layer.visible = false;
-            m_PostProcessingLayer.visible = false;
         }
 
         KeyframeAnimation CreateActiveIndexAnimation()
@@ -267,12 +258,10 @@ namespace Controls
                 if (m_HideShowAnimationPlayer.playbackSpeed >= 0)
                 {
                     m_Layer.visible = true;
-                    m_PostProcessingLayer.visible = true;
                 }
                 else
                 {
                     m_Layer.visible = false;
-                    m_PostProcessingLayer.visible = false;
                 }
             });
 
@@ -280,7 +269,7 @@ namespace Controls
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(20, 1f);
 
-            var t2 = animation.AddTrack(blurSize => m_PostProcessingLayer.blurSize = blurSize);
+            var t2 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
             t2.AddKeyframe(10, PostProcessingLayer.DefaultBlurSize);
             t2.AddKeyframe(30, 0f);
 
@@ -297,7 +286,6 @@ namespace Controls
             m_HideShowAnimationPlayer.Stop();
 
             LayerManager.RemoveLayer(m_Layer);
-            LayerManager.RemoveLayer(m_PostProcessingLayer);
 
             m_Disposed = true;
         }
