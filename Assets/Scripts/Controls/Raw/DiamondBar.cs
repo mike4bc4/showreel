@@ -8,7 +8,7 @@ using Extensions;
 
 namespace Controls.Raw
 {
-    class DiamondBar : VisualElement
+    public class DiamondBar : VisualElement
     {
         public const int DefaultSize = 3;
         public const float DefaultElementSize = 32f;
@@ -18,7 +18,6 @@ namespace Controls.Raw
         const string k_ElementUssClassName = k_UssClassName + "__element";
         const string k_DiamondUssClassName = k_UssClassName + "__diamond";
         const string k_EndVariantElementUssClassName = k_ElementUssClassName + "--end";
-        const string k_ContainerUssClassName = k_UssClassName + "__container";
         const string k_ScaleAnimationName = "ScaleAnimation";
 
         public new class UxmlFactory : UxmlFactory<DiamondBar, UxmlTraits> { }
@@ -43,7 +42,6 @@ namespace Controls.Raw
             }
         }
 
-        VisualElement m_Container;
         int m_ElementCount;
         List<DiamondBarElement> m_Elements;
         float m_ElementSize;
@@ -133,11 +131,6 @@ namespace Controls.Raw
             AddToClassList(k_UssClassName);
             RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
 
-            m_Container = new VisualElement();
-            m_Container.name = "container";
-            m_Container.AddToClassList(k_ContainerUssClassName);
-            Add(m_Container);
-
             size = DefaultSize;
             elementSize = DefaultElementSize;
             activeIndex = -1;
@@ -151,7 +144,7 @@ namespace Controls.Raw
 
         void RecalculateFirstAndLastElementWidth()
         {
-            float barWidth = m_Container.resolvedStyle.width;
+            float barWidth = resolvedStyle.width;
             if (barWidth.IsNaN())
             {
                 return;
@@ -165,14 +158,14 @@ namespace Controls.Raw
 
         void RebuildElements()
         {
-            m_Container.Clear();
+            Clear();
             m_Elements.Clear();
             for (int i = 0; i < size; i++)
             {
                 var element = new DiamondBarElement() { name = $"element-{i}" };
                 element.AddToClassList(k_ElementUssClassName);
                 m_Elements.Add(element);
-                m_Container.Add(element);
+                Add(element);
             }
 
             var firstElement = m_Elements.First();

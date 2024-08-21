@@ -297,14 +297,8 @@
 }
 
 .diamond-bar {
-    height: 128px;
-    padding-left: 25%;
-    padding-right: 25%;
-    justify-content: center;
-    bottom: 0;
-    position: absolute;
-    right: 0;
-    left: 0;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .diamond-bar__container {
@@ -774,6 +768,6 @@
     -unity-text-align: middle-center;
 }
 
-.layer-root{
+.layer-root {
     flex-grow: 1;
 }

@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace Controls.Raw
 {
-    class DiamondBarElement : VisualElement
+    public class DiamondBarElement : VisualElement
     {
         const string k_UssClassName = "diamond-bar-element";
         const string k_EdgeUssClassName = k_UssClassName + "__edge";
