@@ -32,6 +32,11 @@ namespace KeyframeSystem
         WrapMode m_WrapMode;
         Status m_Status;
 
+        public bool isPlayingForward
+        {
+            get => m_PlaybackSpeed >= 0f;
+        }
+
         public Status status
         {
             get => m_Status;
