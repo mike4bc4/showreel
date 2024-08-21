@@ -11,7 +11,7 @@ using UnityEngine.UIElements;
 
 namespace Boards
 {
-    public class InterfaceBoard : Board, IBoard
+    public class InterfaceBoard : Board
     {
         public const int InputSortOrder = 1000;   // Sorting order affects UI element picking.
         public const int DisplaySortOrder = 1000;   // Display order affects Layer sorting

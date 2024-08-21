@@ -9,7 +9,7 @@ using Layers;
 
 namespace Boards
 {
-    public class BackgroundBoard : Board, IBoard
+    public class BackgroundBoard : Board
     {
         const int k_DisplaySortOrder = 0;
 

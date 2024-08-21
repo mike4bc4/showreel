@@ -15,7 +15,7 @@ namespace Boards
         Left,
     }
 
-    public class DialogBoard : Board, IBoard
+    public class DialogBoard : Board
     {
         // public const int DisplaySortOrder = InterfaceBoard.DisplaySortOrder + 1000; // In front of InterfaceBoard as Layer
         // public const int InputSortOrder = InterfaceBoard.InputSortOrder + 1000; // In front of InterfaceBoard as UIDocument

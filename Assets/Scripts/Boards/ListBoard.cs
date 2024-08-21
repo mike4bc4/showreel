@@ -13,7 +13,7 @@ using UnityEngine.Video;
 
 namespace Boards
 {
-    public class ListBoard : Board, IBoard
+    public class ListBoard : Board
     {
         // public const string FrameSnapshotLayerName = "FrameSnapshotLayer";
         // public const string FrameContentContainerSnapshotLayerName = "FrameContentContainerSnapshotLayer";

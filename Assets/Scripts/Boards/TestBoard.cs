@@ -10,7 +10,7 @@ using UnityEngine.Video;
 
 namespace Boards
 {
-    public class TestBoard : Board, IBoard
+    public class TestBoard : Board
     {
         // public static readonly string StateID = Guid.NewGuid().ToString();
 

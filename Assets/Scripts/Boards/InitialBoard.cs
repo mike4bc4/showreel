@@ -13,7 +13,7 @@ using FSM;
 
 namespace Boards
 {
-    public class InitialBoard : Board, IBoard
+    public class InitialBoard : Board
     {
         const int k_DisplaySortOrder = 1;
         const string k_ShowHideAnimationName = "ShowHideAnimation";
@@ -199,7 +199,7 @@ namespace Boards
             animation.AddEvent(30, () =>
             {
                 m_SubtitleAnimationPlayer.Stop();
-                
+
                 m_Layer.visible = false;
                 m_PostProcessingLayer.visible = false;
             });
