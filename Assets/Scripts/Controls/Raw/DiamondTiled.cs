@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using KeyframeSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -7,6 +8,8 @@ namespace Controls.Raw
 {
     public class DiamondTiled : VisualElement
     {
+        public const float DefaultTargetTileScale = 0.66f;
+
         const string k_UssClassName = "diamond-tiled";
         const string k_TileUssClassName = k_UssClassName + "__tile";
         const string k_TileTransitionUssClassName = k_TileUssClassName + "--transition";
@@ -14,23 +17,21 @@ namespace Controls.Raw
         const string k_TileRightUssClassName = k_TileUssClassName + "--right";
         const string k_TileBottomUssClassName = k_TileUssClassName + "--bottom";
         const string k_TileLeftUssClassName = k_TileUssClassName + "--left";
-
-        const float k_DefaultAnimationScale = 0.66f;
-        const float k_DefaultRestTime = 0.5f;
+        const string k_AnimationName = "Animation";
 
         public new class UxmlFactory : UxmlFactory<DiamondTiled, UxmlTraits> { }
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            UxmlFloatAttributeDescription m_AnimationScale = new UxmlFloatAttributeDescription() { name = "animation-scale", defaultValue = k_DefaultAnimationScale };
-            UxmlFloatAttributeDescription m_RestTime = new UxmlFloatAttributeDescription() { name = "rest-time", defaultValue = k_DefaultRestTime };
+            UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
+            UxmlFloatAttributeDescription m_TargetTileScale = new UxmlFloatAttributeDescription() { name = "target-tile-scale", defaultValue = DefaultTargetTileScale };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
                 base.Init(ve, bag, cc);
                 DiamondTiled diamondTiled = (DiamondTiled)ve;
-                diamondTiled.animationScale = m_AnimationScale.GetValueFromBag(bag, cc);
-                diamondTiled.restTime = m_RestTime.GetValueFromBag(bag, cc);
+                diamondTiled.targetTileScale = m_TargetTileScale.GetValueFromBag(bag, cc);
+                diamondTiled.animationProgress = m_AnimationProgress.GetValueFromBag(bag, cc);
             }
         }
 
@@ -38,19 +39,44 @@ namespace Controls.Raw
         VisualElement m_TileRight;
         VisualElement m_TileBottom;
         VisualElement m_TileLeft;
-        Coroutine m_AnimationCoroutine;
+        AnimationPlayer m_Player;
+        float m_TargetTileScale;
 
         List<VisualElement> tiles
         {
             get => new List<VisualElement>() { m_TileTop, m_TileRight, m_TileBottom, m_TileLeft };
         }
 
-        public float animationScale { get; set; }
+        public float targetTileScale
+        {
+            get => m_TargetTileScale;
+            set
+            {
+                m_TargetTileScale = value;
+                m_Player.Sample();
+            }
+        }
 
-        public float restTime { get; set; }
+        public float animationProgress
+        {
+            get => m_Player.animationTime / m_Player.duration;
+            set
+            {
+                var previousFrameIndex = m_Player.frameIndex;
+                m_Player.animationTime = m_Player.duration * Mathf.Clamp01(value);
+                if (m_Player.frameIndex != previousFrameIndex)
+                {
+                    m_Player.Sample();
+                }
+            }
+        }
 
         public DiamondTiled()
         {
+            m_Player = new AnimationPlayer();
+            m_Player.AddAnimation(CreateAnimation(), k_AnimationName);
+            m_Player.animation = m_Player[k_AnimationName];
+
             AddToClassList(k_UssClassName);
 
             m_TileTop = new VisualElement() { name = "tile-top" };
@@ -77,63 +103,26 @@ namespace Controls.Raw
             m_TileLeft.AddToClassList(k_TileTransitionUssClassName);
             Add(m_TileLeft);
 
-            // UXMLTraits.Init will not be invoked when control is created in constructor of other 
-            // custom control, so default values should be set here instead.
-            animationScale = k_DefaultAnimationScale;
-            restTime = k_DefaultRestTime;
+            targetTileScale = DefaultTargetTileScale;
         }
 
-        public void StopAnimation()
+        KeyframeAnimation CreateAnimation()
         {
-            // if (m_AnimationCoroutine != null)
-            // {
-            //     CoroutineAnimationManager.Instance.StopCoroutine(m_AnimationCoroutine);
-            // }
+            var animation = new KeyframeAnimation();
+            int interval = 60;
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                var index = i;
+                var track = animation.AddTrack(t => tiles[index].style.scale = Vector2.one * Mathf.Lerp(targetTileScale, 1f, t));
 
-            // foreach (var tile in tiles)
-            // {
-            //     tile.style.scale = Vector2.one;
-            // }
-        }
+                int startFrame = i * interval;
+                track.AddKeyframe(startFrame, 1f);
+                track.AddKeyframe(startFrame + (int)(interval * 0.2f), 0f);
+                track.AddKeyframe(startFrame + (int)(interval * 0.8f), 0f);
+                track.AddKeyframe(startFrame + interval, 1f);
+            }
 
-        public void StartAnimation()
-        {
-            // IEnumerator Coroutine()
-            // {
-            //     var s = new Vector2(animationScale, animationScale);
-            //     var wait = new WaitForSeconds(restTime);
-            //     while (true)
-            //     {
-            //         foreach (var tile in tiles)
-            //         {
-            //             // Debug.Log(tile);
-            //             tile.style.scale = tile.resolvedStyle.scale;
-            //             yield return null;
-
-            //             tile.style.scale = s;
-            //             while (tile.resolvedStyle.scale != s)
-            //             {
-            //                 yield return null;
-            //             }
-
-
-            //             yield return wait;
-
-            //             tile.style.scale = Vector2.one;
-            //             while (tile.resolvedStyle.scale != Vector2.one)
-            //             {
-            //                 yield return null;
-            //             }
-            //         }
-            //     }
-            // }
-
-            // if (m_AnimationCoroutine != null)
-            // {
-            //     CoroutineAnimationManager.Instance.StopCoroutine(m_AnimationCoroutine);
-            // }
-
-            // m_AnimationCoroutine = CoroutineAnimationManager.Instance.StartCoroutine(Coroutine());
+            return animation;
         }
     }
 }

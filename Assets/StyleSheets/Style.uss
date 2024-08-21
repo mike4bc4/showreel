@@ -297,6 +297,17 @@
 }
 
 .diamond-bar {
+    height: 128px;
+    padding-left: 25%;
+    padding-right: 25%;
+    justify-content: center;
+    bottom: 0;
+    position: absolute;
+    right: 0;
+    left: 0;
+}
+
+.diamond-bar__container {
     flex-direction: row;
     justify-content: space-between;
 }
@@ -311,15 +322,11 @@
 
 .diamond-bar__element {
     flex-grow: 1;
+    flex-basis: 0;
 }
 
 .diamond-bar__element--end {
     flex-grow: 0;
-}
-
-.diamond-bar__diamond--transition {
-    transition-property: width, height;
-    transition-duration: 0.5s, 0.5s;
 }
 
 .diamond-bar-element {
@@ -336,10 +343,6 @@
 .diamond-bar-element__diamond {
     margin-right: -2px;
     margin-left: -2px;
-}
-
-.diamond-bar-element--single-edge {
-    flex-shrink: 1.2;
 }
 
 .diamond-spreading {
