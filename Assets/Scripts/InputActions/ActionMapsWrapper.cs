@@ -94,13 +94,22 @@ namespace InputActions
             ]
         },
         {
-            ""name"": ""QuitDialogBox"",
-            ""id"": ""0500fcb8-ce25-43d7-9eef-a74d4296ef5d"",
+            ""name"": ""InterfaceBoard"",
+            ""id"": ""7e53604d-bc1d-4a17-8b73-41e68fe7e2b0"",
             ""actions"": [
                 {
-                    ""name"": ""Confirm"",
+                    ""name"": ""Left"",
                     ""type"": ""Button"",
-                    ""id"": ""19142f8e-74fc-4f5f-a6aa-7e41c3f6d0a2"",
+                    ""id"": ""2bfb3fac-44bb-4470-9ac4-236854440570"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Right"",
+                    ""type"": ""Button"",
+                    ""id"": ""2146963e-992f-4528-9f81-d4356df8c1c5"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -109,7 +118,34 @@ namespace InputActions
                 {
                     ""name"": ""Cancel"",
                     ""type"": ""Button"",
-                    ""id"": ""06838767-069b-42dc-8c32-2e9789fe691d"",
+                    ""id"": ""f56658a4-77c9-4b73-828d-57f0350bd06d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Confirm"",
+                    ""type"": ""Button"",
+                    ""id"": ""a6eaf789-9cf0-4e1f-8001-880817aac646"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Help"",
+                    ""type"": ""Button"",
+                    ""id"": ""8150bc43-e895-406f-bed2-78b3f1393f77"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Any"",
+                    ""type"": ""Button"",
+                    ""id"": ""7cb7433d-2ad5-4404-b17a-e1e7a2975e22"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -119,7 +155,62 @@ namespace InputActions
             ""bindings"": [
                 {
                     ""name"": """",
-                    ""id"": ""c7d247bc-47c0-4e39-a86d-03b75abfca98"",
+                    ""id"": ""b6f3575a-4894-4c3a-aec2-d3d38879289d"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Left"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8bc9f40d-d9c9-408e-8147-7d8b9945c075"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Left"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6d6322cd-c493-4293-aa19-114354424ee0"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Right"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""47803f66-4fe0-4024-b1fd-640c2f02f022"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Right"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b689171f-b134-4015-89db-92b237ad2c0e"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9b588f74-049a-41dc-953c-4613d08bfc6b"",
                     ""path"": ""<Keyboard>/enter"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -130,12 +221,67 @@ namespace InputActions
                 },
                 {
                     ""name"": """",
-                    ""id"": ""d1e2c536-8a52-4776-8c32-4aaef24c088f"",
-                    ""path"": ""<Keyboard>/escape"",
+                    ""id"": ""a47b86e4-e5c8-4dc2-8873-32ec56b6bdef"",
+                    ""path"": ""<Keyboard>/h"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Cancel"",
+                    ""action"": ""Help"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""42571ffe-83b6-4b71-9463-adbd4d350489"",
+                    ""path"": ""<Keyboard>/f1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Help"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""fac0e304-fd58-4970-bee7-2fe717873aac"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Help"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""d57a5773-4f92-45b3-a981-e011389e3e0f"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Help"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""8e0f13c6-37fc-4b4d-9ba0-aa2a5e34b17e"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Help"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f939dc2a-13c3-4b81-b453-56af627fa623"",
+                    ""path"": ""<Keyboard>/anyKey"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Any"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -149,10 +295,14 @@ namespace InputActions
             m_InitialBoard_Any = m_InitialBoard.FindAction("Any", throwIfNotFound: true);
             m_InitialBoard_Cancel = m_InitialBoard.FindAction("Cancel", throwIfNotFound: true);
             m_InitialBoard_Confirm = m_InitialBoard.FindAction("Confirm", throwIfNotFound: true);
-            // QuitDialogBox
-            m_QuitDialogBox = asset.FindActionMap("QuitDialogBox", throwIfNotFound: true);
-            m_QuitDialogBox_Confirm = m_QuitDialogBox.FindAction("Confirm", throwIfNotFound: true);
-            m_QuitDialogBox_Cancel = m_QuitDialogBox.FindAction("Cancel", throwIfNotFound: true);
+            // InterfaceBoard
+            m_InterfaceBoard = asset.FindActionMap("InterfaceBoard", throwIfNotFound: true);
+            m_InterfaceBoard_Left = m_InterfaceBoard.FindAction("Left", throwIfNotFound: true);
+            m_InterfaceBoard_Right = m_InterfaceBoard.FindAction("Right", throwIfNotFound: true);
+            m_InterfaceBoard_Cancel = m_InterfaceBoard.FindAction("Cancel", throwIfNotFound: true);
+            m_InterfaceBoard_Confirm = m_InterfaceBoard.FindAction("Confirm", throwIfNotFound: true);
+            m_InterfaceBoard_Help = m_InterfaceBoard.FindAction("Help", throwIfNotFound: true);
+            m_InterfaceBoard_Any = m_InterfaceBoard.FindAction("Any", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -273,69 +423,105 @@ namespace InputActions
         }
         public InitialBoardActions @InitialBoard => new InitialBoardActions(this);
 
-        // QuitDialogBox
-        private readonly InputActionMap m_QuitDialogBox;
-        private List<IQuitDialogBoxActions> m_QuitDialogBoxActionsCallbackInterfaces = new List<IQuitDialogBoxActions>();
-        private readonly InputAction m_QuitDialogBox_Confirm;
-        private readonly InputAction m_QuitDialogBox_Cancel;
-        public struct QuitDialogBoxActions
+        // InterfaceBoard
+        private readonly InputActionMap m_InterfaceBoard;
+        private List<IInterfaceBoardActions> m_InterfaceBoardActionsCallbackInterfaces = new List<IInterfaceBoardActions>();
+        private readonly InputAction m_InterfaceBoard_Left;
+        private readonly InputAction m_InterfaceBoard_Right;
+        private readonly InputAction m_InterfaceBoard_Cancel;
+        private readonly InputAction m_InterfaceBoard_Confirm;
+        private readonly InputAction m_InterfaceBoard_Help;
+        private readonly InputAction m_InterfaceBoard_Any;
+        public struct InterfaceBoardActions
         {
             private @ActionMapsWrapper m_Wrapper;
-            public QuitDialogBoxActions(@ActionMapsWrapper wrapper) { m_Wrapper = wrapper; }
-            public InputAction @Confirm => m_Wrapper.m_QuitDialogBox_Confirm;
-            public InputAction @Cancel => m_Wrapper.m_QuitDialogBox_Cancel;
-            public InputActionMap Get() { return m_Wrapper.m_QuitDialogBox; }
+            public InterfaceBoardActions(@ActionMapsWrapper wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Left => m_Wrapper.m_InterfaceBoard_Left;
+            public InputAction @Right => m_Wrapper.m_InterfaceBoard_Right;
+            public InputAction @Cancel => m_Wrapper.m_InterfaceBoard_Cancel;
+            public InputAction @Confirm => m_Wrapper.m_InterfaceBoard_Confirm;
+            public InputAction @Help => m_Wrapper.m_InterfaceBoard_Help;
+            public InputAction @Any => m_Wrapper.m_InterfaceBoard_Any;
+            public InputActionMap Get() { return m_Wrapper.m_InterfaceBoard; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
             public bool enabled => Get().enabled;
-            public static implicit operator InputActionMap(QuitDialogBoxActions set) { return set.Get(); }
-            public void AddCallbacks(IQuitDialogBoxActions instance)
+            public static implicit operator InputActionMap(InterfaceBoardActions set) { return set.Get(); }
+            public void AddCallbacks(IInterfaceBoardActions instance)
             {
-                if (instance == null || m_Wrapper.m_QuitDialogBoxActionsCallbackInterfaces.Contains(instance)) return;
-                m_Wrapper.m_QuitDialogBoxActionsCallbackInterfaces.Add(instance);
-                @Confirm.started += instance.OnConfirm;
-                @Confirm.performed += instance.OnConfirm;
-                @Confirm.canceled += instance.OnConfirm;
+                if (instance == null || m_Wrapper.m_InterfaceBoardActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_InterfaceBoardActionsCallbackInterfaces.Add(instance);
+                @Left.started += instance.OnLeft;
+                @Left.performed += instance.OnLeft;
+                @Left.canceled += instance.OnLeft;
+                @Right.started += instance.OnRight;
+                @Right.performed += instance.OnRight;
+                @Right.canceled += instance.OnRight;
                 @Cancel.started += instance.OnCancel;
                 @Cancel.performed += instance.OnCancel;
                 @Cancel.canceled += instance.OnCancel;
+                @Confirm.started += instance.OnConfirm;
+                @Confirm.performed += instance.OnConfirm;
+                @Confirm.canceled += instance.OnConfirm;
+                @Help.started += instance.OnHelp;
+                @Help.performed += instance.OnHelp;
+                @Help.canceled += instance.OnHelp;
+                @Any.started += instance.OnAny;
+                @Any.performed += instance.OnAny;
+                @Any.canceled += instance.OnAny;
             }
 
-            private void UnregisterCallbacks(IQuitDialogBoxActions instance)
+            private void UnregisterCallbacks(IInterfaceBoardActions instance)
             {
-                @Confirm.started -= instance.OnConfirm;
-                @Confirm.performed -= instance.OnConfirm;
-                @Confirm.canceled -= instance.OnConfirm;
+                @Left.started -= instance.OnLeft;
+                @Left.performed -= instance.OnLeft;
+                @Left.canceled -= instance.OnLeft;
+                @Right.started -= instance.OnRight;
+                @Right.performed -= instance.OnRight;
+                @Right.canceled -= instance.OnRight;
                 @Cancel.started -= instance.OnCancel;
                 @Cancel.performed -= instance.OnCancel;
                 @Cancel.canceled -= instance.OnCancel;
+                @Confirm.started -= instance.OnConfirm;
+                @Confirm.performed -= instance.OnConfirm;
+                @Confirm.canceled -= instance.OnConfirm;
+                @Help.started -= instance.OnHelp;
+                @Help.performed -= instance.OnHelp;
+                @Help.canceled -= instance.OnHelp;
+                @Any.started -= instance.OnAny;
+                @Any.performed -= instance.OnAny;
+                @Any.canceled -= instance.OnAny;
             }
 
-            public void RemoveCallbacks(IQuitDialogBoxActions instance)
+            public void RemoveCallbacks(IInterfaceBoardActions instance)
             {
-                if (m_Wrapper.m_QuitDialogBoxActionsCallbackInterfaces.Remove(instance))
+                if (m_Wrapper.m_InterfaceBoardActionsCallbackInterfaces.Remove(instance))
                     UnregisterCallbacks(instance);
             }
 
-            public void SetCallbacks(IQuitDialogBoxActions instance)
+            public void SetCallbacks(IInterfaceBoardActions instance)
             {
-                foreach (var item in m_Wrapper.m_QuitDialogBoxActionsCallbackInterfaces)
+                foreach (var item in m_Wrapper.m_InterfaceBoardActionsCallbackInterfaces)
                     UnregisterCallbacks(item);
-                m_Wrapper.m_QuitDialogBoxActionsCallbackInterfaces.Clear();
+                m_Wrapper.m_InterfaceBoardActionsCallbackInterfaces.Clear();
                 AddCallbacks(instance);
             }
         }
-        public QuitDialogBoxActions @QuitDialogBox => new QuitDialogBoxActions(this);
+        public InterfaceBoardActions @InterfaceBoard => new InterfaceBoardActions(this);
         public interface IInitialBoardActions
         {
             void OnAny(InputAction.CallbackContext context);
             void OnCancel(InputAction.CallbackContext context);
             void OnConfirm(InputAction.CallbackContext context);
         }
-        public interface IQuitDialogBoxActions
+        public interface IInterfaceBoardActions
         {
-            void OnConfirm(InputAction.CallbackContext context);
+            void OnLeft(InputAction.CallbackContext context);
+            void OnRight(InputAction.CallbackContext context);
             void OnCancel(InputAction.CallbackContext context);
+            void OnConfirm(InputAction.CallbackContext context);
+            void OnHelp(InputAction.CallbackContext context);
+            void OnAny(InputAction.CallbackContext context);
         }
     }
 }

@@ -1,5 +1,5 @@
 {
-    "name": "ActionGroup",
+    "name": "ActionMapsWrapper",
     "maps": [
         {
             "name": "InitialBoard",
@@ -70,13 +70,22 @@
             ]
         },
         {
-            "name": "QuitDialogBox",
-            "id": "0500fcb8-ce25-43d7-9eef-a74d4296ef5d",
+            "name": "InterfaceBoard",
+            "id": "7e53604d-bc1d-4a17-8b73-41e68fe7e2b0",
             "actions": [
                 {
-                    "name": "Confirm",
+                    "name": "Left",
                     "type": "Button",
-                    "id": "19142f8e-74fc-4f5f-a6aa-7e41c3f6d0a2",
+                    "id": "2bfb3fac-44bb-4470-9ac4-236854440570",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Right",
+                    "type": "Button",
+                    "id": "2146963e-992f-4528-9f81-d4356df8c1c5",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -85,7 +94,34 @@
                 {
                     "name": "Cancel",
                     "type": "Button",
-                    "id": "06838767-069b-42dc-8c32-2e9789fe691d",
+                    "id": "f56658a4-77c9-4b73-828d-57f0350bd06d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Confirm",
+                    "type": "Button",
+                    "id": "a6eaf789-9cf0-4e1f-8001-880817aac646",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Help",
+                    "type": "Button",
+                    "id": "8150bc43-e895-406f-bed2-78b3f1393f77",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Any",
+                    "type": "Button",
+                    "id": "7cb7433d-2ad5-4404-b17a-e1e7a2975e22",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -95,7 +131,62 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "c7d247bc-47c0-4e39-a86d-03b75abfca98",
+                    "id": "b6f3575a-4894-4c3a-aec2-d3d38879289d",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8bc9f40d-d9c9-408e-8147-7d8b9945c075",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6d6322cd-c493-4293-aa19-114354424ee0",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "47803f66-4fe0-4024-b1fd-640c2f02f022",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b689171f-b134-4015-89db-92b237ad2c0e",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9b588f74-049a-41dc-953c-4613d08bfc6b",
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
@@ -106,12 +197,67 @@
                 },
                 {
                     "name": "",
-                    "id": "d1e2c536-8a52-4776-8c32-4aaef24c088f",
-                    "path": "<Keyboard>/escape",
+                    "id": "a47b86e4-e5c8-4dc2-8873-32ec56b6bdef",
+                    "path": "<Keyboard>/h",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Cancel",
+                    "action": "Help",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "42571ffe-83b6-4b71-9463-adbd4d350489",
+                    "path": "<Keyboard>/f1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Help",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "fac0e304-fd58-4970-bee7-2fe717873aac",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Help",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "d57a5773-4f92-45b3-a981-e011389e3e0f",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Help",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "8e0f13c6-37fc-4b4d-9ba0-aa2a5e34b17e",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Help",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "f939dc2a-13c3-4b81-b453-56af627fa623",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Any",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
