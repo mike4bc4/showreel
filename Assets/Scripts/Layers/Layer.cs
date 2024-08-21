@@ -57,8 +57,8 @@ namespace Layers
 
         public bool interactable
         {
-            get => rootVisualElement.GetSelectableGameObject().GetComponent<PanelEventHandler>().isActiveAndEnabled;
-            set => rootVisualElement.GetSelectableGameObject().GetComponent<PanelEventHandler>().enabled = value;
+            get => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelEventHandler>().isActiveAndEnabled;
+            set => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelEventHandler>().enabled = value;
         }
 
         // This actually is kind of workaround, as normally we would have to change picking mode for
@@ -70,8 +70,8 @@ namespace Layers
         // and hidden behind IPanel interface.
         public bool blocksRaycasts
         {
-            get => rootVisualElement.GetSelectableGameObject().GetComponent<PanelRaycaster>().isActiveAndEnabled;
-            set => rootVisualElement.GetSelectableGameObject().GetComponent<PanelRaycaster>().enabled = value;
+            get => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelRaycaster>().isActiveAndEnabled;
+            set => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelRaycaster>().enabled = value;
         }
 
         public void Init(Material material, UIDocument uiDocument)
