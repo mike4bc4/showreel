@@ -38,6 +38,17 @@ namespace Layers
         Overscan m_Overscan;
         bool m_Visible;
         bool m_Active;
+        string m_Name;
+
+        public new string name
+        {
+            get => m_Name;
+            set
+            {
+                m_Name = value;
+                gameObject.name = $"{GetType().Name}({m_Name})";
+            }
+        }
 
         public bool active
         {
@@ -45,7 +56,7 @@ namespace Layers
             set => m_Active = value;
         }
 
-        public bool visible
+        public virtual bool visible
         {
             get => m_Visible;
             set

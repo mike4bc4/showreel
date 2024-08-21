@@ -59,7 +59,9 @@ namespace Boards
             {
                 if (m_Player.playbackSpeed > 0)
                 {
-                    m_InitialBoardLayer = LayerManager.CreateLayer(m_InitialBoardVisualTreeAsset, displaySortOrder: k_DisplaySortOrder);
+                    m_InitialBoardLayer = LayerManager.CreateLayer("Initial");
+                    m_InitialBoardLayer.displaySortOrder = k_DisplaySortOrder;
+                    m_InitialBoardLayer.AddTemplateFromVisualTreeAsset(m_InitialBoardVisualTreeAsset);
 
                     m_Title = m_InitialBoardLayer.rootVisualElement.Q<DiamondTitle>(k_TitleElementName);
                     m_Title.style.opacity = 0f;
@@ -70,7 +72,8 @@ namespace Boards
                     m_Subtitle.style.opacity = 0f;
                     m_Subtitle.animationProgress = 0f;
 
-                    m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
+                    m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer("Initial");
+                    m_PostProcessingLayer.displaySortOrder = k_DisplaySortOrder + 1;
                     m_PostProcessingLayer.overscan = 8f;
                     m_PostProcessingLayer.maskElement = m_Title;
                     m_PostProcessingLayer.blurSize = BaseLayer.DefaultBlurSize;
@@ -193,7 +196,8 @@ namespace Boards
                 }
                 else
                 {
-                    m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
+                    m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer("Initial");
+                    m_PostProcessingLayer.displaySortOrder = k_DisplaySortOrder + 1;
                     m_PostProcessingLayer.overscan = 8f;
                     m_PostProcessingLayer.maskElement = m_Subtitle;
                     m_SubtitleAnimationPlayer.Stop();
@@ -261,14 +265,16 @@ namespace Boards
             return animation;
         }
 
-        public void ShowImmediate()
+        public override void ShowImmediate()
         {
             m_Player.Stop();
 
             LayerManager.RemoveLayer(m_PostProcessingLayer);
             if (m_InitialBoardLayer == null)
             {
-                m_InitialBoardLayer = LayerManager.CreateLayer(m_InitialBoardVisualTreeAsset, displaySortOrder: k_DisplaySortOrder);
+                m_InitialBoardLayer = LayerManager.CreateLayer("Initial");
+                m_InitialBoardLayer.displaySortOrder = k_DisplaySortOrder;
+                m_InitialBoardLayer.AddTemplateFromVisualTreeAsset(m_InitialBoardVisualTreeAsset);
             }
 
             m_InitialBoardLayer.blurSize = 0f;
@@ -287,14 +293,14 @@ namespace Boards
             m_SubtitleAnimationPlayer.Play();
         }
 
-        public void Show()
+        public override void Show()
         {
             m_Player.animation = m_Player[k_MainAnimationName];
             m_Player.playbackSpeed = 1f;
             m_Player.Play();
         }
 
-        public void Hide()
+        public override void Hide()
         {
             m_Player.animation = m_Player[k_MainAnimationName];
             m_Player.playbackSpeed = -1;

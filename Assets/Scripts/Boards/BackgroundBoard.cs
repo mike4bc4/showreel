@@ -17,14 +17,16 @@ namespace Boards
 
         Layer m_BackgroundBoardLayer;
 
-        public void ShowImmediate()
+        public override void ShowImmediate()
         {
-            m_BackgroundBoardLayer = LayerManager.CreateLayer(m_BackgroundBoardVisualTreeAsset, displaySortOrder: k_DisplaySortOrder);
+            m_BackgroundBoardLayer = LayerManager.CreateLayer("Background");
+            m_BackgroundBoardLayer.displaySortOrder = k_DisplaySortOrder;
+            m_BackgroundBoardLayer.AddTemplateFromVisualTreeAsset(m_BackgroundBoardVisualTreeAsset);
             m_BackgroundBoardLayer.interactable = false;
             m_BackgroundBoardLayer.blocksRaycasts = false;
         }
 
-        public void HideImmediate()
+        public override void HideImmediate()
         {
             LayerManager.RemoveLayer(m_BackgroundBoardLayer);
         }

@@ -66,14 +66,13 @@ namespace Layers
             commandBufferDirty = true;
         }
 
-        public static PostProcessingLayer CreatePostProcessingLayer(string name = "PostProcessingLayer", int displaySortOrder = 0)
+        public static PostProcessingLayer CreatePostProcessingLayer(string name = "Unnamed")
         {
-            var gameObject = new GameObject(name);
+            var gameObject = new GameObject();
             gameObject.transform.SetParent(transform);
 
             var layer = gameObject.AddComponent<PostProcessingLayer>();
             layer.name = name;
-            layer.displaySortOrder = displaySortOrder;
             layer.Init(new Material(layerShader));
             layers.Add(layer);
 
@@ -82,23 +81,21 @@ namespace Layers
             return layer;
         }
 
-        public static Layer CreateLayer(VisualTreeAsset vta = null, string name = "Layer", int displaySortOrder = 0)
+        public static Layer CreateLayer(string name = "Unnamed")
         {
             var renderTexture = RenderTexture.GetTemporary(Camera.main.pixelWidth, Camera.main.pixelHeight);
 
             var ps = Instantiate(panelSettings);
             ps.targetTexture = renderTexture;
 
-            var gameObject = new GameObject(name);
+            var gameObject = new GameObject();
             gameObject.transform.SetParent(transform);
 
             var uiDocument = gameObject.AddComponent<UIDocument>();
             uiDocument.panelSettings = ps;
-            uiDocument.visualTreeAsset = vta;
 
             var layer = gameObject.AddComponent<Layer>();
             layer.name = name;
-            layer.displaySortOrder = displaySortOrder;
             layer.Init(new Material(layerShader), uiDocument);
             layers.Add(layer);
 
@@ -171,6 +168,8 @@ namespace Layers
             layers.Sort(BaseLayer.Comparer);
             for (int i = 0; i < layers.Count; i++)
             {
+                layers[i].transform.SetSiblingIndex(i);
+
                 if (!layers[i].visible)
                 {
                     continue;

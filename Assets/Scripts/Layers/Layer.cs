@@ -10,7 +10,34 @@ namespace Layers
 {
     public class Layer : BaseLayer
     {
+        const string k_LayerRootUssClassName = "layer-root";
+
         UIDocument m_UIDocument;
+        VisualElement m_RootVisualElement;
+
+        public override bool visible
+        {
+            get => base.visible;
+            set
+            {
+                // In addition to default behavior make sure that ui document root visual element is
+                // empty when layer is not visible. This effectively removes panel from ui renderer
+                // and no write to render texture occurs.
+                var previousVisible = visible;
+                base.visible = value;
+                if (visible != previousVisible)
+                {
+                    if (!visible)
+                    {
+                        uiDocument.rootVisualElement.Remove(m_RootVisualElement);
+                    }
+                    else
+                    {
+                        uiDocument.rootVisualElement.Add(m_RootVisualElement);
+                    }
+                }
+            }
+        }
 
         public UIDocument uiDocument
         {
@@ -25,7 +52,7 @@ namespace Layers
 
         public VisualElement rootVisualElement
         {
-            get => uiDocument.rootVisualElement;
+            get => m_RootVisualElement;
         }
 
         public bool interactable
@@ -51,6 +78,19 @@ namespace Layers
         {
             base.Init(material);
             m_UIDocument = uiDocument;
+
+            m_RootVisualElement = new VisualElement();
+            m_RootVisualElement.name = "layer-root";
+            m_RootVisualElement.AddToClassList(k_LayerRootUssClassName);
+            uiDocument.rootVisualElement.Add(m_RootVisualElement);
+        }
+
+        public TemplateContainer AddTemplateFromVisualTreeAsset(VisualTreeAsset visualTreeAsset)
+        {
+            var templateContainer = visualTreeAsset.Instantiate();
+            templateContainer.style.flexGrow = 1f;
+            rootVisualElement.Add(templateContainer);
+            return templateContainer;
         }
 
         void OnDestroy()

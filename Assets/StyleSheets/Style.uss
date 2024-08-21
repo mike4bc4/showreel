@@ -773,3 +773,7 @@
     margin-bottom: 32px;
     -unity-text-align: middle-center;
 }
+
+.layer-root{
+    flex-grow: 1;
+}
