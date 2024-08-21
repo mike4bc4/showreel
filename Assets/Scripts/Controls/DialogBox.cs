@@ -74,9 +74,9 @@ namespace Controls
 
         public DialogBox()
         {
-            m_Layer = LayerManager.CreateLayer();
-            m_BackgroundPostProcessingLayer = LayerManager.CreatePostProcessingLayer();
-            m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer();
+            m_Layer = LayerManager.CreateLayer("DialogBox");
+            m_BackgroundPostProcessingLayer = LayerManager.CreatePostProcessingLayer("DialogBoxBackground");
+            m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer("DialogBox");
             displaySortOrder = k_DefaultDisplaySortOrder;
 
             m_DialogBox = new Controls.Raw.DialogBox();
