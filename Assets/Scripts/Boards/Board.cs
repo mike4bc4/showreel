@@ -8,5 +8,9 @@ namespace Boards
     {
         public virtual void EarlyInit() { }
         public virtual void Init() { }
+        public virtual void Show() { }
+        public virtual void ShowImmediate() { }
+        public virtual void Hide() { }
+        public virtual void HideImmediate() { }
     }
 }
