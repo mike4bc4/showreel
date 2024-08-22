@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Layers;
 using Templates;
+using UnityEngine.AddressableAssets;
 
 namespace Controls
 {
@@ -19,6 +20,7 @@ namespace Controls
         const float k_PopupScale = 0.95f;
         const string k_DialogBoxLabelQuitVariantUssClassName = "dialog-box__label--quit";
         static readonly Color s_BackgroundLayerColor = new Color(0.85f, 0.85f, 0.85f, 1f);
+        const string k_InfoDialogBoxContentVtaAddress = "InfoDialogBoxContentVisualTreeAsset";
 
         public event Action onHide;
         public event Action onRightButtonClicked;
@@ -70,6 +72,12 @@ namespace Controls
                 m_BackgroundPostProcessingLayer.displaySortOrder = value - 1;
                 m_PostProcessingLayer.displaySortOrder = value + 1;
             }
+        }
+
+        public int inputSortOrder
+        {
+            get => m_Layer.inputSortOrder;
+            set => m_Layer.inputSortOrder = value;
         }
 
         public DialogBox()
@@ -267,6 +275,21 @@ namespace Controls
             label.text = "Do you want to close application?";
             label.AddToClassList(k_DialogBoxLabelQuitVariantUssClassName);
             dialogBox.contentContainer.Add(label);
+
+            return dialogBox;
+        }
+
+        public static DialogBox CreateInfoDialogBox()
+        {
+            var dialogBox = new DialogBox();
+
+            dialogBox.titleLabel = "Info";
+            dialogBox.buttonDisplay = ButtonDisplay.LeftCenter;
+            dialogBox.leftButtonLabel = "OK";
+
+            var handle = Addressables.LoadAssetAsync<VisualTreeAsset>(k_InfoDialogBoxContentVtaAddress);
+            var contentVisualTreeAsset = handle.WaitForCompletion();
+            dialogBox.contentContainer.Add(contentVisualTreeAsset.Instantiate());
 
             return dialogBox;
         }

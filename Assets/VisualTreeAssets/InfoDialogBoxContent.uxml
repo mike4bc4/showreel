@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="BulletLisElement" src="project://database/Assets/VisualTreeAssets/BulletListElement.uxml?fileID=9197481963319205126&amp;guid=b4aeea5072294a04889c6b9f494a770b&amp;type=3#BulletListElement" />
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:Label tabindex="-1" text="General:" parse-escape-sequences="true" display-tooltip-when-elided="true" class="h3" style="margin-bottom: 8px;" />
+        <ui:Instance template="BulletLisElement" />
+        <ui:Instance template="BulletLisElement" />
+        <ui:Label tabindex="-1" text="Navigation:" parse-escape-sequences="true" display-tooltip-when-elided="true" class="h3" style="margin-bottom: 8px;" />
+        <ui:Instance template="BulletLisElement" />
+        <ui:Instance template="BulletLisElement" />
+        <ui:Instance template="BulletLisElement" />
+    </ui:VisualElement>
+</ui:UXML>

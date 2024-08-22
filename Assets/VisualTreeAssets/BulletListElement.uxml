@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="bullet-list-element" style="flex-grow: 1; flex-direction: row; margin-bottom: 8px;">
+        <ui:VisualElement name="bullet" style="background-image: url(&quot;project://database/Assets/Textures/DiamondFill.png?fileID=2800000&amp;guid=f164d7cb61904fa4b9f722e671a217b9&amp;type=3#DiamondFill&quot;); width: 16px; height: 24px; -unity-background-image-tint-color: rgb(51, 51, 51); -unity-background-scale-mode: scale-to-fit; margin-right: 8px;" />
+        <ui:Label tabindex="-1" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eu tempor augue, rhoncus ornare purus. Ut nisl orci, molestie id magna et, suscipit pellentesque risus. Curabitur id porttitor purus." parse-escape-sequences="true" display-tooltip-when-elided="true" name="label" />
+    </ui:VisualElement>
+</ui:UXML>
