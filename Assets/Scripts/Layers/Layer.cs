@@ -14,6 +14,7 @@ namespace Layers
 
         UIDocument m_UIDocument;
         VisualElement m_RootVisualElement;
+        int? m_InputSortOrder;
 
         public override bool visible
         {
@@ -44,10 +45,27 @@ namespace Layers
             get => m_UIDocument;
         }
 
+        public override int displaySortOrder
+        {
+            get => base.displaySortOrder;
+            set
+            {
+                base.displaySortOrder = value;
+                if (m_InputSortOrder == null)
+                {
+                    uiDocument.panelSettings.sortingOrder = value;
+                }
+            }
+        }
+
         public int inputSortOrder
         {
             get => (int)uiDocument.panelSettings.sortingOrder;
-            set => uiDocument.panelSettings.sortingOrder = value;
+            set
+            {
+                m_InputSortOrder = value;
+                uiDocument.panelSettings.sortingOrder = value;
+            }
         }
 
         public VisualElement rootVisualElement

@@ -74,7 +74,7 @@ namespace Layers
             get => m_Material;
         }
 
-        public int displaySortOrder
+        public virtual int displaySortOrder
         {
             get => m_DisplaySortOrder;
             set
