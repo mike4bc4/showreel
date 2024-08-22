@@ -61,6 +61,7 @@ namespace Boards
             s_Instance = this;
             m_ActionMapsWrapper = new ActionMapsWrapper();
             m_Boards = GetComponentsInChildren<Board>(true).ToList();
+            m_StateMachine = CreateStateMachine();
         }
 
         void Start()
@@ -75,9 +76,7 @@ namespace Boards
                 board.Init();
             }
 
-            var initialBoard = GetBoard<InitialBoard>();
-            initialBoard.Show();
-            initialBoard.inputActions.Enable();
+            m_StateMachine.state = m_StateMachine[BMState.InitialBoard.ToString()];
             GetBoard<BackgroundBoard>().ShowImmediate();
         }
 
@@ -92,6 +91,37 @@ namespace Boards
             }
 
             return default(T);
+        }
+
+        StateMachine CreateStateMachine()
+        {
+            var stateMachine = new StateMachine();
+            stateMachine.AddState(BMState.InitialBoard);
+            stateMachine.AddState(BMState.InterfaceBoard);
+
+            stateMachine.initialState.AddTransition(BMState.InitialBoard, () =>
+            {
+                var initialBoard = GetBoard<InitialBoard>();
+                initialBoard.Show();
+            });
+
+            stateMachine[BMState.InitialBoard].AddTransition(BMState.InterfaceBoard, () =>
+            {
+                var initialBoard = GetBoard<InitialBoard>();
+                var interfaceBoard = GetBoard<InterfaceBoard>();
+                var diamondBarBoard = GetBoard<DiamondBarBoard>();
+
+                initialBoard.Hide();
+                Action onHideFinished = null;
+                initialBoard.onHideFinished += onHideFinished = () =>
+                {
+                    interfaceBoard.Show();
+                    diamondBarBoard.Show();
+                    initialBoard.onHideFinished -= onHideFinished;
+                };
+            });
+
+            return stateMachine;
         }
     }
 }

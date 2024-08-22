@@ -22,6 +22,8 @@ namespace Boards
 
         [SerializeField] VisualTreeAsset m_InitialBoardVisualTreeAsset;
 
+        public Action onHideFinished;
+
         AnimationPlayer m_AnimationPlayer;
         AnimationPlayer m_SubtitleAnimationPlayer;
 
@@ -65,6 +67,54 @@ namespace Boards
             m_SubtitleAnimationPlayer.animation = m_SubtitleAnimationPlayer[k_SubtitleAnimationName];
 
             HideImmediate();
+        }
+
+        public override void Show()
+        {
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_ShowHideAnimationName];
+            m_AnimationPlayer.playbackSpeed = 1f;
+            m_AnimationPlayer.Play();
+        }
+
+        public override void ShowImmediate()
+        {
+            m_AnimationPlayer.Stop();
+
+            m_PostProcessingLayer.visible = false;
+            m_Layer.blurSize = 0f;
+            m_Layer.alpha = 1f;
+
+            m_Title.animationProgress = 1f;
+            m_Title.style.opacity = 1f;
+            m_Title.label.style.opacity = 1f;
+
+            m_Subtitle.style.opacity = 1f;
+
+            m_SubtitleAnimationPlayer.Stop();
+            m_SubtitleAnimationPlayer.Play();
+
+            inputActions.Enable();
+        }
+
+        public override void Hide()
+        {
+            // m_Player.animation = m_Player[k_MainAnimationName];
+            // m_Player.playbackSpeed = -1;
+            // m_Player.Play();
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_HideAnimationName];
+            m_AnimationPlayer.playbackSpeed = 1f;
+            m_AnimationPlayer.Play();
+        }
+
+        public override void HideImmediate()
+        {
+            m_AnimationPlayer.Stop();
+            m_SubtitleAnimationPlayer.Stop();
+
+            m_Layer.visible = false;
+            m_PostProcessingLayer.visible = false;
+
+            inputActions.Disable();
         }
 
         KeyframeAnimation CreateShowHideAnimation()
@@ -161,11 +211,13 @@ namespace Boards
                 {
                     m_PostProcessingLayer.visible = false;
                     m_SubtitleAnimationPlayer.Play();
+                    inputActions.Enable();
                 }
                 else
                 {
                     m_PostProcessingLayer.visible = true;
                     m_SubtitleAnimationPlayer.Stop();
+                    inputActions.Disable();
                 }
             });
 
@@ -188,6 +240,11 @@ namespace Boards
         {
             var animation = new KeyframeAnimation();
 
+            animation.AddEvent(0, () =>
+            {
+                inputActions.Disable();
+            });
+
             var t1 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(20, Layer.DefaultBlurSize);
@@ -202,53 +259,11 @@ namespace Boards
 
                 m_Layer.visible = false;
                 m_PostProcessingLayer.visible = false;
+
+                onHideFinished?.Invoke();
             });
 
             return animation;
-        }
-
-        public override void Show()
-        {
-            m_AnimationPlayer.animation = m_AnimationPlayer[k_ShowHideAnimationName];
-            m_AnimationPlayer.playbackSpeed = 1f;
-            m_AnimationPlayer.Play();
-        }
-
-        public override void ShowImmediate()
-        {
-            m_AnimationPlayer.Stop();
-
-            m_PostProcessingLayer.visible = false;
-            m_Layer.blurSize = 0f;
-            m_Layer.alpha = 1f;
-
-            m_Title.animationProgress = 1f;
-            m_Title.style.opacity = 1f;
-            m_Title.label.style.opacity = 1f;
-
-            m_Subtitle.style.opacity = 1f;
-
-            m_SubtitleAnimationPlayer.Stop();
-            m_SubtitleAnimationPlayer.Play();
-        }
-
-        public override void Hide()
-        {
-            // m_Player.animation = m_Player[k_MainAnimationName];
-            // m_Player.playbackSpeed = -1;
-            // m_Player.Play();
-            m_AnimationPlayer.animation = m_AnimationPlayer[k_HideAnimationName];
-            m_AnimationPlayer.playbackSpeed = 1f;
-            m_AnimationPlayer.Play();
-        }
-
-        public override void HideImmediate()
-        {
-            m_AnimationPlayer.Stop();
-            m_SubtitleAnimationPlayer.Stop();
-
-            m_Layer.visible = false;
-            m_PostProcessingLayer.visible = false;
         }
 
         public void OnAny(InputAction.CallbackContext ctx)
@@ -264,7 +279,7 @@ namespace Boards
             }
             else
             {
-                Debug.Log("Continue");
+                BoardManager.StateMachine.state = BoardManager.StateMachine[BMState.InterfaceBoard];
             }
         }
 

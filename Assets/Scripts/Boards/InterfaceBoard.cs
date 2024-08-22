@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Controls;
 using Cysharp.Threading.Tasks;
+using FSM;
 using KeyframeSystem;
 using Layers;
 using UnityEngine;
@@ -15,166 +17,128 @@ namespace Boards
     {
         public const int InputSortOrder = 1000;   // Sorting order affects UI element picking.
         public const int DisplaySortOrder = 1000;   // Display order affects Layer sorting
+        const string k_ShowHideAnimationName = "ShowHideAnimation";
 
-        // const string k_ShowHideAnimationName = "ShowHideAnimation";
+        [SerializeField] VisualTreeAsset m_InterfaceBoardVisualTreeAsset;
 
-        // [SerializeField] VisualTreeAsset m_InterfaceBoardVisualTreeAsset;
+        Layer m_Layer;
+        AnimationPlayer m_ShowHideAnimationPlayer;
+        
+        public InputActions.ActionMapsWrapper.InterfaceBoardActions inputActions
+        {
+            get => BoardManager.ActionMapsWrapper.InterfaceBoard;
+        }
 
-        // Layer m_Layer;
-        // VisualElement m_LayerContent;
-        // AnimationPlayer m_ShowHideAnimationPlayer;
-        // bool m_Visible;
+        public override void Init()
+        {
+            inputActions.Any.performed += OnAny;
+            inputActions.Left.performed += OnLeft;
+            inputActions.Right.performed += OnRight;
+            inputActions.Confirm.performed += OnConfirm;
+            inputActions.Cancel.performed += OnCancel;
+            inputActions.Help.performed += OnHelp;
 
+            m_ShowHideAnimationPlayer = new AnimationPlayer();
+            m_ShowHideAnimationPlayer.AddAnimation(CreateShowHideAnimation(), k_ShowHideAnimationName);
+            m_ShowHideAnimationPlayer.animation = m_ShowHideAnimationPlayer[k_ShowHideAnimationName];
 
-        // public InputActions.ActionMapsWrapper.InterfaceBoardActions inputActions
-        // {
-        //     get => BoardManager.ActionMapsWrapper.InterfaceBoard;
-        // }
+            m_Layer = LayerManager.CreateLayer("Interface");
+            m_Layer.AddTemplateFromVisualTreeAsset(m_InterfaceBoardVisualTreeAsset);
+            m_Layer.displaySortOrder = DisplaySortOrder;
+            m_Layer.inputSortOrder = InputSortOrder;
 
-        // // public override bool visible
-        // // {
-        // //     get => m_Visible;
-        // //     set
-        // //     {
-        // //         if (value != m_Visible)
-        // //         {
-        // //             m_Visible = value;
-        // //             m_Layer.visible = m_Visible;
-        // //             if (m_Visible)
-        // //             {
-        // //                 m_Layer.rootVisualElement.Add(m_LayerContent);
-        // //             }
-        // //             else
-        // //             {
-        // //                 m_Layer.rootVisualElement.Remove(m_LayerContent);
-        // //             }
-        // //         }
-        // //     }
-        // // }
+            HideImmediate();
+        }
 
-        // public override void Init()
-        // {
-        //     inputActions.Any.performed += OnAny;
-        //     inputActions.Left.performed += OnLeft;
-        //     inputActions.Right.performed += OnRight;
-        //     inputActions.Confirm.performed += OnConfirm;
-        //     inputActions.Cancel.performed += OnCancel;
-        //     inputActions.Help.performed += OnHelp;
+        public override void Show()
+        {
+            m_ShowHideAnimationPlayer.playbackSpeed = 1f;
+            m_ShowHideAnimationPlayer.Play();
+        }
 
-        //     m_ShowHideAnimationPlayer = new AnimationPlayer();
-        //     m_ShowHideAnimationPlayer.AddAnimation(CreateShowHideAnimation(), k_ShowHideAnimationName);
-        //     m_ShowHideAnimationPlayer.animation = m_ShowHideAnimationPlayer[k_ShowHideAnimationName];
+        public override void ShowImmediate()
+        {
+            m_ShowHideAnimationPlayer.Stop();
+            m_Layer.visible = true;
+            m_Layer.blocksRaycasts = true;
+            m_Layer.interactable = true;
+            m_Layer.alpha = 1f;
+            m_Layer.blurSize = 0f;
+            inputActions.Enable();
+        }
 
-        //     m_LayerContent = m_InterfaceBoardVisualTreeAsset.Instantiate();
+        public override void Hide()
+        {
+            m_ShowHideAnimationPlayer.playbackSpeed = -1f;
+            m_ShowHideAnimationPlayer.Play();
+        }
 
-        //     m_Layer = LayerManager.CreateLayer("Interface");
-        //     m_Layer.visible = false;
-        //     m_Layer.displaySortOrder = DisplaySortOrder;
-        //     m_Layer.inputSortOrder = InputSortOrder;
-        //     // m_Layer.interactable = false;
-        //     // m_Layer.blocksRaycasts = false;
+        public override void HideImmediate()
+        {
+            m_ShowHideAnimationPlayer.Stop();
+            m_Layer.visible = false;
+            m_Layer.blocksRaycasts = false;
+            m_Layer.interactable = false;
+            inputActions.Disable();
+        }
 
-        //     visible = false;
-        // }
+        KeyframeAnimation CreateShowHideAnimation()
+        {
+            var animation = new KeyframeAnimation();
+            animation.AddEvent(0, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_Layer.visible = true;
+                    m_Layer.blocksRaycasts = true;
+                }
+                else
+                {
+                    m_Layer.visible = false;
+                    m_Layer.blocksRaycasts = false;
+                }
+            });
 
-        // public override void Show()
-        // {
-        //     m_ShowHideAnimationPlayer.playbackSpeed = 1f;
-        //     m_ShowHideAnimationPlayer.Play();
-        // }
+            var t1 = animation.AddTrack(alpha => m_Layer.alpha = alpha);
+            t1.AddKeyframe(0, 0f);
+            t1.AddKeyframe(20, 1f);
 
-        // public override void ShowImmediate()
-        // {
-        //     m_Layer.interactable = true;
-        //     m_Layer.blocksRaycasts = true;
-        //     m_Layer.alpha = 1f;
-        //     m_Layer.blurSize = 0f;
-        // }
+            var t2 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
+            t2.AddKeyframe(10, Layer.DefaultBlurSize);
+            t2.AddKeyframe(30, 0f);
 
-        // public override void Hide()
-        // {
-        //     m_ShowHideAnimationPlayer.playbackSpeed = -1f;
-        //     m_ShowHideAnimationPlayer.Play();
-        // }
+            animation.AddEvent(30, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_Layer.interactable = true;
+                    inputActions.Enable();
+                }
+                else
+                {
+                    m_Layer.interactable = false;
+                    inputActions.Disable();
+                }
+            });
 
-        // public override void HideImmediate()
-        // {
+            return animation;
+        }
 
-        // }
+        void OnAny(InputAction.CallbackContext callbackContext) { }
 
-        // KeyframeAnimation CreateShowHideAnimation()
-        // {
-        //     var animation = new KeyframeAnimation();
-        //     animation.AddEvent(0, () => OnShowHideAnimationFirstFrame(animation));
+        void OnLeft(InputAction.CallbackContext callbackContext) { }
 
-        //     var t1 = animation.AddTrack(alpha => m_Layer.alpha = alpha);
-        //     t1.AddKeyframe(0, 0f);
-        //     t1.AddKeyframe(20, 1f);
+        void OnRight(InputAction.CallbackContext callbackContext) { }
 
-        //     var t2 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
-        //     t2.AddKeyframe(10, Layer.DefaultBlurSize);
-        //     t2.AddKeyframe(30, 0f);
+        void OnConfirm(InputAction.CallbackContext callbackContext) { }
 
-        //     animation.AddEvent(30, () => OnShowHideAnimationLastFrame(animation));
+        void OnCancel(InputAction.CallbackContext callbackContext) { }
 
-        //     return animation;
-        // }
+        void OnHelp(InputAction.CallbackContext callbackContext) { }
 
-        // void OnShowHideAnimationFirstFrame(KeyframeAnimation animation)
-        // {
-        //     if (animation.player.playbackSpeed >= 0)
-        //     {
-        //         m_Layer.visible = true;
-        //         m_Layer.blocksRaycasts = true;
-        //     }
-        //     else
-        //     {
-        //         m_Layer.visible = false;
-        //         m_Layer.blocksRaycasts = false;
-        //     }
-        // }
-
-        // void OnShowHideAnimationLastFrame(KeyframeAnimation animation)
-        // {
-        //     if (animation.player.playbackSpeed >= 0)
-        //     {
-        //         m_Layer.interactable = true;
-        //     }
-        //     else
-        //     {
-        //         m_Layer.interactable = false;
-        //     }
-        // }
-
-
-        // void OnAny(InputAction.CallbackContext callbackContext)
-        // {
-        //     if (m_ShowHideAnimationPlayer.status.IsPlaying())
-        //     {
-        //         ShowImmediate();
-        //     }
-        // }
-
-        // void OnLeft(InputAction.CallbackContext callbackContext)
-        // {
-        //     if (!m_Layer.interactable)
-        //     {
-        //         return;
-        //     }
-        // }
-
-        // void OnRight(InputAction.CallbackContext callbackContext)
-        // {
-        //     if (!m_Layer.interactable)
-        //     {
-        //         return;
-        //     }
-        // }
-
-        // void OnConfirm(InputAction.CallbackContext callbackContext) { }
-
-        // void OnCancel(InputAction.CallbackContext callbackContext) { }
-
-        // void OnHelp(InputAction.CallbackContext callbackContext) { }
+        void OnDestroy()
+        {
+            LayerManager.RemoveLayer(m_Layer);
+        }
     }
 }
