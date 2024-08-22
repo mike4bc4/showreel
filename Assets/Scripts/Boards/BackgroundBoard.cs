@@ -11,7 +11,7 @@ namespace Boards
 {
     public class BackgroundBoard : Board
     {
-        const int k_DisplaySortOrder = 0;
+        public const int DisplaySortOrder = -100;
 
         [SerializeField] VisualTreeAsset m_BackgroundBoardVisualTreeAsset;
 
@@ -20,7 +20,7 @@ namespace Boards
         public override void ShowImmediate()
         {
             m_BackgroundBoardLayer = LayerManager.CreateLayer("Background");
-            m_BackgroundBoardLayer.displaySortOrder = k_DisplaySortOrder;
+            m_BackgroundBoardLayer.displaySortOrder = DisplaySortOrder;
             m_BackgroundBoardLayer.AddTemplateFromVisualTreeAsset(m_BackgroundBoardVisualTreeAsset);
             m_BackgroundBoardLayer.interactable = false;
             m_BackgroundBoardLayer.blocksRaycasts = false;

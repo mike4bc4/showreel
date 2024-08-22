@@ -15,15 +15,14 @@ namespace Boards
 {
     public class InterfaceBoard : Board
     {
-        public const int InputSortOrder = 1000;   // Sorting order affects UI element picking.
-        public const int DisplaySortOrder = 1000;   // Display order affects Layer sorting
+        public const int DisplaySortOrder = 1000;
         const string k_ShowHideAnimationName = "ShowHideAnimation";
 
         [SerializeField] VisualTreeAsset m_InterfaceBoardVisualTreeAsset;
 
         Layer m_Layer;
         AnimationPlayer m_ShowHideAnimationPlayer;
-        
+
         public InputActions.ActionMapsWrapper.InterfaceBoardActions inputActions
         {
             get => BoardManager.ActionMapsWrapper.InterfaceBoard;
@@ -45,7 +44,6 @@ namespace Boards
             m_Layer = LayerManager.CreateLayer("Interface");
             m_Layer.AddTemplateFromVisualTreeAsset(m_InterfaceBoardVisualTreeAsset);
             m_Layer.displaySortOrder = DisplaySortOrder;
-            m_Layer.inputSortOrder = InputSortOrder;
 
             HideImmediate();
         }
