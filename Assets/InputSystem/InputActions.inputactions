@@ -1,5 +1,5 @@
 {
-    "name": "ActionMapsWrapper",
+    "name": "InputActions",
     "maps": [
         {
             "name": "InitialBoard",
@@ -9,7 +9,7 @@
                     "name": "Any",
                     "type": "Button",
                     "id": "08f7b6a1-ff66-4068-a901-7079c6f819b3",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -77,7 +77,7 @@
                     "name": "Left",
                     "type": "Button",
                     "id": "2bfb3fac-44bb-4470-9ac4-236854440570",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -86,7 +86,7 @@
                     "name": "Right",
                     "type": "Button",
                     "id": "2146963e-992f-4528-9f81-d4356df8c1c5",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -113,7 +113,7 @@
                     "name": "Help",
                     "type": "Button",
                     "id": "8150bc43-e895-406f-bed2-78b3f1393f77",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false

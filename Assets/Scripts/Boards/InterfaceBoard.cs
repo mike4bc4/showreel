@@ -22,20 +22,18 @@ namespace Boards
 
         Layer m_Layer;
         AnimationPlayer m_ShowHideAnimationPlayer;
-
-        public InputActions.ActionMapsWrapper.InterfaceBoardActions inputActions
-        {
-            get => BoardManager.ActionMapsWrapper.InterfaceBoard;
-        }
+        DialogBox m_InfoDialogBox;
+        InputActionMap m_ActionMap;
 
         public override void Init()
         {
-            inputActions.Any.performed += OnAny;
-            inputActions.Left.performed += OnLeft;
-            inputActions.Right.performed += OnRight;
-            inputActions.Confirm.performed += OnConfirm;
-            inputActions.Cancel.performed += OnCancel;
-            inputActions.Help.performed += OnHelp;
+            m_ActionMap = InputSystem.actions.FindActionMap("InterfaceBoard");
+            m_ActionMap.FindAction("Any").performed += OnAny;
+            m_ActionMap.FindAction("Left").performed += OnLeft;
+            m_ActionMap.FindAction("Right").performed += OnRight;
+            m_ActionMap.FindAction("Confirm").performed += OnConfirm;
+            m_ActionMap.FindAction("Cancel").performed += OnCancel;
+            m_ActionMap.FindAction("Help").performed += OnHelp;
 
             m_ShowHideAnimationPlayer = new AnimationPlayer();
             m_ShowHideAnimationPlayer.AddAnimation(CreateShowHideAnimation(), k_ShowHideAnimationName);
@@ -62,7 +60,7 @@ namespace Boards
             m_Layer.interactable = true;
             m_Layer.alpha = 1f;
             m_Layer.blurSize = 0f;
-            inputActions.Enable();
+            m_ActionMap.Enable();
         }
 
         public override void Hide()
@@ -77,7 +75,7 @@ namespace Boards
             m_Layer.visible = false;
             m_Layer.blocksRaycasts = false;
             m_Layer.interactable = false;
-            inputActions.Disable();
+            m_ActionMap.Disable();
         }
 
         KeyframeAnimation CreateShowHideAnimation()
@@ -110,29 +108,68 @@ namespace Boards
                 if (animation.player.isPlayingForward)
                 {
                     m_Layer.interactable = true;
-                    inputActions.Enable();
+                    m_ActionMap.Enable();
                 }
                 else
                 {
                     m_Layer.interactable = false;
-                    inputActions.Disable();
+                    m_ActionMap.Disable();
                 }
             });
 
             return animation;
         }
 
-        void OnAny(InputAction.CallbackContext callbackContext) { }
+        void OnAny(InputAction.CallbackContext callbackContext)
+        {
+            if (m_ShowHideAnimationPlayer.status.IsPlaying())
+            {
+                ShowImmediate();
+            }
+        }
 
         void OnLeft(InputAction.CallbackContext callbackContext) { }
 
         void OnRight(InputAction.CallbackContext callbackContext) { }
 
-        void OnConfirm(InputAction.CallbackContext callbackContext) { }
+        void OnConfirm(InputAction.CallbackContext callbackContext)
+        {
+            if (m_InfoDialogBox != null)
+            {
+                m_InfoDialogBox.Hide();
+            }
+        }
 
-        void OnCancel(InputAction.CallbackContext callbackContext) { }
+        void OnCancel(InputAction.CallbackContext callbackContext)
+        {
+            if (m_InfoDialogBox != null)
+            {
+                m_InfoDialogBox.Hide();
 
-        void OnHelp(InputAction.CallbackContext callbackContext) { }
+            }
+        }
+
+        void OnHelp(InputAction.CallbackContext callbackContext)
+        {
+            if (m_InfoDialogBox == null)
+            {
+                m_InfoDialogBox = DialogBox.CreateInfoDialogBox();
+                m_InfoDialogBox.displaySortOrder = DisplaySortOrder + 100;
+                m_InfoDialogBox.onHide += m_InfoDialogBox.Dispose;
+                m_InfoDialogBox.onBackgroundClicked += OnInfoDialogBoxLeftButtonOrBackgroundClicked;
+                m_InfoDialogBox.onLeftButtonClicked += OnInfoDialogBoxLeftButtonOrBackgroundClicked;
+                m_InfoDialogBox.Show();
+            }
+            else
+            {
+                m_InfoDialogBox.Hide();
+            }
+        }
+
+        void OnInfoDialogBoxLeftButtonOrBackgroundClicked()
+        {
+            m_InfoDialogBox.Hide();
+        }
 
         void OnDestroy()
         {

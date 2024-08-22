@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Controls;
 using FSM;
-using InputActions;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -17,10 +16,8 @@ namespace Boards
 
         List<Board> m_Boards;
         StateMachine m_StateMachine;
-        ActionMapsWrapper m_ActionMapsWrapper;
 
         public static StateMachine StateMachine => s_Instance.m_StateMachine;
-        public static ActionMapsWrapper ActionMapsWrapper => s_Instance.m_ActionMapsWrapper;
 
         void Awake()
         {
@@ -31,7 +28,6 @@ namespace Boards
             }
 
             s_Instance = this;
-            m_ActionMapsWrapper = new ActionMapsWrapper();
             m_Boards = GetComponentsInChildren<Board>(true).ToList();
             m_StateMachine = CreateStateMachine();
         }

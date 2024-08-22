@@ -32,17 +32,14 @@ namespace Boards
         DiamondTitle m_Title;
         Subtitle m_Subtitle;
         DialogBox m_QuitDialogBox;
-
-        public InputActions.ActionMapsWrapper.InitialBoardActions inputActions
-        {
-            get => BoardManager.ActionMapsWrapper.InitialBoard;
-        }
+        InputActionMap m_ActionMap;
 
         public override void Init()
         {
-            inputActions.Any.performed += OnAny;
-            inputActions.Cancel.performed += OnCancel;
-            inputActions.Confirm.performed += OnConfirm;
+            m_ActionMap = InputSystem.actions.FindActionMap("InitialBoard");
+            m_ActionMap.FindAction("Any").performed += OnAny;
+            m_ActionMap.FindAction("Confirm").performed += OnConfirm;
+            m_ActionMap.FindAction("Cancel").performed += OnCancel;
 
             m_Layer = LayerManager.CreateLayer("Initial");
             m_Layer.displaySortOrder = DisplaySortOrder;
@@ -93,7 +90,7 @@ namespace Boards
             m_SubtitleAnimationPlayer.Stop();
             m_SubtitleAnimationPlayer.Play();
 
-            inputActions.Enable();
+            m_ActionMap.Enable();
         }
 
         public override void Hide()
@@ -111,7 +108,7 @@ namespace Boards
             m_Layer.visible = false;
             m_PostProcessingLayer.visible = false;
 
-            inputActions.Disable();
+            m_ActionMap.Disable();
         }
 
         KeyframeAnimation CreateShowAnimation()
@@ -124,7 +121,7 @@ namespace Boards
                 m_PostProcessingLayer.visible = true;
                 m_PostProcessingLayer.maskElement = m_Title;
                 m_PostProcessingLayer.overscan = 8f;
-                inputActions.Enable();
+                m_ActionMap.Enable();
             });
 
             var t1 = animation.AddTrack(opacity => m_Title.style.opacity = opacity);
@@ -199,7 +196,7 @@ namespace Boards
 
             animation.AddEvent(0, () =>
             {
-                inputActions.Disable();
+                m_ActionMap.Disable();
             });
 
             var t1 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
