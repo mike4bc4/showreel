@@ -54,6 +54,14 @@ namespace FSM
             }
         }
 
+        public State this[Enum enumName]
+        {
+            get
+            {
+                return this[enumName.ToString()];
+            }
+        }
+
         /// <summary>
         /// Adds new state to state machine with give name. If name parameter is default, state will
         /// be initialized with GUID as a name.
@@ -75,6 +83,11 @@ namespace FSM
             m_States.Add(name, state);
 
             return state;
+        }
+
+        public State AddState(Enum nameEnum = default)
+        {
+            return AddState(nameEnum != default ? nameEnum.ToString() : default(string));
         }
 
         public void RemoveState(State state)

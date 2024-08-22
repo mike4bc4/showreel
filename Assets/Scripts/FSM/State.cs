@@ -62,6 +62,11 @@ namespace FSM
             return transition;
         }
 
+        public Transition AddTransition(Enum enumToName, Action action)
+        {
+            return AddTransition(enumToName.ToString(), action);
+        }
+
         public void RemoveTransition(Transition transition)
         {
             foreach (var kv in m_Transitions.Where(kvp => kvp.Value == transition))
