@@ -88,7 +88,7 @@ namespace Controls.Raw
 
         float maxOffset
         {
-            get => Mathf.Max(0, contentContainer.layout.height - layout.height);
+            get => Mathf.Max(0, contentContainer.layout.height - m_Viewport.layout.height);
         }
 
         public float normalizedOffset
@@ -197,7 +197,7 @@ namespace Controls.Raw
             m_ScrollBar.SetEnabled(maxOffset > 0);
             m_ScrollBar.style.display = maxOffset > 0 ? DisplayStyle.Flex : DisplayStyle.None;
 
-            var draggerSize = layout.height / Mathf.Max(1, contentContainer.layout.height);
+            var draggerSize = m_Viewport.layout.height / Mathf.Max(1, contentContainer.layout.height);
             m_ScrollBar.dragger.style.height = Length.Percent(Mathf.Min(draggerSize, 1) * 100f);
         }
     }
