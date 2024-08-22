@@ -15,8 +15,8 @@ namespace Boards
 {
     public class InitialBoard : Board
     {
-        const int k_DisplaySortOrder = 1;
-        const string k_ShowHideAnimationName = "ShowHideAnimation";
+        public const int DisplaySortOrder = 0;
+        const string k_ShowAnimationName = "ShowAnimation";
         const string k_HideAnimationName = "HideAnimation";
         const string k_SubtitleAnimationName = "SubtitleAnimation";
 
@@ -45,21 +45,21 @@ namespace Boards
             inputActions.Confirm.performed += OnConfirm;
 
             m_Layer = LayerManager.CreateLayer("Initial");
-            m_Layer.displaySortOrder = k_DisplaySortOrder;
+            m_Layer.displaySortOrder = DisplaySortOrder;
             m_Layer.AddTemplateFromVisualTreeAsset(m_InitialBoardVisualTreeAsset);
             m_Layer.blocksRaycasts = false;
             m_Layer.interactable = false;
 
             m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer("Initial");
-            m_PostProcessingLayer.displaySortOrder = k_DisplaySortOrder + 1;
+            m_PostProcessingLayer.displaySortOrder = DisplaySortOrder + 1;
 
             m_Title = m_Layer.rootVisualElement.Q<DiamondTitle>("title");
             m_Subtitle = m_Layer.rootVisualElement.Q<Subtitle>("subtitle");
 
             m_AnimationPlayer = new AnimationPlayer();
-            m_AnimationPlayer.AddAnimation(CreateShowHideAnimation(), k_ShowHideAnimationName);
+            m_AnimationPlayer.AddAnimation(CreateShowAnimation(), k_ShowAnimationName);
             m_AnimationPlayer.AddAnimation(CreateHideAnimation(), k_HideAnimationName);
-            m_AnimationPlayer.animation = m_AnimationPlayer[k_ShowHideAnimationName];
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_ShowAnimationName];
 
             m_SubtitleAnimationPlayer = new AnimationPlayer();
             m_SubtitleAnimationPlayer.wrapMode = KeyframeSystem.WrapMode.Loop;
@@ -71,7 +71,7 @@ namespace Boards
 
         public override void Show()
         {
-            m_AnimationPlayer.animation = m_AnimationPlayer[k_ShowHideAnimationName];
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_ShowAnimationName];
             m_AnimationPlayer.playbackSpeed = 1f;
             m_AnimationPlayer.Play();
         }
@@ -98,9 +98,6 @@ namespace Boards
 
         public override void Hide()
         {
-            // m_Player.animation = m_Player[k_MainAnimationName];
-            // m_Player.playbackSpeed = -1;
-            // m_Player.Play();
             m_AnimationPlayer.animation = m_AnimationPlayer[k_HideAnimationName];
             m_AnimationPlayer.playbackSpeed = 1f;
             m_AnimationPlayer.Play();
@@ -117,24 +114,17 @@ namespace Boards
             inputActions.Disable();
         }
 
-        KeyframeAnimation CreateShowHideAnimation()
+        KeyframeAnimation CreateShowAnimation()
         {
             var animation = new KeyframeAnimation();
 
             animation.AddEvent(0, () =>
             {
-                if (animation.player.isPlayingForward)
-                {
-                    m_Layer.visible = true;
-                    m_PostProcessingLayer.visible = true;
-                    m_PostProcessingLayer.maskElement = m_Title;
-                    m_PostProcessingLayer.overscan = 8f;
-                }
-                else
-                {
-                    m_Layer.visible = false;
-                    m_PostProcessingLayer.visible = false;
-                }
+                m_Layer.visible = true;
+                m_PostProcessingLayer.visible = true;
+                m_PostProcessingLayer.maskElement = m_Title;
+                m_PostProcessingLayer.overscan = 8f;
+                inputActions.Enable();
             });
 
             var t1 = animation.AddTrack(opacity => m_Title.style.opacity = opacity);
@@ -147,15 +137,7 @@ namespace Boards
 
             animation.AddEvent(30, () =>
             {
-                if (animation.player.isPlayingForward)
-                {
-                    m_PostProcessingLayer.maskElement = null;
-                }
-                else
-                {
-                    m_PostProcessingLayer.maskElement = m_Title;
-                    m_PostProcessingLayer.overscan = 8f;
-                }
+                m_PostProcessingLayer.maskElement = null;
             });
 
             var t2 = animation.AddTrack(animationProgress => m_Title.animationProgress = animationProgress);
@@ -164,15 +146,8 @@ namespace Boards
 
             animation.AddEvent(90, () =>
             {
-                if (animation.player.isPlayingForward)
-                {
-                    m_PostProcessingLayer.overscan = new Overscan(8f, 8f, 0f, 8f);
-                    m_PostProcessingLayer.maskElement = m_Title.label;
-                }
-                else
-                {
-                    m_PostProcessingLayer.maskElement = null;
-                }
+                m_PostProcessingLayer.overscan = new Overscan(8f, 8f, 0f, 8f);
+                m_PostProcessingLayer.maskElement = m_Title.label;
             });
 
             var t3 = animation.AddTrack(opacity => m_Title.label.style.opacity = opacity);
@@ -185,16 +160,8 @@ namespace Boards
 
             animation.AddEvent(120, () =>
             {
-                if (animation.player.isPlayingForward)
-                {
-                    m_PostProcessingLayer.overscan = 8f;
-                    m_PostProcessingLayer.maskElement = m_Subtitle;
-                }
-                else
-                {
-                    m_PostProcessingLayer.overscan = new Overscan(8f, 8f, 0f, 8f);
-                    m_PostProcessingLayer.maskElement = m_Title.label;
-                }
+                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.maskElement = m_Subtitle;
             });
 
             var t4 = animation.AddTrack(opacity => m_Subtitle.style.opacity = opacity);
@@ -207,18 +174,8 @@ namespace Boards
 
             animation.AddEvent(150, () =>
             {
-                if (animation.player.isPlayingForward)
-                {
-                    m_PostProcessingLayer.visible = false;
-                    m_SubtitleAnimationPlayer.Play();
-                    inputActions.Enable();
-                }
-                else
-                {
-                    m_PostProcessingLayer.visible = true;
-                    m_SubtitleAnimationPlayer.Stop();
-                    inputActions.Disable();
-                }
+                m_PostProcessingLayer.visible = false;
+                m_SubtitleAnimationPlayer.Play();
             });
 
             return animation;
@@ -273,7 +230,7 @@ namespace Boards
                 return;
             }
 
-            if (m_AnimationPlayer.animation == m_AnimationPlayer[k_ShowHideAnimationName] && m_AnimationPlayer.status.IsPlaying())
+            if (m_AnimationPlayer.animation == m_AnimationPlayer[k_ShowAnimationName] && m_AnimationPlayer.status.IsPlaying())
             {
                 ShowImmediate();
             }
@@ -288,6 +245,7 @@ namespace Boards
             if (m_QuitDialogBox == null)
             {
                 m_QuitDialogBox = DialogBox.CreateQuitDialogBox();
+                m_QuitDialogBox.displaySortOrder = DisplaySortOrder + 100;
                 m_QuitDialogBox.onHide += m_QuitDialogBox.Dispose;
                 m_QuitDialogBox.onRightButtonClicked += OnQuitDialogBoxBackgroundOrRightButtonClicked;
                 m_QuitDialogBox.onBackgroundClicked += OnQuitDialogBoxBackgroundOrRightButtonClicked;
