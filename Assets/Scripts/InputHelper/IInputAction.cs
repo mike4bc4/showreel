@@ -1,0 +1,12 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public interface IInputAction
+{
+    public event Action<InputAction.CallbackContext> performed;
+    public int lastPerformedFrameIndex { get; }
+    public int performedCountThisFrame { get; }
+}
