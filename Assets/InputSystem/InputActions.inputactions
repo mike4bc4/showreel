@@ -262,6 +262,54 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "DiamondBarBoard",
+            "id": "2e5bb9fc-d542-47fd-84af-1a2625ef18a0",
+            "actions": [
+                {
+                    "name": "Any",
+                    "type": "Button",
+                    "id": "62576641-c9db-4477-80b0-f546059f16ce",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Cancel",
+                    "type": "Button",
+                    "id": "1ba6dcc1-c5c3-4fa1-806d-95af8c493417",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "2401d0e2-b7d1-479d-9ed8-a2868fc0d783",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Any",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c91ee578-0288-4520-a124-e0aa4530b7d2",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

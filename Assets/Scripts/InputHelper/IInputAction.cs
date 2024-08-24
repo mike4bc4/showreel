@@ -9,4 +9,6 @@ public interface IInputAction
     public event Action<InputAction.CallbackContext> performed;
     public int lastPerformedFrameIndex { get; }
     public int performedCountThisFrame { get; }
+    public bool performedInvokesOncePerFrame { get; set; }
+    public bool isPerformedDelayed { get; set; }
 }

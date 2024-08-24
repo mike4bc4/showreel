@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
+using Cysharp.Threading.Tasks;
 
 namespace InputHelper
 {
@@ -14,6 +15,20 @@ namespace InputHelper
         int m_LastPerformedFrameIndex;
         int m_PerformedCountThisFrame;
         Guid m_PreviousInputActionId;
+        bool m_PerformedInvokesOncePerFrame;
+        bool m_IsPerformedDelayed;
+
+        public bool isPerformedDelayed
+        {
+            get => m_IsPerformedDelayed;
+            set => m_IsPerformedDelayed = value;
+        }
+
+        public bool performedInvokesOncePerFrame
+        {
+            get => m_PerformedInvokesOncePerFrame;
+            set => m_PerformedInvokesOncePerFrame = value;
+        }
 
         /// <summary>
         /// When this property is read inside performed callback, it will return index BEFORE current
@@ -50,6 +65,8 @@ namespace InputHelper
 
         public InputActionWrapper(InputAction inputAction)
         {
+            m_IsPerformedDelayed = true;
+            m_PerformedInvokesOncePerFrame = true;
             m_LastPerformedFrameIndex = -1;
             m_LastPerformedFrameIndex = -1;
 
@@ -80,11 +97,28 @@ namespace InputHelper
             }
             else
             {
-                m_PerformedCountThisFrame = 1;
+                m_PerformedCountThisFrame = 0;
             }
 
-            performed?.Invoke(callbackContext);
+            if (!m_PerformedInvokesOncePerFrame || m_PerformedCountThisFrame <= 0)
+            {
+                if (!m_IsPerformedDelayed)
+                {
+                    performed?.Invoke(callbackContext);
+                }
+                else
+                {
+                    InvokePerformedAsync(callbackContext).Forget();
+                }
+            }
+
             m_LastPerformedFrameIndex = Time.frameCount;
+        }
+
+        async UniTask InvokePerformedAsync(InputAction.CallbackContext callbackContext)
+        {
+            await UniTask.Yield(PlayerLoopTiming.LastUpdate);
+            performed?.Invoke(callbackContext);
         }
     }
 }

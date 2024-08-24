@@ -25,6 +25,24 @@ namespace InputHelper
             return action != null ? action.lastPerformedFrameIndex : -1;
         }
 
+        public static void SetPerformedInvokesOncePerFrame(this InputAction inputAction, bool value)
+        {
+            var action = InputActionAssetHelper.FindAction(inputAction.id);
+            if (action != null)
+            {
+                action.performedInvokesOncePerFrame = value;
+            }
+        }
+
+        public static void SetIsPerformedDelayed(this InputAction inputAction, bool value)
+        {
+            var action = InputActionAssetHelper.FindAction(inputAction.id);
+            if (action != null)
+            {
+                action.isPerformedDelayed = value;
+            }
+        }
+
         public static void RegisterHelperPerformedCallback(this InputAction inputAction, Action<InputAction.CallbackContext> callback)
         {
             var action = InputActionAssetHelper.FindAction(inputAction.id);
