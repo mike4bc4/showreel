@@ -22,10 +22,14 @@ namespace Controls
         static readonly Color s_BackgroundLayerColor = new Color(0.85f, 0.85f, 0.85f, 1f);
         const string k_InfoDialogBoxContentVtaAddress = "InfoDialogBoxContentVisualTreeAsset";
 
+        public enum ButtonIndex
+        {
+            Left,
+            Right,
+            Background,
+        } 
+
         public event Action onHide;
-        public event Action onRightButtonClicked;
-        public event Action onLeftButtonClicked;
-        public event Action onBackgroundClicked;
 
         Layer m_Layer;
         PostProcessingLayer m_BackgroundPostProcessingLayer;
@@ -33,6 +37,7 @@ namespace Controls
         Controls.Raw.DialogBox m_DialogBox;
         AnimationPlayer m_ShowHideAnimationPlayer;
         AnimationPlayer m_TitleAnimationPlayer;
+        List<Action> m_ClickDelegates = new List<Action>();
 
         public VisualElement contentContainer
         {
@@ -82,19 +87,25 @@ namespace Controls
 
         public DialogBox()
         {
+            m_ClickDelegates = new List<Action>();
+            for (int i = 0; i < Enum.GetNames(typeof(ButtonIndex)).Length; i++)
+            {
+                m_ClickDelegates.Add(delegate { });
+            }
+
             m_Layer = LayerManager.CreateLayer("DialogBox");
             m_BackgroundPostProcessingLayer = LayerManager.CreatePostProcessingLayer("DialogBoxBackground");
             m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer("DialogBox");
             displaySortOrder = k_DefaultDisplaySortOrder;
 
             m_DialogBox = new Controls.Raw.DialogBox();
-            m_DialogBox.rightButton.clicked += () => onRightButtonClicked?.Invoke();
-            m_DialogBox.leftButton.clicked += () => onLeftButtonClicked?.Invoke();
+            m_DialogBox.rightButton.clicked += () => PerformClick(ButtonIndex.Right);
+            m_DialogBox.leftButton.clicked += () => PerformClick(ButtonIndex.Left);
             m_DialogBox.RegisterCallback<ClickEvent>(evt =>
             {
                 if (evt.target == m_DialogBox)
                 {
-                    onBackgroundClicked?.Invoke();
+                    PerformClick(ButtonIndex.Background);
                 }
             });
 
@@ -109,6 +120,21 @@ namespace Controls
             m_TitleAnimationPlayer.animation = m_TitleAnimationPlayer[k_TitleAnimationName];
 
             HideImmediate();
+        }
+
+        public void RegisterClickCallback(ButtonIndex buttonIndex, Action callback)
+        {
+            m_ClickDelegates[(int)buttonIndex] += callback;
+        }
+
+        public void UnregisterClickCallback(ButtonIndex buttonIndex, Action callback)
+        {
+            m_ClickDelegates[(int)buttonIndex] -= callback;
+        }
+
+        public void PerformClick(ButtonIndex buttonIndex)
+        {
+            m_ClickDelegates[(int)buttonIndex].Invoke();
         }
 
         KeyframeAnimation CreateShowHideAnimation()

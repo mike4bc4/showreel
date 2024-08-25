@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Controls;
 using FSM;
+using InputHelper;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -14,10 +15,13 @@ namespace Boards
     {
         static BoardManager s_Instance;
 
+        [SerializeField] InputActionAsset m_InputActionAsset;
+
         List<Board> m_Boards;
         StateMachine m_StateMachine;
 
         public static StateMachine StateMachine => s_Instance.m_StateMachine;
+        public static InputActionAsset InputActions => s_Instance.m_InputActionAsset;
 
         void Awake()
         {
@@ -30,6 +34,7 @@ namespace Boards
             s_Instance = this;
             m_Boards = GetComponentsInChildren<Board>(true).ToList();
             m_StateMachine = CreateStateMachine();
+            InputActionAssetHelper.InputActionAsset = m_InputActionAsset;
         }
 
         void Start()

@@ -166,6 +166,11 @@ public class DiamondBarBoard : Board
         }
     }
 
+    public bool isShowing
+    {
+        get => m_ShowHideAnimationPlayer.status.IsPlaying() && m_ShowHideAnimationPlayer.isPlayingForward;
+    }
+
     public override void Init()
     {
         m_BarElementHandlers = new List<BarElementHandler>();

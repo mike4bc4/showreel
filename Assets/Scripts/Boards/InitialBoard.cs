@@ -10,6 +10,7 @@ using Layers;
 using Controls.Raw;
 using Controls;
 using FSM;
+using InputHelper;
 
 namespace Boards
 {
@@ -33,13 +34,16 @@ namespace Boards
         Subtitle m_Subtitle;
         DialogBox m_QuitDialogBox;
         InputActionMap m_ActionMap;
+        InputAction m_CancelAction;
 
         public override void Init()
         {
-            m_ActionMap = InputSystem.actions.FindActionMap("InitialBoard");
-            m_ActionMap.FindAction("Any").performed += OnAny;
-            m_ActionMap.FindAction("Confirm").performed += OnConfirm;
-            m_ActionMap.FindAction("Cancel").performed += OnCancel;
+            m_ActionMap = BoardManager.InputActions.FindActionMap("InitialBoard");
+            m_ActionMap["Any"].RegisterHelperPerformedCallback(OnAny);
+            m_ActionMap["Confirm"].RegisterHelperPerformedCallback(OnConfirm);
+
+            m_CancelAction = m_ActionMap["Cancel"];
+            m_CancelAction.RegisterHelperPerformedCallback(OnCancel);
 
             m_Layer = LayerManager.CreateLayer("Initial");
             m_Layer.displaySortOrder = DisplaySortOrder;
@@ -222,7 +226,7 @@ namespace Boards
 
         public void OnAny(InputAction.CallbackContext ctx)
         {
-            if (Keyboard.current.escapeKey.wasPressedThisFrame || m_QuitDialogBox != null)
+            if (m_CancelAction.WasPerformedThisFrame() || m_QuitDialogBox != null)
             {
                 return;
             }
@@ -244,35 +248,29 @@ namespace Boards
                 m_QuitDialogBox = DialogBox.CreateQuitDialogBox();
                 m_QuitDialogBox.displaySortOrder = DisplaySortOrder + 100;
                 m_QuitDialogBox.onHide += m_QuitDialogBox.Dispose;
-                m_QuitDialogBox.onRightButtonClicked += OnQuitDialogBoxBackgroundOrRightButtonClicked;
-                m_QuitDialogBox.onBackgroundClicked += OnQuitDialogBoxBackgroundOrRightButtonClicked;
-                m_QuitDialogBox.onLeftButtonClicked += OnQuitDialogBoxLeftButtonClicked;
+                m_QuitDialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Background, m_QuitDialogBox.Hide);
+                m_QuitDialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Right, m_QuitDialogBox.Hide);
+                m_QuitDialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Left, () =>
+                {
+                    Application.Quit();
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.isPlaying = false;
+#endif
+                });
+
                 m_QuitDialogBox.Show();
             }
             else
             {
-                m_QuitDialogBox.Hide();
+                m_QuitDialogBox.PerformClick(DialogBox.ButtonIndex.Right);
             }
-        }
-
-        void OnQuitDialogBoxBackgroundOrRightButtonClicked()
-        {
-            m_QuitDialogBox.Hide();
-        }
-
-        void OnQuitDialogBoxLeftButtonClicked()
-        {
-            Application.Quit();
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#endif
         }
 
         public void OnConfirm(InputAction.CallbackContext ctx)
         {
             if (m_QuitDialogBox != null)
             {
-                OnQuitDialogBoxLeftButtonClicked();
+                m_QuitDialogBox.PerformClick(DialogBox.ButtonIndex.Left);
             }
         }
 
