@@ -60,5 +60,10 @@ namespace InputHelper
                 action.performed -= callback;
             }
         }
+
+        public static IInputActionHelper GetHelper(this InputAction inputAction)
+        {
+            return InputActionAssetHelper.FindAction(inputAction.id);
+        }
     }
 }

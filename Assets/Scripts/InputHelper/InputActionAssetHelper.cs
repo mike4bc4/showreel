@@ -11,8 +11,8 @@ namespace InputHelper
         static InputActionAssetHelper s_Instance;
 
         InputActionAsset m_InputActionAsset;
-        Dictionary<Guid, InputActionWrapper> m_InputActions;
-        Dictionary<string, InputActionWrapper> m_InputActionsLookup;
+        Dictionary<Guid, InputActionHelper> m_InputActions;
+        Dictionary<string, InputActionHelper> m_InputActionsLookup;
 
         public static InputActionAssetHelper Instance
         {
@@ -37,16 +37,16 @@ namespace InputHelper
             }
         }
 
-        static Dictionary<Guid, InputActionWrapper> inputActions => Instance.m_InputActions;
-        static Dictionary<string, InputActionWrapper> inputActionsLookup => Instance.m_InputActionsLookup;
+        static Dictionary<Guid, InputActionHelper> inputActions => Instance.m_InputActions;
+        static Dictionary<string, InputActionHelper> inputActionsLookup => Instance.m_InputActionsLookup;
 
         private InputActionAssetHelper()
         {
-            m_InputActions = new Dictionary<Guid, InputActionWrapper>();
-            m_InputActionsLookup = new Dictionary<string, InputActionWrapper>();
+            m_InputActions = new Dictionary<Guid, InputActionHelper>();
+            m_InputActionsLookup = new Dictionary<string, InputActionHelper>();
         }
 
-        public static IInputAction FindAction(Guid actionId)
+        public static IInputActionHelper FindAction(Guid actionId)
         {
             if (inputActions.TryGetValue(actionId, out var inputAction))
             {
@@ -56,7 +56,7 @@ namespace InputHelper
             return null;
         }
 
-        public static IInputAction FindAction(string actionName)
+        public static IInputActionHelper FindAction(string actionName)
         {
             if (inputActionsLookup.TryGetValue(actionName.ToLower(), out var inputAction))
             {
@@ -93,7 +93,7 @@ namespace InputHelper
             {
                 if (!inputActions.ContainsKey(inputAction.id))
                 {
-                    var wrapper = new InputActionWrapper(inputAction);
+                    var wrapper = new InputActionHelper(inputAction);
                     inputActions.Add(inputAction.id, wrapper);
                 }
             }

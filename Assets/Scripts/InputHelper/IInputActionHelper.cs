@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public interface IInputAction
+public interface IInputActionHelper
 {
     public event Action<InputAction.CallbackContext> performed;
     public int lastPerformedFrameIndex { get; }

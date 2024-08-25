@@ -7,7 +7,7 @@ using Cysharp.Threading.Tasks;
 
 namespace InputHelper
 {
-    class InputActionWrapper : IInputAction
+    class InputActionHelper : IInputActionHelper
     {
         public event Action<InputAction.CallbackContext> performed;
 
@@ -63,7 +63,7 @@ namespace InputHelper
             get => m_InputAction;
         }
 
-        public InputActionWrapper(InputAction inputAction)
+        public InputActionHelper(InputAction inputAction)
         {
             m_IsPerformedDelayed = true;
             m_PerformedInvokesOncePerFrame = true;
