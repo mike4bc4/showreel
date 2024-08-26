@@ -31,6 +31,8 @@ namespace KeyframeSystem
         List<TrackEvent> m_ScheduledEvents;
         WrapMode m_WrapMode;
         Status m_Status;
+        bool m_InvokingEvent;
+        bool m_UpdateInvalid;
 
         public bool isPlayingForward
         {
@@ -40,6 +42,14 @@ namespace KeyframeSystem
         public Status status
         {
             get => m_Status;
+            private set
+            {
+                m_Status = value;
+                if (m_InvokingEvent)
+                {
+                    m_UpdateInvalid = true;
+                }
+            }
         }
 
         public WrapMode wrapMode
@@ -124,7 +134,7 @@ namespace KeyframeSystem
                     return;
                 }
 
-                if (m_Status != Status.Stopped)
+                if (status != Status.Stopped)
                 {
                     Stop();
                 }
@@ -179,12 +189,18 @@ namespace KeyframeSystem
 
                     if (evt.currentDelay == 0)
                     {
+                        m_InvokingEvent = true;
                         evt.action?.Invoke();
+                        m_InvokingEvent = false;
 
-                        // Because event may call Pause or Stop method we should check whether
-                        // player have to be stopped immediately.
-                        if (m_Status != Status.Playing)
+                        // If player state was changed while event was being invoked (probably by event
+                        // itself), then we cannot relay on current update loop context anymore. That's
+                        // why it will be marked as invalid, and have to exit (and safely restart next 
+                        // frame if requested).
+                        if (m_UpdateInvalid)
                         {
+                            m_UpdateInvalid = false;
+                            m_ScheduledEvents.Remove(evt);
                             return;
                         }
 
@@ -274,13 +290,13 @@ namespace KeyframeSystem
 
         public void Pause()
         {
-            m_Status = Status.Paused;
+            status = Status.Paused;
             AnimationPlayerRunner.onUpdate -= Update;
         }
 
         public void Play()
         {
-            if (m_Status == Status.Playing)
+            if (status == Status.Playing)
             {
                 return;
             }
@@ -290,19 +306,19 @@ namespace KeyframeSystem
                 throw new Exception("First select an animation.");
             }
 
-            if (m_Status == Status.Stopped)
+            if (status == Status.Stopped)
             {
                 m_PreviousFrameIndex = m_PlaybackSpeed >= 0 ? frameIndex - 1 : frameIndex + 1;
             }
 
-            m_Status = Status.Playing;
+            status = Status.Playing;
             AnimationPlayerRunner.onUpdate -= Update;
             AnimationPlayerRunner.onUpdate += Update;
         }
 
         public void Stop()
         {
-            m_Status = Status.Stopped;
+            status = Status.Stopped;
             AnimationPlayerRunner.onUpdate -= Update;
             m_ScheduledEvents.Clear();
             m_AnimationTime = 0f;
