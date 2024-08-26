@@ -99,6 +99,7 @@ namespace Layers
 
             m_RootVisualElement = new VisualElement();
             m_RootVisualElement.name = "layer-root";
+            m_RootVisualElement.pickingMode = PickingMode.Ignore;
             m_RootVisualElement.AddToClassList(k_LayerRootUssClassName);
             uiDocument.rootVisualElement.Add(m_RootVisualElement);
         }
@@ -106,6 +107,7 @@ namespace Layers
         public TemplateContainer AddTemplateFromVisualTreeAsset(VisualTreeAsset visualTreeAsset)
         {
             var templateContainer = visualTreeAsset.Instantiate();
+            templateContainer.pickingMode = PickingMode.Ignore;
             templateContainer.style.flexGrow = 1f;
             rootVisualElement.Add(templateContainer);
             return templateContainer;
