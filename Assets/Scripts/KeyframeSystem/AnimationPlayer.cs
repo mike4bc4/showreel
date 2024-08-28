@@ -134,11 +134,7 @@ namespace KeyframeSystem
                     return;
                 }
 
-                if (status != Status.Stopped)
-                {
-                    Stop();
-                }
-
+                Stop();
                 m_Animation = value;
             }
         }
@@ -322,6 +318,19 @@ namespace KeyframeSystem
             AnimationPlayerRunner.onUpdate -= Update;
             m_ScheduledEvents.Clear();
             m_AnimationTime = 0f;
+        }
+
+        public void FastForward()
+        {
+            if (m_Animation != null)
+            {
+                animationTime = duration;
+            }
+        }
+
+        public void Rewind()
+        {
+            animationTime = 0f;
         }
     }
 }
