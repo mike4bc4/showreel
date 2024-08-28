@@ -10,446 +10,453 @@ using Boards;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Video;
+using Layers;
+using Controls.Raw;
+using Utility;
 
 namespace Boards
 {
     public class ListBoard : Board
     {
-        // public const string FrameSnapshotLayerName = "FrameSnapshotLayer";
-        // public const string FrameContentContainerSnapshotLayerName = "FrameContentContainerSnapshotLayer";
-        // public const string TitleSnapshotLayerName = "TitleSnapshotLayer";
-        // public const string TitleLabelSnapshotLayerName = "TitleLabelSnapshotLayer";
-        // public const string ScrollBoxSnapshotLayerName = "ScrollBoxSnapshotLayer";
-        // public const string ListElementSnapshotLayerName = "ListElementSnapshotLayerName";
+        public const int DisplaySortOrder = 0;
 
-        // const int k_DisplaySortOrder = 0;
-        // const string k_VideoPlayerName = "VideoPlayer";
+        const int k_PostProcessingLayersCount = 2;
+        const string k_ShowAnimationName = "ShowAnimation";
+        const string k_HideAnimationName = "HideAnimation";
+        const string k_TitleAnimationName = "TitleAnimation";
+        const string k_ListElementsShowAnimationName = "ListElementsAnimation";
+        const string k_ScrollBoxShowAnimationName = "ScrollBoxAnimation";
+        const string k_VideoPlayerName = "VideoPlayer";
+        const int k_BulletAnimationInterval = 20;
+        const int k_BulletAnimationDuration = 80;
+        const int k_ButtonShowDelay = 60;
 
-        // [SerializeField] VisualTreeAsset m_ListBoard;
-        // [SerializeField] VideoClip m_VideoClip;
-        // [SerializeField] int m_ListElementCount;
+        [SerializeField] VisualTreeAsset m_ListBoardVisualTreeAsset;
+        [SerializeField] VideoClip m_VideoClip;
 
-        // Layer m_ListBoardLayer;
-        // PostProcessingLayer m_PostProcessingLayer;
-        // KeyframeTrackPlayer m_Player;
+        Layer m_Layer;
+        List<PostProcessingLayer> m_PostProcessingLayers;
+        AnimationPlayer m_AnimationPlayer;
+        AnimationPlayer m_TitleAnimationPlayer;
+        VisualElement m_FrameViewport;
+        DiamondFrameVertical m_Frame;
+        VisualElement m_VideoContainer;
+        VisualElement m_FrameSpacerLeft;
+        ScrollBox m_ScrollBox;
+        List<ListElement> m_ListElements;
+        DiamondTitle m_Title;
 
-        // VisualElement m_FrameViewport;
-        // VisualElement m_TitleViewport;
-        // VisualElement m_ListViewport;
+        public bool isVisible
+        {
+            get => m_AnimationPlayer.animation == m_AnimationPlayer[k_ListElementsShowAnimationName] && m_AnimationPlayer.animationTime == m_AnimationPlayer.duration;
+        }
 
-        // VisualElement m_FrameSpacer;
-        // DiamondFrameVertical m_Frame;
-        // VisualElement m_VideoElement;
-        // DiamondTitle m_Title;
-        // ScrollBox m_ScrollBox;
-        // List<ListElement> m_ListElements;
+        public override void Init()
+        {
+            m_Layer = LayerManager.CreateLayer("ListBoard");
+            m_Layer.AddTemplateFromVisualTreeAsset(m_ListBoardVisualTreeAsset);
+            m_Layer.displaySortOrder = DisplaySortOrder;
 
-        // public void Init()
-        // {
-        //     m_ListElements = new List<ListElement>();
-        //     m_Player = new KeyframeTrackPlayer();
-        //     m_Player.sampling = 60;
+            m_PostProcessingLayers = new List<PostProcessingLayer>();
+            for (int i = 0; i < k_PostProcessingLayersCount; i++)
+            {
+                var postProcessingLayer = LayerManager.CreatePostProcessingLayer("ListBoard");
+                m_PostProcessingLayers.Add(postProcessingLayer);
+                postProcessingLayer.displaySortOrder = DisplaySortOrder + 1;
+            }
 
-        //     m_Player.AddEvent(0, () =>
-        //     {
-        //         if (m_Player.playbackSpeed > 0)
-        //         {
-        //             m_ListBoardLayer = LayerManager.CreateLayer(m_ListBoard, displaySortOrder: k_DisplaySortOrder);
-        //             m_ListBoardLayer.blocksRaycasts = true;
-        //             m_ListBoardLayer.interactable = false;
+            m_FrameViewport = m_Layer.rootVisualElement.Q("frame-viewport");
+            m_Frame = m_Layer.rootVisualElement.Q<DiamondFrameVertical>("frame");
+            m_VideoContainer = m_FrameViewport.Q("video-container");
+            m_FrameSpacerLeft = m_FrameViewport.Q("spacer-left");
+            m_ScrollBox = m_Layer.rootVisualElement.Q<ScrollBox>("scroll-box");
+            m_ListElements = m_Layer.rootVisualElement.Query<ListElement>().ToList();
+            m_Title = m_Layer.rootVisualElement.Q<DiamondTitle>("title");
 
-        //             m_FrameViewport = m_ListBoardLayer.rootVisualElement.Q("frame-viewport");
-        //             m_TitleViewport = m_ListBoardLayer.rootVisualElement.Q("title-viewport");
-        //             m_ListViewport = m_ListBoardLayer.rootVisualElement.Q("list-viewport");
+            m_AnimationPlayer = new AnimationPlayer();
+            m_AnimationPlayer.AddAnimation(CreateShowAnimation(), k_ShowAnimationName);
+            m_AnimationPlayer.AddAnimation(CreateHideAnimation(), k_HideAnimationName);
+            m_AnimationPlayer.AddAnimation(CreateListElementsShowAnimation(), k_ListElementsShowAnimationName);
+            m_AnimationPlayer.AddAnimation(CreateScrollBoxShowAnimation(), k_ScrollBoxShowAnimationName);
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_ShowAnimationName];
 
-        //             m_Frame = m_FrameViewport.Q<DiamondFrameVertical>();
-        //             m_Frame.animationProgress = 0f;
-        //             m_Frame.style.opacity = 0f;
-        //             m_Frame.contentContainer.style.opacity = 0f;
-        //             m_VideoElement = m_Frame.contentContainer.Q("video");
+            m_TitleAnimationPlayer = new AnimationPlayer();
+            m_TitleAnimationPlayer.AddAnimation(CreateTitleAnimation(), k_TitleAnimationName);
+            m_TitleAnimationPlayer.animation = m_TitleAnimationPlayer[k_TitleAnimationName];
 
-        //             m_FrameSpacer = m_FrameViewport.Q("spacer-left");
-        //             m_FrameSpacer.style.flexGrow = 0.5f;
+            HideImmediate();
+        }
 
-        //             m_Title = m_TitleViewport.Q<DiamondTitle>();
-        //             m_Title.animationProgress = 0f;
-        //             m_Title.style.opacity = 0f;
-        //             m_Title.label.style.opacity = 0f;
+        public override void Show(Action onCompleted = null)
+        {
+            base.Show(onCompleted);
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_ShowAnimationName];
+            m_AnimationPlayer.playbackSpeed = 1f;
+            m_AnimationPlayer.Play();
+        }
 
-        //             m_ScrollBox = m_ListViewport.Query<ScrollBox>();
-        //             m_ScrollBox.style.opacity = 0f;
+        public override void ShowImmediate()
+        {
+            m_AnimationPlayer.Stop();
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_ListElementsShowAnimationName];
+            m_AnimationPlayer.FastForward();
+            
+            m_TitleAnimationPlayer.Stop();
 
-        //             m_ListElements = m_ListViewport.Query<ListElement>().ToList();
-        //             foreach (var element in m_ListElements)
-        //             {
-        //                 element.bullet.animationProgress = 0f;
-        //                 element.bullet.visible = false;
-        //                 element.button.style.opacity = 0f;
-        //             }
+            m_Frame.style.opacity = 1f;
+            m_Frame.animationProgress = 1f;
+            m_Frame.contentContainer.style.opacity = 1f;
 
-        //             m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
-        //             m_PostProcessingLayer.maskElement = m_Frame;
-        //             m_PostProcessingLayer.overscan = 8f;
-        //             m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
-        //         }
-        //         else
-        //         {
-        //             LayerManager.RemoveLayer(m_ListBoardLayer);
-        //             LayerManager.RemoveLayer(m_PostProcessingLayer);
-        //         }
-        //     });
+            m_FrameSpacerLeft.style.flexGrow = 1f;
 
-        //     var t1 = m_Player.AddKeyframeTrack((float opacity) =>
-        //     {
-        //         if (m_Frame != null)
-        //         {
-        //             m_Frame.style.opacity = opacity;
-        //         }
-        //     });
-        //     t1.AddKeyframe(0, 0f);
-        //     t1.AddKeyframe(20, 1f);
+            var videoPlayer = VideoPlayerManager.GetPlayer(k_VideoPlayerName);
+            if (videoPlayer == null)
+            {
+                videoPlayer = VideoPlayerManager.CreatePlayer(m_VideoClip, k_VideoPlayerName);
+                videoPlayer.Play();
+            }
 
-        //     var t2 = m_Player.AddKeyframeTrack((float blurSize) =>
-        //     {
-        //         if (m_PostProcessingLayer != null)
-        //         {
-        //             m_PostProcessingLayer.blurSize = blurSize;
-        //         }
-        //     });
-        //     t2.AddKeyframe(10, PostProcessingLayer.DefaultBlurSize);
-        //     t2.AddKeyframe(30, 0f);
+            m_VideoContainer.style.backgroundImage = Background.FromRenderTexture(videoPlayer.targetTexture);
 
-        //     m_Player.AddEvent(30, () =>
-        //     {
-        //         if (m_Player.playbackSpeed > 0)
-        //         {
-        //             m_PostProcessingLayer.maskElement = null;
-        //         }
-        //         else
-        //         {
-        //             m_PostProcessingLayer.maskElement = m_Frame;
-        //         }
-        //     });
+            m_Layer.visible = true;
+            m_Layer.interactable = true;
+            m_Layer.blocksRaycasts = true;
+            m_Layer.alpha = 1f;
+            m_Layer.blurSize = 0f;
 
-        //     var t3 = m_Player.AddKeyframeTrack((float animationProgress) =>
-        //     {
-        //         if (m_Frame != null)
-        //         {
-        //             m_Frame.animationProgress = animationProgress;
-        //         }
-        //     });
-        //     t3.AddKeyframe(30, 0f);
-        //     t3.AddKeyframe(120, 1f);
+            SetPostProcessingLayersVisible(false);
 
-        //     m_Player.AddEvent(120, () =>
-        //     {
-        //         if (m_Player.playbackSpeed > 0)
-        //         {
-        //             var videoPlayer = VideoPlayerManager.CreatePlayer(m_VideoClip, k_VideoPlayerName);
-        //             videoPlayer.Play();
-        //             m_VideoElement.style.backgroundImage = Background.FromRenderTexture(videoPlayer.targetTexture);
+            m_Title.style.opacity = 1f;
+            m_Title.label.style.opacity = 1f;
+            m_Title.animationProgress = 1f;
 
-        //             m_PostProcessingLayer.maskElement = m_VideoElement;
-        //             m_PostProcessingLayer.overscan = 8f;
-        //             m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
-        //         }
-        //         else
-        //         {
-        //             VideoPlayerManager.RemovePlayer(k_VideoPlayerName);
-        //             m_VideoElement.style.backgroundImage = null;
+            m_ScrollBox.style.opacity = 1f;
 
-        //             m_PostProcessingLayer.maskElement = null;
-        //             m_PostProcessingLayer.overscan = 8f;
-        //             m_PostProcessingLayer.blurSize = 0f;
-        //         }
-        //     });
+            foreach (var listElement in m_ListElements)
+            {
+                listElement.bullet.visible = true;
+                listElement.bullet.animationProgress = 1f;
+                listElement.button.style.opacity = 1f;
+            }
+        }
 
-        //     var t4 = m_Player.AddKeyframeTrack((float opacity) =>
-        //     {
-        //         if (m_Frame != null)
-        //         {
-        //             m_Frame.contentContainer.style.opacity = opacity;
-        //         }
-        //     });
-        //     t4.AddKeyframe(120, 0f);
-        //     t4.AddKeyframe(140, 1f);
+        public override void Hide(Action onCompleted = null)
+        {
+            base.Hide(onCompleted);
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_HideAnimationName];
+            m_AnimationPlayer.playbackSpeed = 1f;
+            m_AnimationPlayer.Play();
+        }
 
-        //     var t5 = m_Player.AddKeyframeTrack((float blurSize) =>
-        //     {
-        //         if (m_PostProcessingLayer != null)
-        //         {
-        //             m_PostProcessingLayer.blurSize = blurSize;
-        //         }
-        //     });
-        //     t5.AddKeyframe(130, PostProcessingLayer.DefaultBlurSize);
-        //     t5.AddKeyframe(150, 0f);
+        public override void HideImmediate()
+        {
+            m_AnimationPlayer.Stop();
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_HideAnimationName];
+            m_TitleAnimationPlayer.Stop();
 
-        //     var t6 = m_Player.AddKeyframeTrack((float flexGrow) =>
-        //     {
-        //         if (m_FrameSpacer != null)
-        //         {
-        //             m_FrameSpacer.style.flexGrow = flexGrow;
-        //         }
-        //     });
-        //     t6.AddKeyframe(150, 0.5f);
-        //     t6.AddKeyframe(195, 1f);
+            m_Layer.visible = false;
+            m_Layer.interactable = false;
+            m_Layer.blocksRaycasts = false;
 
-        //     m_Player.AddEvent(195, () =>
-        //     {
-        //         if (m_Player.playbackSpeed > 0)
-        //         {
-        //             m_PostProcessingLayer.maskElement = m_ScrollBox;
-        //             m_PostProcessingLayer.overscan = 8f;
-        //             m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
-        //         }
-        //         else
-        //         {
-        //             m_PostProcessingLayer.maskElement = m_VideoElement;
-        //             m_PostProcessingLayer.overscan = 8f;
-        //             m_PostProcessingLayer.blurSize = 0f;
-        //         }
-        //     });
+            SetPostProcessingLayersVisible(false);
 
-        //     var t7 = m_Player.AddKeyframeTrack((float opacity) =>
-        //     {
-        //         if (m_ScrollBox != null)
-        //         {
-        //             m_ScrollBox.style.opacity = opacity;
-        //         }
-        //     });
-        //     t7.AddKeyframe(195, 0f);
-        //     t7.AddKeyframe(215, 1f);
+            m_Title.style.opacity = 0f;
+            m_ScrollBox.style.opacity = 0f;
+            foreach (var listElement in m_ListElements)
+            {
+                listElement.bullet.visible = false;
+                listElement.button.style.opacity = 0f;
+            }
+        }
 
-        //     var t8 = m_Player.AddKeyframeTrack((float blurSize) =>
-        //     {
-        //         if (m_PostProcessingLayer != null)
-        //         {
-        //             m_PostProcessingLayer.blurSize = blurSize;
-        //         }
-        //     });
-        //     t8.AddKeyframe(205, PostProcessingLayer.DefaultBlurSize);
-        //     t8.AddKeyframe(225, 0f);
+        void SetPostProcessingLayersVisible(bool visible)
+        {
+            foreach (var postProcessingLayer in m_PostProcessingLayers)
+            {
+                postProcessingLayer.visible = visible;
+            }
+        }
 
-        //     int startFrameIndex = 225;
-        //     int bulletAnimationDelay = 20;
-        //     int bulletAnimationDuration = 75;
-        //     int fadeDelay = 45;
-        //     for (int i = 0; i < m_ListElementCount; i++)
-        //     {
-        //         int index = i;
-        //         int bulletAnimationStartFrameIndex = startFrameIndex + i * bulletAnimationDelay;
-        //         m_Player.AddEvent(bulletAnimationStartFrameIndex, () =>
-        //         {
-        //             if (m_Player.playbackSpeed > 0)
-        //             {
-        //                 m_ListElements[index].bullet.visible = true;
-        //             }
-        //             else
-        //             {
-        //                 m_ListElements[index].bullet.visible = false;
-        //             }
-        //         });
+        void SetPostProcessingLayersOverscan(Overscan overscan)
+        {
+            foreach (var postProcessingLayer in m_PostProcessingLayers)
+            {
+                postProcessingLayer.overscan = overscan;
+            }
+        }
 
-        //         var tt1 = m_Player.AddKeyframeTrack((float animationProgress) =>
-        //         {
-        //             if (m_ListElements.ElementAtOrDefault(index) != null)
-        //             {
-        //                 m_ListElements[index].bullet.animationProgress = animationProgress;
-        //             }
-        //         });
-        //         tt1.AddKeyframe(bulletAnimationStartFrameIndex, 0f);
-        //         tt1.AddKeyframe(bulletAnimationStartFrameIndex + bulletAnimationDuration, 1);
+        KeyframeAnimation CreateShowAnimation()
+        {
+            var animation = new KeyframeAnimation();
 
-        //         int buttonAnimationStartFrameIndex = bulletAnimationStartFrameIndex + fadeDelay;
-        //         m_Player.AddEvent(buttonAnimationStartFrameIndex, () =>
-        //         {
-        //             if (m_Player.playbackSpeed > 0)
-        //             {
-        //                 m_PostProcessingLayer.maskElement = m_ListElements[index].button;
-        //                 m_PostProcessingLayer.overscan = 8f;
-        //                 m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
-        //             }
-        //             else
-        //             {
-        //                 m_PostProcessingLayer.maskElement = index > 0 ? m_ListElements[index - 1].button : m_ScrollBox;
-        //                 m_PostProcessingLayer.overscan = 8f;
-        //                 m_PostProcessingLayer.blurSize = 0f;
-        //             }
-        //         });
+            animation.AddEvent(0, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_Layer.visible = true;
+                    m_PostProcessingLayers[0].visible = true;
+                    m_PostProcessingLayers[0].overscan = 8f;
+                    m_PostProcessingLayers[0].maskElement = m_Frame;
+                }
+            });
 
-        //         var tt2 = m_Player.AddKeyframeTrack((float opacity) =>
-        //         {
-        //             if (m_ListElements.ElementAtOrDefault(index) != null)
-        //             {
-        //                 m_ListElements[index].button.style.opacity = opacity;
-        //             }
-        //         });
-        //         tt2.AddKeyframe(buttonAnimationStartFrameIndex, 0f);
-        //         tt2.AddKeyframe(buttonAnimationStartFrameIndex + 20, 1);
+            var t1 = animation.AddTrack(opacity => m_Frame.style.opacity = opacity);
+            t1.AddKeyframe(0, 0f);
+            t1.AddKeyframe(20, 1f);
 
-        //         var tt3 = m_Player.AddKeyframeTrack((float blurSize) =>
-        //         {
-        //             if (m_PostProcessingLayer != null)
-        //             {
-        //                 m_PostProcessingLayer.blurSize = blurSize;
-        //             }
-        //         });
-        //         tt3.AddKeyframe(buttonAnimationStartFrameIndex + 10, PostProcessingLayer.DefaultBlurSize);
-        //         tt3.AddKeyframe(buttonAnimationStartFrameIndex + 30, 0f);
-        //     }
+            var blurTrack1 = animation.AddTrack(blurSize => m_PostProcessingLayers[0].blurSize = blurSize);
+            blurTrack1.AddKeyframe(10, PostProcessingLayer.DefaultBlurSize);
+            blurTrack1.AddKeyframe(30, 0f, Easing.StepOut);
 
-        //     int titleAnimationStartFrameIndex = startFrameIndex + (m_ListElementCount - 1) * bulletAnimationDelay + fadeDelay + 30;
-        //     m_Player.AddEvent(titleAnimationStartFrameIndex, () =>
-        //     {
-        //         if (m_Player.playbackSpeed > 0)
-        //         {
-        //             m_ListBoardLayer.interactable = true;
-        //             m_PostProcessingLayer.maskElement = m_Title;
-        //             m_PostProcessingLayer.overscan = 8f;
-        //             m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
-        //         }
-        //         else
-        //         {
-        //             m_ListBoardLayer.interactable = false;
-        //             m_PostProcessingLayer.maskElement = m_ListElements[m_ListElementCount - 1].button;
-        //             m_PostProcessingLayer.overscan = 8f;
-        //             m_PostProcessingLayer.blurSize = 0f;
-        //         }
-        //     });
+            var t2 = animation.AddTrack(animationProgress => m_Frame.animationProgress = animationProgress);
+            t2.AddKeyframe(30, 0f);
+            t2.AddKeyframe(120, 1f);
 
-        //     var t9 = m_Player.AddKeyframeTrack((float opacity) =>
-        //     {
-        //         if (m_Title != null)
-        //         {
-        //             m_Title.style.opacity = opacity;
-        //         }
-        //     });
-        //     t9.AddKeyframe(titleAnimationStartFrameIndex, 0f);
-        //     t9.AddKeyframe(titleAnimationStartFrameIndex + 20, 1f);
+            animation.AddEvent(120, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    var videoPlayer = VideoPlayerManager.CreatePlayer(m_VideoClip, k_VideoPlayerName);
+                    videoPlayer.Play();
+                    m_VideoContainer.style.backgroundImage = Background.FromRenderTexture(videoPlayer.targetTexture);
+                    m_PostProcessingLayers[0].maskElement = m_Frame.contentContainer;
+                }
+            });
 
-        //     var t10 = m_Player.AddKeyframeTrack((float blurSize) =>
-        //     {
-        //         if (m_PostProcessingLayer != null)
-        //         {
-        //             m_PostProcessingLayer.blurSize = blurSize;
-        //         }
-        //     });
-        //     t10.AddKeyframe(titleAnimationStartFrameIndex + 10, PostProcessingLayer.DefaultBlurSize);
-        //     t10.AddKeyframe(titleAnimationStartFrameIndex + 30, 0f);
+            var t3 = animation.AddTrack(opacity => m_Frame.contentContainer.style.opacity = opacity);
+            t3.AddKeyframe(120, 0f);
+            t3.AddKeyframe(140, 1f);
 
-        //     m_Player.AddEvent(titleAnimationStartFrameIndex + 30, () =>
-        //     {
-        //         if (m_Player.playbackSpeed > 0)
-        //         {
-        //             m_PostProcessingLayer.maskElement = null;
-        //         }
-        //         else
-        //         {
-        //             m_PostProcessingLayer.maskElement = m_Title;
-        //         }
-        //     });
+            blurTrack1.AddKeyframe(120, PostProcessingLayer.DefaultBlurSize);
+            blurTrack1.AddKeyframe(130, PostProcessingLayer.DefaultBlurSize);
+            blurTrack1.AddKeyframe(150, 0f, Easing.StepOut);
 
-        //     var t11 = m_Player.AddKeyframeTrack((float animationProgress) =>
-        //     {
-        //         if (m_Title != null)
-        //         {
-        //             m_Title.animationProgress = animationProgress;
-        //         }
-        //     });
-        //     t11.AddKeyframe(titleAnimationStartFrameIndex + 30, 0f);
-        //     t11.AddKeyframe(titleAnimationStartFrameIndex + 90, 1f);
+            var t4 = animation.AddTrack(flexGrow => m_FrameSpacerLeft.style.flexGrow = flexGrow);
+            t4.AddKeyframe(150, 0.5f);
+            t4.AddKeyframe(210, 1f);
 
-        //     m_Player.AddEvent(titleAnimationStartFrameIndex + 90, () =>
-        //     {
-        //         if (m_Player.playbackSpeed > 0)
-        //         {
-        //             m_PostProcessingLayer.maskElement = m_Title.label;
-        //             m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
-        //             m_PostProcessingLayer.blurSize = PostProcessingLayer.DefaultBlurSize;
-        //         }
-        //         else
-        //         {
-        //             m_PostProcessingLayer.maskElement = null;
-        //             m_PostProcessingLayer.overscan = 8f;
-        //             m_PostProcessingLayer.blurSize = 0f;
-        //         }
-        //     });
+            animation.AddEvent(210, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_PostProcessingLayers[0].visible = false;
+                    if (m_ScrollBox.isScrollBarDisplayed)
+                    {
+                        m_AnimationPlayer.animation = m_AnimationPlayer[k_ScrollBoxShowAnimationName];
+                        m_AnimationPlayer.playbackSpeed = 1f;
+                        m_AnimationPlayer.Play();
+                    }
+                    else
+                    {
+                        m_AnimationPlayer.animation = m_AnimationPlayer[k_ListElementsShowAnimationName];
+                        m_AnimationPlayer.playbackSpeed = 1f;
+                        m_AnimationPlayer.Play();
+                    }
+                }
+            });
 
-        //     var t12 = m_Player.AddKeyframeTrack((float opacity) =>
-        //     {
-        //         if (m_Title != null)
-        //         {
-        //             m_Title.label.style.opacity = opacity;
-        //         }
-        //     });
-        //     t12.AddKeyframe(titleAnimationStartFrameIndex + 90, 0f);
-        //     t12.AddKeyframe(titleAnimationStartFrameIndex + 110, 1f);
+            return animation;
+        }
 
-        //     var t13 = m_Player.AddKeyframeTrack((float blurSize) =>
-        //     {
-        //         if (m_PostProcessingLayer != null)
-        //         {
-        //             m_PostProcessingLayer.blurSize = blurSize;
-        //         }
-        //     });
-        //     t13.AddKeyframe(titleAnimationStartFrameIndex + 100, PostProcessingLayer.DefaultBlurSize);
-        //     t13.AddKeyframe(titleAnimationStartFrameIndex + 120, 0f);
+        KeyframeAnimation CreateScrollBoxShowAnimation()
+        {
+            var animation = new KeyframeAnimation();
 
-        //     m_Player.AddEvent(titleAnimationStartFrameIndex + 120, () =>
-        //     {
-        //         if (m_Player.playbackSpeed > 0)
-        //         {
-        //             LayerManager.RemoveLayer(m_PostProcessingLayer);
-        //         }
-        //         else
-        //         {
-        //             m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer(displaySortOrder: k_DisplaySortOrder + 1);
-        //             m_PostProcessingLayer.maskElement = m_Title.label;
-        //             m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
-        //         }
-        //     });
-        // }
+            animation.AddEvent(0, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_PostProcessingLayers[0].visible = true;
+                    m_PostProcessingLayers[0].overscan = 8f;
+                    m_PostProcessingLayers[0].maskElement = m_ScrollBox;
+                }
+            });
 
-        // public void ShowImmediate()
-        // {
+            var t1 = animation.AddTrack(opacity => m_ScrollBox.style.opacity = opacity);
+            t1.AddKeyframe(0, 0f);
+            t1.AddKeyframe(20, 1f);
 
-        // }
+            var blurTrack = animation.AddTrack(blurSize => m_PostProcessingLayers[0].blurSize = blurSize);
+            blurTrack.AddKeyframe(10, PostProcessingLayer.DefaultBlurSize);
+            blurTrack.AddKeyframe(30, 0, Easing.StepOut);
 
-        // public void HideImmediate()
-        // {
+            animation.AddEvent(30, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_PostProcessingLayers[0].visible = false;
+                    m_AnimationPlayer.animation = m_AnimationPlayer[k_ListElementsShowAnimationName];
+                    m_AnimationPlayer.playbackSpeed = 1f;
+                    m_AnimationPlayer.Play();
+                }
+            });
 
-        // }
+            return animation;
+        }
 
-        // public UniTask Show(CancellationToken cancellationToken = default)
-        // {
-        //     return UniTask.CompletedTask;
-        // }
+        KeyframeAnimation CreateListElementsShowAnimation()
+        {
+            var animation = new KeyframeAnimation();
 
-        // public UniTask Hide(CancellationToken cancellationToken = default)
-        // {
-        //     return UniTask.CompletedTask;
-        // }
+            animation.AddEvent(0, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_ScrollBox.style.opacity = 1f;
+                    SetPostProcessingLayersVisible(true);
+                    SetPostProcessingLayersOverscan(8f);
+                }
+            });
 
-        // void Update()
-        // {
-        //     if (Input.GetKeyDown(KeyCode.A))
-        //     {
-        //         m_Player.playbackSpeed = 1f;
-        //         m_Player.Play();
-        //     }
-        //     else if (Input.GetKeyDown(KeyCode.D))
-        //     {
-        //         m_Player.playbackSpeed = -1f;
-        //         m_Player.Play();
-        //     }
-        //     else if (Input.GetKeyDown(KeyCode.Q))
-        //     {
-        //         ShowImmediate();
-        //     }
-        //     else if (Input.GetKeyDown(KeyCode.E))
-        //     {
-        //         HideImmediate();
-        //     }
-        // }
+            var blurTrack1 = animation.AddTrack(blurSize => m_PostProcessingLayers[0].blurSize = blurSize);
+            blurTrack1.AddKeyframe(0, 0f, Easing.StepOut);
+
+            var blurTrack2 = animation.AddTrack(blurSize => m_PostProcessingLayers[1].blurSize = blurSize);
+            blurTrack2.AddKeyframe(0, 0f, Easing.StepOut);
+
+            for (int i = 0; i < m_ListElements.Count; i++)
+            {
+                int idx = i;    // Cache idx, because i is loop variable.
+                var listElement = m_ListElements[i];
+                int bulletAnimationStartFrame = k_BulletAnimationInterval * i;
+                animation.AddEvent(bulletAnimationStartFrame, () =>
+                {
+                    if (animation.player.isPlayingForward)
+                    {
+                        listElement.bullet.visible = true;
+                    }
+                });
+
+                var track1 = animation.AddTrack(animationProgress => listElement.bullet.animationProgress = animationProgress);
+                track1.AddKeyframe(bulletAnimationStartFrame, 0f);
+                track1.AddKeyframe(bulletAnimationStartFrame + k_BulletAnimationDuration, 1f);
+
+                int buttonAnimationStartFrame = bulletAnimationStartFrame + k_ButtonShowDelay;
+                animation.AddEvent(buttonAnimationStartFrame, () =>
+                {
+                    if (animation.player.isPlayingForward)
+                    {
+                        // We are swapping post processing layers, as otherwise their blur tracks
+                        // would overlap. In other words there are two post processing layers responsible
+                        // for handling list element's button blur and they are animated in parallel
+                        // with separate animation tracks.
+                        var postProcessingLayer = m_PostProcessingLayers[idx % 2];
+                        postProcessingLayer.maskElement = listElement.button;
+                    }
+                });
+
+                var track2 = animation.AddTrack(opacity => listElement.button.style.opacity = opacity);
+                track2.AddKeyframe(buttonAnimationStartFrame, 0f);
+                track2.AddKeyframe(buttonAnimationStartFrame + 20, 1f);
+
+                var blurTrack = idx % 2 == 0 ? blurTrack1 : blurTrack2;
+                blurTrack.AddKeyframe(buttonAnimationStartFrame, PostProcessingLayer.DefaultBlurSize);
+                blurTrack.AddKeyframe(buttonAnimationStartFrame + 10, PostProcessingLayer.DefaultBlurSize);
+                blurTrack.AddKeyframe(buttonAnimationStartFrame + 30, 0f, Easing.StepOut);
+            }
+
+            int finalEventFrameIndex = (m_ListElements.Count - 1) * k_BulletAnimationInterval + k_ButtonShowDelay + 30;
+            animation.AddEvent(finalEventFrameIndex, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_Layer.interactable = true;
+                    m_Layer.blocksRaycasts = true;
+                    SetPostProcessingLayersVisible(false);
+                    m_TitleAnimationPlayer.Play();
+                    m_ShowCompletedCallback?.Invoke();
+                }
+            });
+
+            return animation;
+        }
+
+        KeyframeAnimation CreateHideAnimation()
+        {
+            var animation = new KeyframeAnimation();
+
+            animation.AddEvent(0, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_Layer.blocksRaycasts = false;
+                    m_Layer.interactable = false;
+                }
+            });
+
+            var t1 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
+            t1.AddKeyframe(0, 0f);
+            t1.AddKeyframe(20, Layer.DefaultBlurSize);
+
+            var t2 = animation.AddTrack(alpha => m_Layer.alpha = alpha);
+            t2.AddKeyframe(10, 1f);
+            t2.AddKeyframe(30, 0f);
+
+            animation.AddEvent(30, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_Layer.visible = false;
+                    SetPostProcessingLayersVisible(false);
+                    m_HideCompletedCallback?.Invoke();
+                }
+            });
+
+            return animation;
+        }
+
+        KeyframeAnimation CreateTitleAnimation()
+        {
+            var animation = new KeyframeAnimation();
+
+            animation.AddEvent(0, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_PostProcessingLayers[0].visible = true;
+                    m_PostProcessingLayers[0].overscan = 8f;
+                    m_PostProcessingLayers[0].maskElement = m_Title;
+                }
+            });
+
+            var t1 = animation.AddTrack(opacity => m_Title.style.opacity = opacity);
+            t1.AddKeyframe(0, 0f);
+            t1.AddKeyframe(20, 1f);
+
+            var blurTrack = animation.AddTrack(blurSize => m_PostProcessingLayers[0].blurSize = blurSize);
+            blurTrack.AddKeyframe(10, PostProcessingLayer.DefaultBlurSize);
+            blurTrack.AddKeyframe(30, 0f, Easing.StepOut);
+
+            var t2 = animation.AddTrack(animationProgress => m_Title.animationProgress = animationProgress);
+            t2.AddKeyframe(30, 0f);
+            t2.AddKeyframe(90, 1f);
+
+            animation.AddEvent(90, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_PostProcessingLayers[0].maskElement = m_Title.label;
+                    m_PostProcessingLayers[0].overscan = new Overscan(8f, 8f, 0f, 8f);
+                }
+            });
+
+            var t3 = animation.AddTrack(opacity => m_Title.label.style.opacity = opacity);
+            t3.AddKeyframe(90, 0f);
+            t3.AddKeyframe(110, 1f);
+
+            blurTrack.AddKeyframe(90, PostProcessingLayer.DefaultBlurSize);
+            blurTrack.AddKeyframe(100, PostProcessingLayer.DefaultBlurSize);
+            blurTrack.AddKeyframe(120, 0f, Easing.StepOut);
+
+            animation.AddEvent(120, () =>
+            {
+                if (animation.player.isPlayingForward)
+                {
+                    m_PostProcessingLayers[0].visible = false;
+                }
+            });
+
+            return animation;
+        }
     }
 }

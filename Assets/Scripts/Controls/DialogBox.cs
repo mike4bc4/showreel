@@ -21,15 +21,25 @@ namespace Controls
         const string k_DialogBoxLabelQuitVariantUssClassName = "dialog-box__label--quit";
         static readonly Color s_BackgroundLayerColor = new Color(0.85f, 0.85f, 0.85f, 1f);
         const string k_InfoDialogBoxContentVtaAddress = "InfoDialogBoxContentVisualTreeAsset";
+        const string k_WelcomeDialogBoxContentVtaAddress = "WelcomeDialogBoxContentVisualTreeAsset";
 
         public enum ButtonIndex
         {
             Left,
             Right,
             Background,
-        } 
+        }
 
-        public event Action onHide;
+        public enum Status
+        {
+            Initial,
+            Hiding,
+            Hidden,
+            Showing,
+            Shown,
+        }
+
+        public event Action<Status> onStatusChanged;
 
         Layer m_Layer;
         PostProcessingLayer m_BackgroundPostProcessingLayer;
@@ -38,6 +48,26 @@ namespace Controls
         AnimationPlayer m_ShowHideAnimationPlayer;
         AnimationPlayer m_TitleAnimationPlayer;
         List<Action> m_ClickDelegates = new List<Action>();
+        Status m_Status;
+
+        public bool isHidden => status == Status.Hidden;
+        public bool isHiding => status == Status.Hiding;
+        public bool isShown => status == Status.Shown;
+        public bool isShowing => status == Status.Showing;
+
+        public Status status
+        {
+            get => m_Status;
+            protected set
+            {
+                var previousStatus = m_Status;
+                if (value != previousStatus)
+                {
+                    m_Status = value;
+                    onStatusChanged?.Invoke(previousStatus);
+                }
+            }
+        }
 
         public VisualElement contentContainer
         {
@@ -119,7 +149,51 @@ namespace Controls
             m_TitleAnimationPlayer.AddAnimation(CreateTitleAnimation(), k_TitleAnimationName);
             m_TitleAnimationPlayer.animation = m_TitleAnimationPlayer[k_TitleAnimationName];
 
-            HideImmediate();
+            HideImmediateInternal();
+        }
+
+        void HideImmediateInternal()
+        {
+            m_BackgroundPostProcessingLayer.visible = false;
+            m_Layer.visible = false;
+            m_Layer.interactable = false;
+            m_Layer.blocksRaycasts = false;
+            m_PostProcessingLayer.visible = false;
+        }
+
+        public void HideImmediate()
+        {
+            if (isHidden)
+            {
+                return;
+            }
+
+            HideImmediateInternal();
+            status = Status.Hidden;
+        }
+
+        public void Show()
+        {
+            if (isShown)
+            {
+                return;
+            }
+
+            m_ShowHideAnimationPlayer.playbackSpeed = 1f;
+            m_ShowHideAnimationPlayer.Play();
+            status = Status.Showing;
+        }
+
+        public void Hide()
+        {
+            if (isHidden)
+            {
+                return;
+            }
+
+            m_ShowHideAnimationPlayer.playbackSpeed = -1;
+            m_ShowHideAnimationPlayer.Play();
+            status = Status.Hiding;
         }
 
         public void RegisterClickCallback(ButtonIndex buttonIndex, Action callback)
@@ -166,7 +240,7 @@ namespace Controls
                     m_PostProcessingLayer.visible = false;
                     m_TitleAnimationPlayer.animationTime = 0f;
 
-                    onHide?.Invoke();
+                    status = Status.Hidden;
                 }
             });
             var t1 = animation.AddTrack((float t) => m_BackgroundPostProcessingLayer.tint = Color.Lerp(Color.white, s_BackgroundLayerColor, t));
@@ -190,6 +264,7 @@ namespace Controls
                 {
                     m_Layer.interactable = true;
                     m_TitleAnimationPlayer.Play();
+                    status = Status.Shown;
                 }
                 else
                 {
@@ -251,27 +326,6 @@ namespace Controls
             return animation;
         }
 
-        public void HideImmediate()
-        {
-            m_BackgroundPostProcessingLayer.visible = false;
-            m_Layer.visible = false;
-            m_Layer.interactable = false;
-            m_Layer.blocksRaycasts = false;
-            m_PostProcessingLayer.visible = false;
-        }
-
-        public void Show()
-        {
-            m_ShowHideAnimationPlayer.playbackSpeed = 1f;
-            m_ShowHideAnimationPlayer.Play();
-        }
-
-        public void Hide()
-        {
-            m_ShowHideAnimationPlayer.playbackSpeed = -1;
-            m_ShowHideAnimationPlayer.Play();
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (m_Disposed)
@@ -314,6 +368,21 @@ namespace Controls
             dialogBox.leftButtonLabel = "OK";
 
             var handle = Addressables.LoadAssetAsync<VisualTreeAsset>(k_InfoDialogBoxContentVtaAddress);
+            var contentVisualTreeAsset = handle.WaitForCompletion();
+            dialogBox.contentContainer.Add(contentVisualTreeAsset.Instantiate());
+
+            return dialogBox;
+        }
+
+        public static DialogBox CreateWelcomeDialogBox()
+        {
+            var dialogBox = new DialogBox();
+
+            dialogBox.titleLabel = "Welcome!";
+            dialogBox.buttonDisplay = ButtonDisplay.LeftCenter;
+            dialogBox.leftButtonLabel = "Continue";
+
+            var handle = Addressables.LoadAssetAsync<VisualTreeAsset>(k_WelcomeDialogBoxContentVtaAddress);
             var contentVisualTreeAsset = handle.WaitForCompletion();
             dialogBox.contentContainer.Add(contentVisualTreeAsset.Instantiate());
 

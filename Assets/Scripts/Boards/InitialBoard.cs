@@ -23,8 +23,6 @@ namespace Boards
 
         [SerializeField] VisualTreeAsset m_InitialBoardVisualTreeAsset;
 
-        public Action onHideFinished;
-
         AnimationPlayer m_AnimationPlayer;
         AnimationPlayer m_SubtitleAnimationPlayer;
 
@@ -33,18 +31,14 @@ namespace Boards
         DiamondTitle m_Title;
         Subtitle m_Subtitle;
         DialogBox m_QuitDialogBox;
-        InputActionMap m_ActionMap;
-        InputAction m_CancelAction;
+
+        public bool isVisible
+        {
+            get => m_AnimationPlayer.animation == m_AnimationPlayer[k_ShowAnimationName] && m_AnimationPlayer.animationTime == m_AnimationPlayer.duration;
+        }
 
         public override void Init()
         {
-            m_ActionMap = BoardManager.InputActions.FindActionMap("InitialBoard");
-            m_ActionMap["Any"].RegisterHelperPerformedCallback(OnAny);
-            m_ActionMap["Confirm"].RegisterHelperPerformedCallback(OnConfirm);
-
-            m_CancelAction = m_ActionMap["Cancel"];
-            m_CancelAction.RegisterHelperPerformedCallback(OnCancel);
-
             m_Layer = LayerManager.CreateLayer("Initial");
             m_Layer.displaySortOrder = DisplaySortOrder;
             m_Layer.AddTemplateFromVisualTreeAsset(m_InitialBoardVisualTreeAsset);
@@ -70,8 +64,9 @@ namespace Boards
             HideImmediate();
         }
 
-        public override void Show()
+        public override void Show(Action onCompleted = null)
         {
+            base.Show(onCompleted);
             m_AnimationPlayer.animation = m_AnimationPlayer[k_ShowAnimationName];
             m_AnimationPlayer.playbackSpeed = 1f;
             m_AnimationPlayer.Play();
@@ -80,6 +75,8 @@ namespace Boards
         public override void ShowImmediate()
         {
             m_AnimationPlayer.Stop();
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_ShowAnimationName];
+            m_AnimationPlayer.FastForward();
 
             m_PostProcessingLayer.visible = false;
             m_Layer.blurSize = 0f;
@@ -93,12 +90,11 @@ namespace Boards
 
             m_SubtitleAnimationPlayer.Stop();
             m_SubtitleAnimationPlayer.Play();
-
-            m_ActionMap.Enable();
         }
 
-        public override void Hide()
+        public override void Hide(Action onCompleted = null)
         {
+            base.Hide(onCompleted);
             m_AnimationPlayer.animation = m_AnimationPlayer[k_HideAnimationName];
             m_AnimationPlayer.playbackSpeed = 1f;
             m_AnimationPlayer.Play();
@@ -107,12 +103,13 @@ namespace Boards
         public override void HideImmediate()
         {
             m_AnimationPlayer.Stop();
+            m_AnimationPlayer.animation = m_AnimationPlayer[k_HideAnimationName];
+            m_AnimationPlayer.FastForward();
+
             m_SubtitleAnimationPlayer.Stop();
 
             m_Layer.visible = false;
             m_PostProcessingLayer.visible = false;
-
-            m_ActionMap.Disable();
         }
 
         KeyframeAnimation CreateShowAnimation()
@@ -122,10 +119,12 @@ namespace Boards
             animation.AddEvent(0, () =>
             {
                 m_Layer.visible = true;
+                m_Layer.blurSize = 0f;
+                m_Layer.alpha = 1f;
+
                 m_PostProcessingLayer.visible = true;
                 m_PostProcessingLayer.maskElement = m_Title;
                 m_PostProcessingLayer.overscan = 8f;
-                m_ActionMap.Enable();
             });
 
             var t1 = animation.AddTrack(opacity => m_Title.style.opacity = opacity);
@@ -161,6 +160,7 @@ namespace Boards
 
             animation.AddEvent(120, () =>
             {
+                m_Subtitle.animationProgress = 0f;
                 m_PostProcessingLayer.overscan = 8f;
                 m_PostProcessingLayer.maskElement = m_Subtitle;
             });
@@ -177,6 +177,7 @@ namespace Boards
             {
                 m_PostProcessingLayer.visible = false;
                 m_SubtitleAnimationPlayer.Play();
+                m_ShowCompletedCallback?.Invoke();
             });
 
             return animation;
@@ -198,11 +199,6 @@ namespace Boards
         {
             var animation = new KeyframeAnimation();
 
-            animation.AddEvent(0, () =>
-            {
-                m_ActionMap.Disable();
-            });
-
             var t1 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(20, Layer.DefaultBlurSize);
@@ -217,69 +213,10 @@ namespace Boards
 
                 m_Layer.visible = false;
                 m_PostProcessingLayer.visible = false;
-
-                onHideFinished?.Invoke();
+                m_HideCompletedCallback?.Invoke();
             });
 
             return animation;
-        }
-
-        public void OnAny(InputAction.CallbackContext ctx)
-        {
-            if (m_CancelAction.WasPerformedThisFrame() || m_QuitDialogBox != null)
-            {
-                return;
-            }
-
-            if (m_AnimationPlayer.animation == m_AnimationPlayer[k_ShowAnimationName] && m_AnimationPlayer.status.IsPlaying())
-            {
-                ShowImmediate();
-            }
-            else
-            {
-                BoardManager.StateMachine.state = BoardManager.StateMachine[BMState.InterfaceBoard];
-            }
-        }
-
-        public void OnCancel(InputAction.CallbackContext ctx)
-        {
-            if (m_QuitDialogBox == null)
-            {
-                m_QuitDialogBox = DialogBox.CreateQuitDialogBox();
-                m_QuitDialogBox.displaySortOrder = DisplaySortOrder + 100;
-                m_QuitDialogBox.onHide += m_QuitDialogBox.Dispose;
-                m_QuitDialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Background, m_QuitDialogBox.Hide);
-                m_QuitDialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Right, m_QuitDialogBox.Hide);
-                m_QuitDialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Left, () =>
-                {
-                    Application.Quit();
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.isPlaying = false;
-#endif
-                });
-
-                m_QuitDialogBox.Show();
-            }
-            else
-            {
-                m_QuitDialogBox.PerformClick(DialogBox.ButtonIndex.Right);
-            }
-        }
-
-        public void OnConfirm(InputAction.CallbackContext ctx)
-        {
-            if (m_QuitDialogBox != null)
-            {
-                m_QuitDialogBox.PerformClick(DialogBox.ButtonIndex.Left);
-            }
-        }
-
-        void OnDestroy()
-        {
-            if (m_QuitDialogBox != null)
-            {
-                m_QuitDialogBox.Dispose();
-            }
         }
     }
 }

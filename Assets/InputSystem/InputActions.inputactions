@@ -2,23 +2,23 @@
     "name": "InputActions",
     "maps": [
         {
-            "name": "InitialBoard",
-            "id": "6b0ab165-a6ba-48bf-887c-2040071f6f03",
+            "name": "UI",
+            "id": "146a7b6f-6112-4ad1-a096-183b554f998c",
             "actions": [
                 {
                     "name": "Any",
                     "type": "Button",
-                    "id": "08f7b6a1-ff66-4068-a901-7079c6f819b3",
-                    "expectedControlType": "",
+                    "id": "3219b309-ce63-4a1c-90a4-11a365728325",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Cancel",
+                    "name": "Info",
                     "type": "Button",
-                    "id": "68f6d7de-542c-4930-a0a7-3fb39ebc5219",
-                    "expectedControlType": "Button",
+                    "id": "4d8066a0-cbb1-4634-ae30-dce65ce57be0",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -26,58 +26,17 @@
                 {
                     "name": "Confirm",
                     "type": "Button",
-                    "id": "a2dca9a3-563b-4d3c-9e48-07ac711de16e",
+                    "id": "016ff845-e785-4b1f-b679-abc8a49b0c86",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "f4031f9f-04f4-4911-bcb3-676d748282e5",
-                    "path": "<Keyboard>/anyKey",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Any",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "6ed1f953-9b2b-4e23-bf96-9b122fc7adbc",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Cancel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "6d811b38-39ef-47da-8ea6-fd90f9558c1b",
-                    "path": "<Keyboard>/enter",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Confirm",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "InterfaceBoard",
-            "id": "7e53604d-bc1d-4a17-8b73-41e68fe7e2b0",
-            "actions": [
-                {
-                    "name": "Left",
+                    "name": "Cancel",
                     "type": "Button",
-                    "id": "2bfb3fac-44bb-4470-9ac4-236854440570",
-                    "expectedControlType": "",
+                    "id": "f51a5dcb-15be-49db-b2a3-7dff1cd79395",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -85,44 +44,17 @@
                 {
                     "name": "Right",
                     "type": "Button",
-                    "id": "2146963e-992f-4528-9f81-d4356df8c1c5",
+                    "id": "7d255423-0658-4872-b1ec-ae1dee4fbc01",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Cancel",
+                    "name": "Left",
                     "type": "Button",
-                    "id": "f56658a4-77c9-4b73-828d-57f0350bd06d",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Confirm",
-                    "type": "Button",
-                    "id": "a6eaf789-9cf0-4e1f-8001-880817aac646",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Help",
-                    "type": "Button",
-                    "id": "8150bc43-e895-406f-bed2-78b3f1393f77",
+                    "id": "a29b70c6-033e-449a-b340-667113c15df5",
                     "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Any",
-                    "type": "Button",
-                    "id": "7cb7433d-2ad5-4404-b17a-e1e7a2975e22",
-                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -131,7 +63,7 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "b6f3575a-4894-4c3a-aec2-d3d38879289d",
+                    "id": "69753910-aba2-4f4c-a8ec-4912e7217840",
                     "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
@@ -142,7 +74,7 @@
                 },
                 {
                     "name": "",
-                    "id": "8bc9f40d-d9c9-408e-8147-7d8b9945c075",
+                    "id": "d10aa77c-c423-4bc2-809b-8eaccea248ce",
                     "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
@@ -153,7 +85,7 @@
                 },
                 {
                     "name": "",
-                    "id": "6d6322cd-c493-4293-aa19-114354424ee0",
+                    "id": "df14897d-baec-4921-b233-349eb4819af2",
                     "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
@@ -164,7 +96,7 @@
                 },
                 {
                     "name": "",
-                    "id": "47803f66-4fe0-4024-b1fd-640c2f02f022",
+                    "id": "d87806c8-cf7b-4224-8977-35c237990cba",
                     "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
@@ -175,7 +107,7 @@
                 },
                 {
                     "name": "",
-                    "id": "b689171f-b134-4015-89db-92b237ad2c0e",
+                    "id": "f8f1e38e-e4e0-4fc4-b158-03d624dbca5b",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
@@ -186,7 +118,7 @@
                 },
                 {
                     "name": "",
-                    "id": "9b588f74-049a-41dc-953c-4613d08bfc6b",
+                    "id": "6459d541-69e1-4bf0-bc21-8d9e8517e1c6",
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
@@ -197,115 +129,67 @@
                 },
                 {
                     "name": "",
-                    "id": "a47b86e4-e5c8-4dc2-8873-32ec56b6bdef",
+                    "id": "0eec5337-ccc1-424a-b780-903f4dff9a12",
                     "path": "<Keyboard>/h",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Help",
+                    "action": "Info",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "42571ffe-83b6-4b71-9463-adbd4d350489",
+                    "id": "55a1c91a-c72d-4ba8-b9fa-9ae26810daa2",
                     "path": "<Keyboard>/f1",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Help",
+                    "action": "Info",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "One Modifier",
-                    "id": "fac0e304-fd58-4970-bee7-2fe717873aac",
+                    "id": "d2fae9eb-6909-4fb6-9af6-5bdea6223dd6",
                     "path": "OneModifier",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Help",
+                    "action": "Info",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "modifier",
-                    "id": "d57a5773-4f92-45b3-a981-e011389e3e0f",
+                    "id": "53152c40-3180-4bf3-9650-73448bc1c117",
                     "path": "<Keyboard>/ctrl",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Help",
+                    "action": "Info",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
                     "name": "binding",
-                    "id": "8e0f13c6-37fc-4b4d-9ba0-aa2a5e34b17e",
+                    "id": "4cf43677-a387-4dd5-8859-bafa9a987934",
                     "path": "<Keyboard>/h",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Help",
+                    "action": "Info",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
                     "name": "",
-                    "id": "f939dc2a-13c3-4b81-b453-56af627fa623",
+                    "id": "0bdc000d-8f98-4fd9-b549-415dbc9a5a1b",
                     "path": "<Keyboard>/anyKey",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Any",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "DiamondBarBoard",
-            "id": "2e5bb9fc-d542-47fd-84af-1a2625ef18a0",
-            "actions": [
-                {
-                    "name": "Any",
-                    "type": "Button",
-                    "id": "62576641-c9db-4477-80b0-f546059f16ce",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Cancel",
-                    "type": "Button",
-                    "id": "1ba6dcc1-c5c3-4fa1-806d-95af8c493417",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "2401d0e2-b7d1-479d-9ed8-a2868fc0d783",
-                    "path": "<Keyboard>/anyKey",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Any",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c91ee578-0288-4520-a124-e0aa4530b7d2",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

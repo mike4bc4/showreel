@@ -22,6 +22,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a08837e58c9afa946a97cdb2317e190f
+    m_Address: WelcomeDialogBoxContentVisualTreeAsset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: a36d229548309194681088cbab99f880, type: 2}
   m_SchemaSet:

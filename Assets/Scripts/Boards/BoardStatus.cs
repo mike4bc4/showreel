@@ -4,9 +4,12 @@ using UnityEngine;
 
 namespace Boards
 {
-    public enum BMState
+    public enum BoardStatus
     {
-        InitialBoard,
-        InterfaceBoard,
+        Initial,
+        Hiding,
+        Hidden,
+        Showing,
+        Shown,
     }
 }

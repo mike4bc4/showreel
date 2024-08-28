@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Controls.Raw;
 using System.Linq;
+using System;
 
 public class DiamondBarBoard : Board
 {
@@ -107,6 +108,11 @@ public class DiamondBarBoard : Board
 
     int m_TargetActiveIndex;
 
+    public bool isVisible
+    {
+        get => m_ShowHideAnimationPlayer.animationTime == m_ShowHideAnimationPlayer.duration;
+    }
+
     public int size
     {
         get => m_DiamondBar.size;
@@ -166,11 +172,6 @@ public class DiamondBarBoard : Board
         }
     }
 
-    public bool isShowing
-    {
-        get => m_ShowHideAnimationPlayer.status.IsPlaying() && m_ShowHideAnimationPlayer.isPlayingForward;
-    }
-
     public override void Init()
     {
         m_BarElementHandlers = new List<BarElementHandler>();
@@ -197,8 +198,9 @@ public class DiamondBarBoard : Board
         HideImmediate();
     }
 
-    public override void Show()
+    public override void Show(Action onCompleted = null)
     {
+        base.Show(onCompleted);
         m_ShowHideAnimationPlayer.playbackSpeed = 1f;
         m_ShowHideAnimationPlayer.Play();
     }
@@ -206,13 +208,15 @@ public class DiamondBarBoard : Board
     public override void ShowImmediate()
     {
         m_ShowHideAnimationPlayer.Stop();
+        m_ShowHideAnimationPlayer.FastForward();
         m_Layer.visible = true;
         m_Layer.alpha = 1f;
         m_Layer.blurSize = 0f;
     }
 
-    public override void Hide()
+    public override void Hide(Action onCompleted = null)
     {
+        base.Hide(onCompleted);
         m_ShowHideAnimationPlayer.playbackSpeed = -1f;
         m_ShowHideAnimationPlayer.Play();
     }
@@ -236,6 +240,7 @@ public class DiamondBarBoard : Board
             else
             {
                 m_Layer.visible = false;
+                m_HideCompletedCallback?.Invoke();
             }
         });
 
@@ -246,6 +251,14 @@ public class DiamondBarBoard : Board
         var t2 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
         t2.AddKeyframe(10, PostProcessingLayer.DefaultBlurSize);
         t2.AddKeyframe(30, 0f);
+
+        animation.AddEvent(30, () =>
+        {
+            if (animation.player.isPlayingForward)
+            {
+                m_ShowCompletedCallback?.Invoke();
+            }
+        });
 
         return animation;
     }
