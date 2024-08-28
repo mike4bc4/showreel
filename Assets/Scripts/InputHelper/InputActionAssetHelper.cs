@@ -71,7 +71,9 @@ namespace InputHelper
                 }
             }
 
-            foreach (var helper in m_PerformedActionRegistry)
+            // Execute for every existing input action helper, because suppressed helpers might not
+            // be registered.
+            foreach (var helper in m_InputActions.Values)
             {
                 helper.wasPerformedThisFrame = false;
                 helper.isSuppressedThisFrame = false;
