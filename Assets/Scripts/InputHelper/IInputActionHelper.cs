@@ -7,8 +7,7 @@ using UnityEngine.InputSystem;
 public interface IInputActionHelper
 {
     public event Action<InputAction.CallbackContext> performed;
-    public int lastPerformedFrameIndex { get; }
-    public int performedCountThisFrame { get; }
-    public bool performedInvokesOncePerFrame { get; set; }
-    public bool isPerformedDelayed { get; set; }
+    public bool isSuppressedThisFrame { get; set; }
+    public bool wasPerformedThisFrame { get; }
+    public bool wasScheduledThisFrame { get; }
 }
