@@ -34,6 +34,11 @@ namespace KeyframeSystem
         bool m_InvokingEvent;
         bool m_UpdateInvalid;
 
+        public bool isPlaying
+        {
+            get => m_Status == Status.Playing;
+        }
+
         public bool isPlayingForward
         {
             get => m_PlaybackSpeed >= 0f;
@@ -201,6 +206,7 @@ namespace KeyframeSystem
                         }
 
                         m_ScheduledEvents.RemoveAt(i);
+                        i--;
                     }
                     else
                     {
@@ -287,7 +293,7 @@ namespace KeyframeSystem
         public void Pause()
         {
             status = Status.Paused;
-            AnimationPlayerRunner.onUpdate -= Update;
+            AnimationPlayerRunner.OnUpdate -= Update;
         }
 
         public void Play()
@@ -308,14 +314,14 @@ namespace KeyframeSystem
             }
 
             status = Status.Playing;
-            AnimationPlayerRunner.onUpdate -= Update;
-            AnimationPlayerRunner.onUpdate += Update;
+            AnimationPlayerRunner.OnUpdate -= Update;
+            AnimationPlayerRunner.OnUpdate += Update;
         }
 
         public void Stop()
         {
             status = Status.Stopped;
-            AnimationPlayerRunner.onUpdate -= Update;
+            AnimationPlayerRunner.OnUpdate -= Update;
             m_ScheduledEvents.Clear();
             m_AnimationTime = 0f;
         }

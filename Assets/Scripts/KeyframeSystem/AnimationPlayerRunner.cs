@@ -13,8 +13,7 @@ namespace KeyframeSystem
     // delegate still might be used, though it will not be invoked anymore.
     class AnimationPlayerRunner
     {
-        static Component s_Component;
-        static bool s_Quitting;
+        static AnimationPlayerRunner s_Instance;
 
         class Component : MonoBehaviour
         {
@@ -26,44 +25,75 @@ namespace KeyframeSystem
             }
         }
 
-        public static event Action onUpdate
-        {
-            add
-            {
-                if (!s_Quitting)
-                {
-                    component.onUpdate += value;
-                }
-            }
-            remove
-            {
-                if (!s_Quitting)
-                {
-                    component.onUpdate -= value;
-                }
-            }
-        }
+        Component m_Component;
+        bool m_IsQuitting;
+        List<Action> m_Callbacks;
 
-        static Component component
+        public static AnimationPlayerRunner Instance
         {
             get
             {
-                if (s_Component == null)
+                if (s_Instance == null)
                 {
-                    var go = new GameObject("AnimationPlayerRunner");
-                    s_Component = go.AddComponent<Component>();
-                    go.hideFlags |= HideFlags.NotEditable;
-                    GameObject.DontDestroyOnLoad(go);
+                    s_Instance = new AnimationPlayerRunner();
                 }
 
-                return s_Component;
+                return s_Instance;
             }
+        }
+
+        public static event Action OnUpdate
+        {
+            add => Instance.m_Callbacks.Add(value);
+            remove => Instance.m_Callbacks.Remove(value);
         }
 
         [RuntimeInitializeOnLoadMethod]
         static void OnLoad()
         {
-            Application.quitting += () => s_Quitting = true;
+            Instance.Awake();
+        }
+
+        AnimationPlayerRunner()
+        {
+            m_Callbacks = new List<Action>();
+        }
+
+        void Awake()
+        {
+            Application.quitting += () => m_IsQuitting = true;
+            m_Component = CreateComponent();
+            m_Component.onUpdate += Update;
+        }
+
+        Component CreateComponent()
+        {
+            var go = new GameObject("AnimationPlayerRunner");
+            var component = go.AddComponent<Component>();
+            go.hideFlags |= HideFlags.NotEditable;
+            GameObject.DontDestroyOnLoad(go);
+            return component;
+        }
+
+        void Update()
+        {
+            if (m_IsQuitting)
+            {
+                return;
+            }
+
+            for (int i = 0; i < m_Callbacks.Count; i++)
+            {
+                if (m_Callbacks[i] != null)
+                {
+                    m_Callbacks[i].Invoke();
+                }
+                else
+                {
+                    m_Callbacks.RemoveAt(i);
+                    i--;
+                }
+            }
         }
     }
 }
