@@ -8,5 +8,5 @@ public class ListBoardResources : ScriptableSingleton<ListBoardResources>
 {
     [SerializeField] List<VideoClip> m_VideoClips;
 
-    public IReadOnlyList<VideoClip> videoClips => m_VideoClips;
+    public IReadOnlyList<VideoClip> videoClips => m_VideoClips.AsReadOnly();
 }
