@@ -8,7 +8,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Layers;
 using Templates;
-using UnityEngine.AddressableAssets;
 
 namespace Controls
 {
@@ -367,8 +366,7 @@ namespace Controls
             dialogBox.buttonDisplay = ButtonDisplay.LeftCenter;
             dialogBox.leftButtonLabel = "OK";
 
-            var handle = Addressables.LoadAssetAsync<VisualTreeAsset>(k_InfoDialogBoxContentVtaAddress);
-            var contentVisualTreeAsset = handle.WaitForCompletion();
+            var contentVisualTreeAsset = DialogBoxResources.Instance.infoDialogBoxContentVta;
             dialogBox.contentContainer.Add(contentVisualTreeAsset.Instantiate());
 
             return dialogBox;
@@ -382,8 +380,7 @@ namespace Controls
             dialogBox.buttonDisplay = ButtonDisplay.LeftCenter;
             dialogBox.leftButtonLabel = "Continue";
 
-            var handle = Addressables.LoadAssetAsync<VisualTreeAsset>(k_WelcomeDialogBoxContentVtaAddress);
-            var contentVisualTreeAsset = handle.WaitForCompletion();
+            var contentVisualTreeAsset = DialogBoxResources.Instance.welcomeDialogBoxContentVta;
             dialogBox.contentContainer.Add(contentVisualTreeAsset.Instantiate());
 
             return dialogBox;

@@ -32,7 +32,6 @@ namespace Boards
         const int k_ButtonShowDelay = 60;
 
         [SerializeField] VisualTreeAsset m_ListBoardVisualTreeAsset;
-        [SerializeField] List<VideoClip> m_VideoClips;
 
         Layer m_Layer;
         List<PostProcessingLayer> m_PostProcessingLayers;
@@ -123,7 +122,7 @@ namespace Boards
 
             m_FrameSpacerLeft.style.flexGrow = 1f;
 
-            m_MoviePlayers[0].PlayClip(m_VideoClips[0]);
+            m_MoviePlayers[0].PlayClip(ListBoardResources.Instance.videoClips[0]);
             m_VideoContainers[0].style.backgroundImage = Background.FromRenderTexture(m_MoviePlayers[0].renderTexture);
 
             m_Layer.visible = true;
@@ -319,7 +318,7 @@ namespace Boards
             {
                 if (animation.player.isPlayingForward)
                 {
-                    m_MoviePlayers[0].PlayClip(m_VideoClips[0]);
+                    m_MoviePlayers[0].PlayClip(ListBoardResources.Instance.videoClips[0]);
                     m_VideoContainers[0].style.backgroundImage = Background.FromRenderTexture(m_MoviePlayers[0].renderTexture);
                     m_PostProcessingLayers[0].maskElement = m_Frame.contentContainer;
                 }
