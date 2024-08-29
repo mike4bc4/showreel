@@ -37,7 +37,6 @@ namespace Layers
         float m_BlurSize;
         Overscan m_Overscan;
         bool m_Visible;
-        bool m_Active;
         string m_LayerName;
 
         public new string name
@@ -48,12 +47,6 @@ namespace Layers
                 m_LayerName = value;
                 gameObject.name = $"{GetType().Name}({m_LayerName})";
             }
-        }
-
-        public bool active
-        {
-            get => m_Active;
-            set => m_Active = value;
         }
 
         public virtual bool visible
@@ -163,7 +156,6 @@ namespace Layers
                 throw new Exception("Cannot initialize multiple times.");
             }
 
-            m_Active = true;
             m_Visible = true;
             m_Material = material;
             blurSize = 0;
@@ -175,12 +167,10 @@ namespace Layers
 
         void Update()
         {
-            if (!m_Active)
+            if (m_Visible)
             {
-                return;
+                UpdateTrackedElement();
             }
-
-            UpdateTrackedElement();
         }
 
         void OnDestroy()
