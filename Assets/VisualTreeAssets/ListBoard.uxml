@@ -5,7 +5,12 @@
         <ui:VisualElement name="frame-container" style="flex-direction: row; width: 1280px;">
             <ui:VisualElement name="spacer-left" style="flex-grow: 1;" />
             <Controls.Raw.DiamondFrameVertical color="#333333FF" corner-radius="4" name="frame" unfolded="true">
-                <ui:VisualElement name="video-container" style="flex-grow: 1; width: 360px; height: 640px; display: flex;" />
+                <ui:VisualElement name="padding-box" style="flex-grow: 1; width: 360px; height: 640px; padding-top: 4px; padding-right: 0; padding-bottom: 4px; padding-left: 0;">
+                    <ui:VisualElement name="video-container" class="video-container">
+                        <ui:VisualElement name="video-container-1" />
+                        <ui:VisualElement name="video-container-2" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </Controls.Raw.DiamondFrameVertical>
             <ui:VisualElement name="spacer-right" />
         </ui:VisualElement>

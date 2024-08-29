@@ -40,6 +40,11 @@ namespace Utility
             }
         }
 
+        public static T AddComponent<T>() where T : Component
+        {
+            return Instance.gameObject.AddComponent<T>();
+        }
+
         void Awake()
         {
             if (s_Instance == null)

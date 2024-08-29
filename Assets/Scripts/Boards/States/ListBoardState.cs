@@ -8,9 +8,11 @@ namespace Boards.States
     public class ListBoardState : BoardState
     {
         ListBoard m_ListBoard;
+        bool m_Interactable;
 
         public ListBoardState(BoardStateContext context) : base(context)
         {
+            m_Interactable = true;
             m_ListBoard = BoardManager.GetBoard<ListBoard>();
             if (!m_ListBoard.isVisible)
             {
@@ -20,6 +22,11 @@ namespace Boards.States
 
         public override void Any()
         {
+            if (!m_Interactable)
+            {
+                return;
+            }
+
             if (!m_ListBoard.isVisible)
             {
                 m_ListBoard.ShowImmediate();
@@ -29,6 +36,18 @@ namespace Boards.States
 
         public override void Left()
         {
+            if (m_ListBoard.isVisible)
+            {
+                m_Interactable = false;
+                m_ListBoard.Hide(() =>
+                {
+                    BoardManager.GetBoard<InterfaceBoard>().Hide();
+                    BoardManager.GetBoard<DiamondBarBoard>().Hide(() =>
+                    {
+                        context.state = new InitialBoardState(context);
+                    });
+                });
+            }
         }
 
         public override void Right()
