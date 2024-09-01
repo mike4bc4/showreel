@@ -15,3 +15,6 @@ MonoBehaviour:
   m_VideoClips:
   - {fileID: 32900000, guid: 10581a60dda40e9499ef47ceed6f0dad, type: 3}
   - {fileID: 32900000, guid: c45300d0a88c13344ac887e0beb5d350, type: 3}
+  m_VisualTreeAssets:
+  - {fileID: 9197481963319205126, guid: 10fd8ecd21465ba41b4256116e87551f, type: 3}
+  - {fileID: 9197481963319205126, guid: 2f6d3f4eb43e10b498a603f6a1ae3fb2, type: 3}
