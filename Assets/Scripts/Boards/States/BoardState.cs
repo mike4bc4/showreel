@@ -17,8 +17,10 @@ namespace Boards.States
         public BoardState(BoardStateContext context)
         {
             m_Context = context;
+            Init();
         }
 
+        protected virtual void Init() { }
         public virtual void Any() { }
         public virtual void Cancel() { }
         public virtual void Confirm() { }

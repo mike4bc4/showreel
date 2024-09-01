@@ -915,9 +915,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34d8887a79cc50b43807745e606305d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ListBoardVisualTreeAsset: {fileID: 9197481963319205126, guid: 10fd8ecd21465ba41b4256116e87551f, type: 3}
-  m_VideoClips:
-  - {fileID: 32900000, guid: 10581a60dda40e9499ef47ceed6f0dad, type: 3}
+  m_VisualTreeAsset: {fileID: 9197481963319205126, guid: 10fd8ecd21465ba41b4256116e87551f, type: 3}
+  m_InitialVideoClip: {fileID: 32900000, guid: 10581a60dda40e9499ef47ceed6f0dad, type: 3}
 --- !u!1 &2127238804
 GameObject:
   m_ObjectHideFlags: 0
