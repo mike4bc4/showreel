@@ -588,6 +588,39 @@ namespace Boards
                 blurTrack.AddKeyframe(buttonAnimationStartFrame, PostProcessingLayer.DefaultBlurSize);
                 blurTrack.AddKeyframe(buttonAnimationStartFrame + 10, PostProcessingLayer.DefaultBlurSize);
                 blurTrack.AddKeyframe(buttonAnimationStartFrame + 30, 0f, Easing.StepOut);
+
+                // Upon the completion of the list element animation and its subsequent visibility, it is
+                // essential to verify if the next list element is not obscured by the scroll box viewport.
+                // If it is indeed clipped, promptly conclude all animations of the list elements by adjusting
+                // their opacity and animation progress properties, and trigger the completed event. This
+                // action is necessary to prevent any delays caused by animations that would remain unseen
+                // due to the dimensions of the scroll box viewport.
+                animation.AddEvent(buttonAnimationStartFrame + 30, () =>
+                {
+                    var nextListElement = listElements.ElementAtOrDefault(idx + 1);
+                    if (animation.player.isPlayingForward && nextListElement != null && !nextListElement.worldBound.Overlaps(scrollBox.viewport.worldBound))
+                    {
+                        foreach (var listElement in listElements)
+                        {
+                            listElement.bullet.visible = true;
+                            listElement.bullet.animationProgress = 1f;
+                            listElement.button.style.opacity = 1f;
+                        }
+
+                        animation.player.Stop();
+                        OnCompleted();
+                        return;
+                    }
+                });
+            }
+
+            void OnCompleted()
+            {
+                m_Layer.interactable = true;
+                m_Layer.blocksRaycasts = true;
+                SetPostProcessingLayersVisible(false);
+                m_TitleAnimationPlayer.Play();
+                m_ShowCompletedCallback?.Invoke();
             }
 
             int finalEventFrameIndex = (listElements.Count - 1) * k_BulletAnimationInterval + k_ButtonShowDelay + 30;
@@ -595,11 +628,7 @@ namespace Boards
             {
                 if (animation.player.isPlayingForward)
                 {
-                    m_Layer.interactable = true;
-                    m_Layer.blocksRaycasts = true;
-                    SetPostProcessingLayersVisible(false);
-                    m_TitleAnimationPlayer.Play();
-                    m_ShowCompletedCallback?.Invoke();
+                    OnCompleted();
                 }
             });
 

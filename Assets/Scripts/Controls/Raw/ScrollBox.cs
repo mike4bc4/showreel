@@ -53,6 +53,11 @@ namespace Controls.Raw
         float m_Deceleration;
         int m_ScrolledLines;
 
+        public VisualElement viewport
+        {
+            get => m_Viewport;
+        }
+
         public bool isScrollBarDisplayed
         {
             get => m_ScrollBar.style.display == DisplayStyle.Flex;
