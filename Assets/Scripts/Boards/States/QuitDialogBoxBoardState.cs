@@ -7,6 +7,16 @@ using UnityEngine.InputSystem;
 
 namespace Boards.States
 {
+    public class PoliticoListBoardQuitDialogBoxState : QuitDialogBoxState
+    {
+        public PoliticoListBoardQuitDialogBoxState(BoardStateContext context) : base(context) { }
+
+        protected override void OnHidden()
+        {
+            context.state = new PoliticoListBoardState(context);
+        }
+    }
+
     public class ListBoard2QuitDialogBoxState : QuitDialogBoxState
     {
         public ListBoard2QuitDialogBoxState(BoardStateContext context) : base(context) { }

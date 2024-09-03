@@ -35,7 +35,7 @@ namespace Boards.States
             else if (m_DialogBox.isHidden)
             {
                 m_DialogBox.Dispose();
-                context.state = new ListBoard1State(context);
+                context.state = new PoliticoListBoardState(context);
             }
         }
 

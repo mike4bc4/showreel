@@ -1,0 +1,35 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
+    <ui:VisualElement name="background" style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(229, 229, 229); display: none;" />
+    <ui:VisualElement name="frame-viewport" style="align-items: center; justify-content: center; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <ui:VisualElement name="frame-container" style="flex-direction: row; width: 1280px;">
+            <ui:VisualElement name="spacer-left" style="flex-grow: 1;" />
+            <Controls.Raw.DiamondFrameVertical color="#333333FF" corner-radius="4" name="frame" unfolded="true">
+                <ui:VisualElement name="padding-box" style="flex-grow: 1; width: 360px; height: 640px; padding-top: 4px; padding-right: 4px; padding-bottom: 4px; padding-left: 4px;">
+                    <ui:VisualElement name="video-container" class="video-container">
+                        <ui:VisualElement name="video-container-1" />
+                        <ui:VisualElement name="video-container-2" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </Controls.Raw.DiamondFrameVertical>
+            <ui:VisualElement name="spacer-right" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="title-viewport" style="flex-grow: 1; align-items: center; justify-content: flex-start; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <Controls.Raw.DiamondTitle name="title" text="Project Politico" style="margin-top: 48px;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="list-viewport" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
+        <ui:VisualElement name="list-container" style="width: 1280px; height: 670px; padding-right: 400px;">
+            <Controls.Raw.ScrollBox scroll-mode="Smooth" name="scroll-box" style="margin-right: 64px; margin-left: -68px;">
+                <ui:VisualElement style="flex-grow: 1;">
+                    <Controls.Raw.ListElement text="The fundamental mechanism of this project involves constructing rooms that deliver particular products and meet the requirements of the party leader. The addition of a new room replaces the existing interior and triggers a series of animations, such as repainting the walls and floors, which are managed by a custom shader. Additionally, the overlay system that offers a semi-transparent preview of the new room&apos;s interior is noteworthy." header="Placing Rooms" />
+                    <Controls.Raw.ListElement text="When the game is loaded, the navigation system is activated, establishing a series of interconnected navigation points. It employs the AStar algorithm to determine the most efficient route whenever a worker needs to move from one room to another. The positioning of workers within a room is managed through animations specific to that room." header="Worker Navigation" />
+                    <Controls.Raw.ListElement text="The game&apos;s prototype enables the assignment of workers to various rooms. These workers produce either money or goods that must be transported to the nearest warehouse. Throughout the workday, workers accumulate experience at the cost of their energy, necessitating visits to relaxation rooms to restore this resource before returning to their tasks." header="Production Cycle" />
+                    <Controls.Raw.ListElement text="The present condition of the project enables employees to utilize various types of equipment, thereby enhancing their abilities in executing specific tasks, such as augmenting their experience acquisition or increasing the volume of goods produced. The appearance of workers is updated in real-time, and each item can be depicted using distinct 3D models." header="Equipment System" />
+                    <Controls.Raw.ListElement text="In the future, every worker will possess distinct physical characteristics, including variations in body shape, hair, gender, and more. To facilitate the creation of these diverse avatars, a worker body system has been established, enabling the interchange of body parts in edit mode. This allows for the development and preservation of unique presets as prefabs." header="Editing Workers" />
+                </ui:VisualElement>
+            </Controls.Raw.ScrollBox>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="test" style="flex-grow: 1; position: absolute; left: 100px; bottom: 100px; width: 100px; height: 100px;" />
+</ui:UXML>
