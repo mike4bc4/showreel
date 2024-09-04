@@ -1,0 +1,36 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
+    <ui:VisualElement name="background" style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(229, 229, 229); display: none;" />
+    <ui:VisualElement name="frame-viewport" style="align-items: center; justify-content: center; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <ui:VisualElement name="frame-container" style="flex-direction: row; width: 1280px;">
+            <ui:VisualElement name="spacer-left" style="flex-grow: 1;" />
+            <Controls.Raw.DiamondFrameVertical color="#333333FF" corner-radius="4" name="frame" unfolded="true">
+                <ui:VisualElement name="padding-box" style="flex-grow: 1; width: 360px; height: 640px; padding-top: 4px; padding-right: 4px; padding-bottom: 4px; padding-left: 4px;">
+                    <ui:VisualElement name="video-container" class="video-container">
+                        <ui:VisualElement name="video-container-1" />
+                        <ui:VisualElement name="video-container-2" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </Controls.Raw.DiamondFrameVertical>
+            <ui:VisualElement name="spacer-right" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="title-viewport" style="flex-grow: 1; align-items: center; justify-content: flex-start; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <Controls.Raw.DiamondTitle name="title" text="Layout System" style="margin-top: 48px;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="list-viewport" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
+        <ui:VisualElement name="list-container" style="width: 1280px; height: 670px; padding-right: 400px;">
+            <Controls.Raw.ScrollBox scroll-mode="Smooth" name="scroll-box" style="margin-right: 64px; margin-left: -68px;">
+                <ui:VisualElement style="flex-grow: 1;">
+                    <Controls.Raw.ListElement text="The layout system provides the Layout Frame component, which can be added to a game object using the standard &quot;Add Component&quot; button or through the Transform context menu. When the Layout Frame component is added in editor mode, the interface layout will be automatically adjusted without the need for any further actions." header="Standalone Component" />
+                    <Controls.Raw.ListElement text="The Layout Frame provides the capability to modify the flow and alignment of content. Child elements can be arranged horizontally, vertically, or in wrap mode, which functions similarly to text, causing overflowing frames to move to the next line. Additionally, it is possible to adjust the positioning of child elements to align with the right, left, or center of the parent container." header="Flow and Alignment" />
+                    <Controls.Raw.ListElement text="The child and parent interface elements, while maintaining a fixed pixel size, can be modified to either occupy the entire parent container or reduce in size to align with the content, whether vertically, horizontally, or in both dimensions. In addition to the rotation property, a specialized content offset property has been introduced to facilitate efficient animation without the necessity of reconstructing the entire layout." header="Resizing and Animation" />
+                    <Controls.Raw.ListElement text="The custom layout system enables the utilization of a padding and spacing workflow, allowing users to manage multiple child frames through a limited set of properties, rather than manually positioning each object or individually adjusting the margin properties of each item." header="Padding and Spacing Workflow" />
+                    <Controls.Raw.ListElement text="A significant drawback of the proposed solution is the potential for encountering a scenario that can be characterized as a collision. This occurs, for instance, when a container attempts to resize itself to fit the dimensions of a child element, while the child element simultaneously strives to conform to the size of its parent. Instances of such conflicts are indicated by marking invalid properties and presenting a warning icon within the hierarchy window." header="Error Detection" />
+                    <Controls.Raw.ListElement text="A user interface is not considered complete without the inclusion of text support; therefore, Text Mesh UI components are incorporated. When a component of this nature is added, the Layout Frame recognizes it and provides a designated field for text input. Subsequently, additional properties can be utilized to modify the text&apos;s behavior, such as enabling the wrapping container to expand in response to an increasing character string." header="Text Support" />
+                </ui:VisualElement>
+            </Controls.Raw.ScrollBox>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="test" style="flex-grow: 1; position: absolute; left: 100px; bottom: 100px; width: 100px; height: 100px;" />
+</ui:UXML>

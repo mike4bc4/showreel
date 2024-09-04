@@ -17,8 +17,6 @@ public class ListBoardResources : ScriptableSingleton<ListBoardResources>
     {
         foreach (var vta in Instance.m_VisualTreeAssets)
         {
-            Debug.Log(vta.name);
-
             if (vta.name.Equals(name, System.StringComparison.OrdinalIgnoreCase))
             {
                 return vta;

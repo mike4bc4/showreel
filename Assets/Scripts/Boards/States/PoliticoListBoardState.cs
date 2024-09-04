@@ -60,7 +60,7 @@ namespace Boards.States
                 listBoard.onListElementClicked -= OnListElementClicked;
                 listBoard.Hide(() =>
                 {
-                    context.state = new ListBoard2State(context);
+                    context.state = new LayoutSystemListBoardState(context);
                 });
             }
         }

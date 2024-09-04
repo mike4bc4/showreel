@@ -20,7 +20,14 @@ MonoBehaviour:
   - {fileID: 32900000, guid: 5fb61e6ab7d4c4941af6c4853aa5b060, type: 3}
   - {fileID: 32900000, guid: 642baf05eb09ffd419e919603f9e48ba, type: 3}
   - {fileID: 32900000, guid: c361a537f31b0ae49b37516adcefa3df, type: 3}
+  - {fileID: 32900000, guid: 1ba741843affdbd46b5fc276901ebbf4, type: 3}
+  - {fileID: 32900000, guid: b05a8bebca7073e4d917f091162bd048, type: 3}
+  - {fileID: 32900000, guid: 189acb3e4449d0941a7f80f301243ae3, type: 3}
+  - {fileID: 32900000, guid: 006f09fa43701c24580b74793bc56bcb, type: 3}
+  - {fileID: 32900000, guid: d191d578b65dd6440b3d2e22114ce1f7, type: 3}
+  - {fileID: 32900000, guid: 92745fccb2b45494990bddd16e150931, type: 3}
   m_VisualTreeAssets:
   - {fileID: 9197481963319205126, guid: 10fd8ecd21465ba41b4256116e87551f, type: 3}
   - {fileID: 9197481963319205126, guid: 2f6d3f4eb43e10b498a603f6a1ae3fb2, type: 3}
   - {fileID: 9197481963319205126, guid: 7c5a3279ae59d9441aa77ab57365d2d6, type: 3}
+  - {fileID: 9197481963319205126, guid: 5315eb04d4eabc947bdf11bf3ce0cb27, type: 3}
