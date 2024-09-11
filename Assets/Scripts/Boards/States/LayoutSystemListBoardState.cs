@@ -53,7 +53,12 @@ namespace Boards.States
         {
             if (listBoard.isVisible && interactable)
             {
-                Debug.Log("Next board not implemented yet.");
+                interactable = false;
+                listBoard.Hide(() =>
+                {
+                    listBoard.onListElementClicked -= OnListElementClicked;
+                    context.state = new LocalizationListBoardState(context);
+                });
             }
         }
 

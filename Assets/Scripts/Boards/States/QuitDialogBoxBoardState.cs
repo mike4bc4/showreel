@@ -7,6 +7,26 @@ using UnityEngine.InputSystem;
 
 namespace Boards.States
 {
+    public class OtherListBoardQuitDialogBoxState : QuitDialogBoxState
+    {
+        public OtherListBoardQuitDialogBoxState(BoardStateContext context) : base(context) { }
+
+        protected override void OnHidden()
+        {
+            context.state = new OtherListBoardState(context);
+        }
+    }
+
+    public class LocalizationListBoardQuitDialogBoxState : QuitDialogBoxState
+    {
+        public LocalizationListBoardQuitDialogBoxState(BoardStateContext context) : base(context) { }
+
+        protected override void OnHidden()
+        {
+            context.state = new LocalizationListBoardState(context);
+        }
+    }
+
     public class LayoutSystemListBoardQuitDialogBoxState : QuitDialogBoxState
     {
         public LayoutSystemListBoardQuitDialogBoxState(BoardStateContext context) : base(context) { }

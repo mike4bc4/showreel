@@ -1,0 +1,32 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
+    <ui:VisualElement name="background" style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(229, 229, 229); display: none;" />
+    <ui:VisualElement name="frame-viewport" style="align-items: center; justify-content: center; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <ui:VisualElement name="frame-container" style="flex-direction: row; width: 1280px;">
+            <ui:VisualElement name="spacer-left" style="flex-grow: 1;" />
+            <Controls.Raw.DiamondFrameVertical color="#333333FF" corner-radius="4" name="frame" unfolded="true">
+                <ui:VisualElement name="padding-box" style="flex-grow: 1; width: 480px; height: 640px; padding-top: 4px; padding-right: 4px; padding-bottom: 4px; padding-left: 4px;">
+                    <ui:VisualElement name="video-container" class="video-container">
+                        <ui:VisualElement name="video-container-1" />
+                        <ui:VisualElement name="video-container-2" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </Controls.Raw.DiamondFrameVertical>
+            <ui:VisualElement name="spacer-right" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="title-viewport" style="flex-grow: 1; align-items: center; justify-content: flex-start; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <Controls.Raw.DiamondTitle name="title" text="Other Projects" style="margin-top: 48px;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="list-viewport" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
+        <ui:VisualElement name="list-container" style="width: 1280px; height: 670px; padding-right: 520px;">
+            <Controls.Raw.ScrollBox scroll-mode="Smooth" name="scroll-box" style="margin-right: 64px; margin-left: -68px;">
+                <ui:VisualElement style="flex-grow: 1;">
+                    <Controls.Raw.ListElement text="The project is primarily focused on the PC platform and is being developed using the Godot Game Engine. At this stage of development, the game enables users to construct buildings, create roads, collect resources, and assign quests. To facilitate the development process, several supplementary tools have been created, including a map editor and a decal drawer, as older versions of Godot did not support decals." header="Arcane Lands" />
+                    <Controls.Raw.ListElement text="This game serves as a showcase for the functionalities of a custom game engine developed from the ground up. While it may appear straightforward, it is, in fact, a sophisticated piece of software that facilitates the integration of custom scripts, the reading of 3D models, textures, and shaders, as well as the implementation of a fundamental collision system. The game engine has been constructed using the JavaScript programming language and the Electron framework." header="Aerobatic Aircraft Game" />
+                    <Controls.Raw.ListElement text="While earlier projects may not showcase my skills effectively and may lack in impressiveness, they nonetheless serve as evidence that my journey in game development commenced more than ten years ago. The River Boat project and vehicle suspension tests were developed using the UnityScript programming language in Unity version 3.0." header="The &quot;Old Ones&quot;" />
+                </ui:VisualElement>
+            </Controls.Raw.ScrollBox>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
+    <ui:VisualElement name="background" style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(229, 229, 229); display: none;" />
+    <ui:VisualElement name="frame-viewport" style="align-items: center; justify-content: center; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <ui:VisualElement name="frame-container" style="flex-direction: row; width: 1280px;">
+            <ui:VisualElement name="spacer-left" style="flex-grow: 1;" />
+            <Controls.Raw.DiamondFrameVertical color="#333333FF" corner-radius="4" name="frame" unfolded="true">
+                <ui:VisualElement name="padding-box" style="flex-grow: 1; width: 480px; height: 640px; padding-top: 4px; padding-right: 4px; padding-bottom: 4px; padding-left: 4px;">
+                    <ui:VisualElement name="video-container" class="video-container">
+                        <ui:VisualElement name="video-container-1" />
+                        <ui:VisualElement name="video-container-2" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </Controls.Raw.DiamondFrameVertical>
+            <ui:VisualElement name="spacer-right" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="title-viewport" style="flex-grow: 1; align-items: center; justify-content: flex-start; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+        <Controls.Raw.DiamondTitle name="title" text="UI Toolkit Localization" style="margin-top: 48px;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="list-viewport" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
+        <ui:VisualElement name="list-container" style="width: 1280px; height: 670px; padding-right: 520px;">
+            <Controls.Raw.ScrollBox scroll-mode="Smooth" name="scroll-box" style="margin-right: 64px; margin-left: -68px;">
+                <ui:VisualElement style="flex-grow: 1;">
+                    <Controls.Raw.ListElement text="The localization process can be administered via a dedicated interface that reveals the localization address for each registered text element, which comprises a localization table and a key. Every text element is stored in a database and is recognized by a unique identifier, allowing users to modify the label&apos;s name or even the complete structure of the Visual Tree, while ensuring that the UI element remains accurately localized." header="Localization Window" />
+                    <Controls.Raw.ListElement text="The plugin prototype facilitates the creation of localization tables. An editable version of these tables is provided in a CSV format, which can be modified using a basic text editor or a more sophisticated spreadsheet application. The original tables can be linked to table assets that monitor changes in the source, subsequently enabling the localization of text elements." header="Localization Tables" />
+                    <Controls.Raw.ListElement text="In Unity 2022, the UI Toolkit lacks localization support; therefore, the proposed solution aims to address this limitation. Users have the ability to associate tables and keys with each text element, regardless of whether the element is part of a custom control or a Visual Tree template. Any modifications made to the localization table will be updated in real-time upon saving the table file." header="Usage" />
+                    <Controls.Raw.ListElement text="Upon the installation of the plugin, an asset for settings and a database are established. At this stage of development, the primary function of the settings asset is to facilitate the selection, addition, modification, and removal of locales. It is important to highlight that any alterations made to the settings asset are instantly visible in the UI Builder window." header="Settings" />
+                </ui:VisualElement>
+            </Controls.Raw.ScrollBox>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
