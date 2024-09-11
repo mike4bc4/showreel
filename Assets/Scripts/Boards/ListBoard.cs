@@ -58,6 +58,18 @@ namespace Boards
         List<MoviePlayer> m_MoviePlayers;
         VideoClip m_QueuedVideoClip;
 
+        public override bool interactable
+        {
+            get => m_Layer.interactable;
+            set => m_Layer.interactable = value;
+        }
+
+        public override bool blocksRaycasts
+        {
+            get => m_Layer.blocksRaycasts;
+            set => m_Layer.blocksRaycasts = value;
+        }
+
         public VisualTreeAsset visualTreeAsset
         {
             get => m_VisualTreeAsset;
@@ -86,11 +98,6 @@ namespace Boards
         {
             get => m_InitialVideoClip;
             set => m_InitialVideoClip = value;
-        }
-
-        public bool isVisible
-        {
-            get => m_AnimationPlayer.animation == m_AnimationPlayer[k_ListElementsShowAnimationName] && m_AnimationPlayer.animationTime == m_AnimationPlayer.duration;
         }
 
         VisualElement frameViewport
@@ -237,6 +244,8 @@ namespace Boards
             m_VideoSwapAnimationPlayer.animation = m_VideoSwapAnimationPlayer[k_VideoSwapAnimationName];
 
             HideImmediate();
+            interactable = false;
+            blocksRaycasts = false;
         }
 
         public override void Show(Action onCompleted = null)
@@ -265,8 +274,6 @@ namespace Boards
             videoContainers[0].style.backgroundImage = Background.FromRenderTexture(m_MoviePlayers[0].renderTexture);
 
             m_Layer.visible = true;
-            m_Layer.interactable = true;
-            m_Layer.blocksRaycasts = true;
             m_Layer.alpha = 1f;
             m_Layer.blurSize = 0f;
 
@@ -284,6 +291,8 @@ namespace Boards
                 listElement.bullet.animationProgress = 1f;
                 listElement.button.style.opacity = 1f;
             }
+
+            m_IsVisible = true;
         }
 
         public override void Hide(Action onCompleted = null)
@@ -301,9 +310,6 @@ namespace Boards
             m_TitleAnimationPlayer.Stop();
 
             m_Layer.visible = false;
-            m_Layer.interactable = false;
-            m_Layer.blocksRaycasts = false;
-
             SetPostProcessingLayersVisible(false);
 
             title.style.opacity = 0f;
@@ -313,6 +319,8 @@ namespace Boards
                 listElement.bullet.visible = false;
                 listElement.button.style.opacity = 0f;
             }
+
+            m_IsVisible = false;
         }
 
         public void SwapVideo(VideoClip videoClip)
@@ -616,10 +624,9 @@ namespace Boards
 
             void OnCompleted()
             {
-                m_Layer.interactable = true;
-                m_Layer.blocksRaycasts = true;
                 SetPostProcessingLayersVisible(false);
                 m_TitleAnimationPlayer.Play();
+                m_IsVisible = true;
                 m_ShowCompletedCallback?.Invoke();
             }
 
@@ -638,16 +645,6 @@ namespace Boards
         KeyframeAnimation CreateHideAnimation()
         {
             var animation = new KeyframeAnimation();
-
-            animation.AddEvent(0, () =>
-            {
-                if (animation.player.isPlayingForward)
-                {
-                    m_Layer.blocksRaycasts = false;
-                    m_Layer.interactable = false;
-                }
-            });
-
             var t1 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(20, Layer.DefaultBlurSize);
@@ -663,6 +660,7 @@ namespace Boards
                     m_TitleAnimationPlayer.Stop();
                     m_Layer.visible = false;
                     SetPostProcessingLayersVisible(false);
+                    m_IsVisible = false;
                     m_HideCompletedCallback?.Invoke();
                 }
             });

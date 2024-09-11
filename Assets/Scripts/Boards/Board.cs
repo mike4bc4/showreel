@@ -11,6 +11,15 @@ namespace Boards
     {
         protected Action m_ShowCompletedCallback;
         protected Action m_HideCompletedCallback;
+        protected bool m_IsVisible;
+
+        public abstract bool interactable { get; set; }
+        public abstract bool blocksRaycasts { get; set; }
+
+        public bool isVisible
+        {
+            get => m_IsVisible;
+        }
 
         public virtual void EarlyInit() { }
         public virtual void Init() { }

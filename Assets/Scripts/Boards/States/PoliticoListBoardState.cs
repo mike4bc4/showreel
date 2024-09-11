@@ -14,15 +14,23 @@ namespace Boards.States
 
         protected override void Init()
         {
-            interactable = true;
-
             listBoard.onListElementClicked += OnListElementClicked;
             listBoard.visualTreeAsset = ListBoardResources.GetVisualTreeAsset("PoliticoListBoard");
 
+            listBoard.blocksRaycasts = true;
             if (!listBoard.isVisible)
             {
+                allowShowSkip = true;
                 listBoard.initialVideoClip = ListBoardResources.GetVideoClip("Building");
-                listBoard.Show();
+                listBoard.Show(() =>
+                {
+                    allowShowSkip = false;
+                    listBoard.interactable = true;
+                });
+            }
+            else
+            {
+                listBoard.interactable = true;
             }
 
             m_VideoClips = new List<VideoClip>()
@@ -37,13 +45,21 @@ namespace Boards.States
 
         public override void Left()
         {
-            if (listBoard.isVisible && interactable)
+            if (listBoard.interactable)
             {
-                interactable = false;
+                listBoard.interactable = false;
                 listBoard.onListElementClicked -= OnListElementClicked;
                 listBoard.Hide(() =>
                 {
-                    BoardManager.GetBoard<InterfaceBoard>().Hide();
+                    listBoard.blocksRaycasts = false;
+                    
+                    var interfaceBoard = BoardManager.GetBoard<InterfaceBoard>();
+                    interfaceBoard.interactable = false;
+                    interfaceBoard.Hide(() =>
+                    {
+                        interfaceBoard.blocksRaycasts = true;
+                    });
+
                     BoardManager.GetBoard<DiamondBarBoard>().Hide(() =>
                     {
                         context.state = new InitialBoardState(context);
@@ -54,12 +70,13 @@ namespace Boards.States
 
         public override void Right()
         {
-            if (listBoard.isVisible && interactable)
+            if (listBoard.interactable)
             {
-                interactable = false;
+                listBoard.interactable = false;
                 listBoard.onListElementClicked -= OnListElementClicked;
                 listBoard.Hide(() =>
                 {
+                    listBoard.blocksRaycasts = false;
                     context.state = new LayoutSystemListBoardState(context);
                 });
             }
@@ -67,8 +84,9 @@ namespace Boards.States
 
         public override void Cancel()
         {
-            if (listBoard.isVisible && interactable)
+            if (listBoard.interactable)
             {
+                listBoard.interactable = false;
                 listBoard.onListElementClicked -= OnListElementClicked;
                 context.state = new PoliticoListBoardQuitDialogBoxState(context);
             }

@@ -8,12 +8,12 @@ namespace Boards.States
     public abstract class BaseListBoardState : BoardState
     {
         ListBoard m_ListBoard;
-        bool m_Interactable;
+        bool m_AllowShowSkip;
 
-        protected bool interactable
+        protected bool allowShowSkip
         {
-            get => m_Interactable;
-            set => m_Interactable = value;
+            get => m_AllowShowSkip;
+            set => m_AllowShowSkip = value;
         }
 
         protected ListBoard listBoard
@@ -33,8 +33,11 @@ namespace Boards.States
 
         public override void Any()
         {
-            if (!listBoard.isVisible && interactable)
+            if (allowShowSkip)
             {
+                allowShowSkip = false;
+                listBoard.interactable = true;
+                listBoard.blocksRaycasts = true;
                 listBoard.ShowImmediate();
                 BoardManager.InputManager.cancelAction.GetHelper().isSuppressedThisFrame = true;
             }

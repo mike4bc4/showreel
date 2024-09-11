@@ -108,9 +108,15 @@ public class DiamondBarBoard : Board
 
     int m_TargetActiveIndex;
 
-    public bool isVisible
+    public override bool interactable
     {
-        get => m_ShowHideAnimationPlayer.animationTime == m_ShowHideAnimationPlayer.duration;
+        get => m_Layer.interactable;
+        set => m_Layer.interactable = value;
+    }
+    public override bool blocksRaycasts
+    {
+        get => m_Layer.blocksRaycasts;
+        set => m_Layer.blocksRaycasts = value;
     }
 
     public int size
@@ -179,8 +185,6 @@ public class DiamondBarBoard : Board
         m_Layer = LayerManager.CreateLayer("DiamondBar");
         m_Layer.AddTemplateFromVisualTreeAsset(m_DiamondBarBoardVisualTreeAsset);
         m_Layer.displaySortOrder = k_DisplaySortOrder;
-        m_Layer.interactable = false;
-        m_Layer.blocksRaycasts = false;
 
         m_DiamondBar = m_Layer.rootVisualElement.Q<DiamondBar>();
 
@@ -196,6 +200,8 @@ public class DiamondBarBoard : Board
         activeIndex = -1;
 
         HideImmediate();
+        interactable = false;
+        blocksRaycasts = false;
     }
 
     public override void Show(Action onCompleted = null)
@@ -212,6 +218,7 @@ public class DiamondBarBoard : Board
         m_Layer.visible = true;
         m_Layer.alpha = 1f;
         m_Layer.blurSize = 0f;
+        m_IsVisible = true;
     }
 
     public override void Hide(Action onCompleted = null)
@@ -225,6 +232,7 @@ public class DiamondBarBoard : Board
     {
         m_ShowHideAnimationPlayer.Stop();
         m_Layer.visible = false;
+        m_IsVisible = false;
     }
 
     KeyframeAnimation CreateShowHideAnimation()
@@ -240,6 +248,7 @@ public class DiamondBarBoard : Board
             else
             {
                 m_Layer.visible = false;
+                m_IsVisible = false;
                 m_HideCompletedCallback?.Invoke();
             }
         });
@@ -256,6 +265,7 @@ public class DiamondBarBoard : Board
         {
             if (animation.player.isPlayingForward)
             {
+                m_IsVisible = true;
                 m_ShowCompletedCallback?.Invoke();
             }
         });

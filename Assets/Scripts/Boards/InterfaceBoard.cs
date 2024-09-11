@@ -30,8 +30,16 @@ namespace Boards
         Button m_InfoButton;
         Button m_QuitButton;
 
-        public bool isVisible{
-            get => m_ShowHideAnimationPlayer.animationTime == m_ShowHideAnimationPlayer.duration;
+        public override bool interactable
+        {
+            get => m_Layer.interactable;
+            set => m_Layer.interactable = value;
+        }
+
+        public override bool blocksRaycasts
+        {
+            get => m_Layer.blocksRaycasts;
+            set => m_Layer.blocksRaycasts = value;
         }
 
         public override void Init()
@@ -45,6 +53,8 @@ namespace Boards
             m_Layer.displaySortOrder = DisplaySortOrder;
 
             HideImmediate();
+            interactable = false;
+            blocksRaycasts = false;
         }
 
         public override void Show(Action onCompleted = null)
@@ -59,10 +69,11 @@ namespace Boards
             m_ShowHideAnimationPlayer.Stop();
             m_ShowHideAnimationPlayer.FastForward();
             m_Layer.visible = true;
-            m_Layer.blocksRaycasts = true;
-            m_Layer.interactable = true;
+            // m_Layer.blocksRaycasts = true;
+            // m_Layer.interactable = true;
             m_Layer.alpha = 1f;
             m_Layer.blurSize = 0f;
+            m_IsVisible = true;
         }
 
         public override void Hide(Action onCompleted = null)
@@ -76,8 +87,7 @@ namespace Boards
         {
             m_ShowHideAnimationPlayer.Stop();
             m_Layer.visible = false;
-            m_Layer.blocksRaycasts = false;
-            m_Layer.interactable = false;
+            m_IsVisible = false;
         }
 
         KeyframeAnimation CreateShowHideAnimation()
@@ -88,12 +98,10 @@ namespace Boards
                 if (animation.player.isPlayingForward)
                 {
                     m_Layer.visible = true;
-                    m_Layer.blocksRaycasts = true;
                 }
                 else
                 {
-                    m_Layer.visible = false;
-                    m_Layer.blocksRaycasts = false;
+                    m_IsVisible = false;
                     m_HideCompletedCallback?.Invoke();
                 }
             });
@@ -110,12 +118,8 @@ namespace Boards
             {
                 if (animation.player.isPlayingForward)
                 {
-                    m_Layer.interactable = true;
+                    m_IsVisible = true;
                     m_ShowCompletedCallback?.Invoke();
-                }
-                else
-                {
-                    m_Layer.interactable = false;
                 }
             });
 

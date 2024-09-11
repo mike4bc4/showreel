@@ -47,25 +47,25 @@ namespace Boards.States
         }
     }
 
-    public class ListBoard2QuitDialogBoxState : QuitDialogBoxState
-    {
-        public ListBoard2QuitDialogBoxState(BoardStateContext context) : base(context) { }
+    // public class ListBoard2QuitDialogBoxState : QuitDialogBoxState
+    // {
+    //     public ListBoard2QuitDialogBoxState(BoardStateContext context) : base(context) { }
 
-        protected override void OnHidden()
-        {
-            context.state = new ListBoard2State(context);
-        }
-    }
+    //     protected override void OnHidden()
+    //     {
+    //         context.state = new ListBoard2State(context);
+    //     }
+    // }
 
-    public class ListBoardQuitDialogBoxState : QuitDialogBoxState
-    {
-        public ListBoardQuitDialogBoxState(BoardStateContext context) : base(context) { }
+    // public class ListBoardQuitDialogBoxState : QuitDialogBoxState
+    // {
+    //     public ListBoardQuitDialogBoxState(BoardStateContext context) : base(context) { }
 
-        protected override void OnHidden()
-        {
-            context.state = new ListBoard1State(context);
-        }
-    }
+    //     protected override void OnHidden()
+    //     {
+    //         context.state = new ListBoard1State(context);
+    //     }
+    // }
 
     public class QuitDialogBoxFromInitialBoardState : QuitDialogBoxState
     {

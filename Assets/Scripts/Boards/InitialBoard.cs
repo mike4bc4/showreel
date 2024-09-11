@@ -32,9 +32,15 @@ namespace Boards
         Subtitle m_Subtitle;
         DialogBox m_QuitDialogBox;
 
-        public bool isVisible
+        public override bool interactable
         {
-            get => m_AnimationPlayer.animation == m_AnimationPlayer[k_ShowAnimationName] && m_AnimationPlayer.animationTime == m_AnimationPlayer.duration;
+            get => m_Layer.interactable;
+            set => m_Layer.interactable = value;
+        }
+        public override bool blocksRaycasts
+        {
+            get => m_Layer.blocksRaycasts;
+            set => m_Layer.blocksRaycasts = value;
         }
 
         public override void Init()
@@ -42,8 +48,6 @@ namespace Boards
             m_Layer = LayerManager.CreateLayer("Initial");
             m_Layer.displaySortOrder = DisplaySortOrder;
             m_Layer.AddTemplateFromVisualTreeAsset(m_InitialBoardVisualTreeAsset);
-            m_Layer.blocksRaycasts = false;
-            m_Layer.interactable = false;
 
             m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer("Initial");
             m_PostProcessingLayer.displaySortOrder = DisplaySortOrder + 1;
@@ -62,6 +66,8 @@ namespace Boards
             m_SubtitleAnimationPlayer.animation = m_SubtitleAnimationPlayer[k_SubtitleAnimationName];
 
             HideImmediate();
+            interactable = false;
+            blocksRaycasts = false;
         }
 
         public override void Show(Action onCompleted = null)
@@ -90,6 +96,7 @@ namespace Boards
 
             m_SubtitleAnimationPlayer.Stop();
             m_SubtitleAnimationPlayer.Play();
+            m_IsVisible = true;
         }
 
         public override void Hide(Action onCompleted = null)
@@ -110,6 +117,7 @@ namespace Boards
 
             m_Layer.visible = false;
             m_PostProcessingLayer.visible = false;
+            m_IsVisible = false;
         }
 
         KeyframeAnimation CreateShowAnimation()
@@ -177,6 +185,7 @@ namespace Boards
             {
                 m_PostProcessingLayer.visible = false;
                 m_SubtitleAnimationPlayer.Play();
+                m_IsVisible = true;
                 m_ShowCompletedCallback?.Invoke();
             });
 
@@ -213,6 +222,7 @@ namespace Boards
 
                 m_Layer.visible = false;
                 m_PostProcessingLayer.visible = false;
+                m_IsVisible = false;
                 m_HideCompletedCallback?.Invoke();
             });
 

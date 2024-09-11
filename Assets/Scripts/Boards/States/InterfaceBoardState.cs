@@ -15,10 +15,20 @@ namespace Boards.States
         public InterfaceBoardState(BoardStateContext context) : base(context)
         {
             m_InterfaceBoard = BoardManager.GetBoard<InterfaceBoard>();
-            m_InterfaceBoard.Show(() =>
+
+            m_InterfaceBoard.blocksRaycasts = true;
+            if (!m_InterfaceBoard.isVisible)
             {
-                m_DiamondBarBoard.Show(OnDiamondBarBoardShowCompleted);
-            });
+                m_InterfaceBoard.Show(() =>
+                {
+                    m_InterfaceBoard.interactable = true;
+                    m_DiamondBarBoard.Show(OnDiamondBarBoardShowCompleted);
+                });
+            }
+            else
+            {
+                m_InterfaceBoard.interactable = true;
+            }
 
             m_DiamondBarBoard = BoardManager.GetBoard<DiamondBarBoard>();
         }
