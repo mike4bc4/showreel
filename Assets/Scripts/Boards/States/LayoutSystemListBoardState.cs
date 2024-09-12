@@ -12,25 +12,27 @@ namespace Boards.States
 
         public LayoutSystemListBoardState(BoardStateContext context) : base(context) { }
 
-        protected override void Init()
+        public override void Init()
         {
             listBoard.onListElementClicked += OnListElementClicked;
             listBoard.visualTreeAsset = ListBoardResources.GetVisualTreeAsset("LayoutSystemListBoard");
 
             listBoard.blocksRaycasts = true;
-            if (!listBoard.isVisible)
+            switch (context.previousState)
             {
-                allowShowSkip = true;
-                listBoard.initialVideoClip = ListBoardResources.GetVideoClip("Component");
-                listBoard.Show(() =>
-                {
-                    allowShowSkip = false;
+                case PoliticoListBoardState:
+                case LocalizationListBoardState:
+                    allowShowSkip = true;
+                    listBoard.initialVideoClip = ListBoardResources.GetVideoClip("Component");
+                    listBoard.Show(() =>
+                    {
+                        allowShowSkip = false;
+                        listBoard.interactable = true;
+                    });
+                    break;
+                case QuitDialogBoxState:
                     listBoard.interactable = true;
-                });
-            }
-            else
-            {
-                listBoard.interactable = true;
+                    break;
             }
 
             m_VideoClips = new List<VideoClip>()
@@ -78,7 +80,7 @@ namespace Boards.States
             {
                 listBoard.blocksRaycasts = false;
                 listBoard.onListElementClicked -= OnListElementClicked;
-                context.state = new LayoutSystemListBoardQuitDialogBoxState(context);
+                context.state = new QuitDialogBoxState(context);
             }
         }
 

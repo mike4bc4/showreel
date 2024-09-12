@@ -15,7 +15,9 @@ namespace Boards.States
         DialogBox m_DialogBox;
         bool m_Interactable;
 
-        public WelcomeDialogBoxBoardState(BoardStateContext context) : base(context)
+        public WelcomeDialogBoxBoardState(BoardStateContext context) : base(context) { }
+
+        public override void Init()
         {
             m_DialogBox = DialogBox.CreateWelcomeDialogBox();
             m_DialogBox.displaySortOrder = DisplaySortOrder;
@@ -34,6 +36,7 @@ namespace Boards.States
             else if (m_DialogBox.isHidden)
             {
                 m_DialogBox.Dispose();
+                BoardManager.GetBoard<InterfaceBoard>().interactable = true;
                 context.state = new PoliticoListBoardState(context);
             }
         }
@@ -49,7 +52,6 @@ namespace Boards.States
 
         public override void Cancel()
         {
-
             OnConfirmOrCancel();
         }
 

@@ -7,82 +7,14 @@ using UnityEngine.InputSystem;
 
 namespace Boards.States
 {
-    public class OtherListBoardQuitDialogBoxState : QuitDialogBoxState
-    {
-        public OtherListBoardQuitDialogBoxState(BoardStateContext context) : base(context) { }
-
-        protected override void OnHidden()
-        {
-            context.state = new OtherListBoardState(context);
-        }
-    }
-
-    public class LocalizationListBoardQuitDialogBoxState : QuitDialogBoxState
-    {
-        public LocalizationListBoardQuitDialogBoxState(BoardStateContext context) : base(context) { }
-
-        protected override void OnHidden()
-        {
-            context.state = new LocalizationListBoardState(context);
-        }
-    }
-
-    public class LayoutSystemListBoardQuitDialogBoxState : QuitDialogBoxState
-    {
-        public LayoutSystemListBoardQuitDialogBoxState(BoardStateContext context) : base(context) { }
-
-        protected override void OnHidden()
-        {
-            context.state = new LayoutSystemListBoardState(context);
-        }
-    }
-
-    public class PoliticoListBoardQuitDialogBoxState : QuitDialogBoxState
-    {
-        public PoliticoListBoardQuitDialogBoxState(BoardStateContext context) : base(context) { }
-
-        protected override void OnHidden()
-        {
-            context.state = new PoliticoListBoardState(context);
-        }
-    }
-
-    // public class ListBoard2QuitDialogBoxState : QuitDialogBoxState
-    // {
-    //     public ListBoard2QuitDialogBoxState(BoardStateContext context) : base(context) { }
-
-    //     protected override void OnHidden()
-    //     {
-    //         context.state = new ListBoard2State(context);
-    //     }
-    // }
-
-    // public class ListBoardQuitDialogBoxState : QuitDialogBoxState
-    // {
-    //     public ListBoardQuitDialogBoxState(BoardStateContext context) : base(context) { }
-
-    //     protected override void OnHidden()
-    //     {
-    //         context.state = new ListBoard1State(context);
-    //     }
-    // }
-
-    public class QuitDialogBoxFromInitialBoardState : QuitDialogBoxState
-    {
-        public QuitDialogBoxFromInitialBoardState(BoardStateContext context) : base(context) { }
-
-        protected override void OnHidden()
-        {
-            context.state = new InitialBoardState(context);
-        }
-    }
-
-    public abstract class QuitDialogBoxState : BoardState
+    public class QuitDialogBoxState : BoardState
     {
         const int k_DisplaySortOrder = 2000;
         DialogBox m_DialogBox;
 
-        public QuitDialogBoxState(BoardStateContext context) : base(context)
+        public QuitDialogBoxState(BoardStateContext context) : base(context) { }
+
+        public override void Init()
         {
             m_DialogBox = DialogBox.CreateQuitDialogBox();
             m_DialogBox.displaySortOrder = k_DisplaySortOrder;
@@ -98,11 +30,26 @@ namespace Boards.States
             if (m_DialogBox.isHidden)
             {
                 m_DialogBox.Dispose();
-                OnHidden();
+                switch (context.previousState)
+                {
+                    case InitialBoardState:
+                        context.state = new InitialBoardState(context);
+                        break;
+                    case PoliticoListBoardState:
+                        context.state = new PoliticoListBoardState(context);
+                        break;
+                    case LayoutSystemListBoardState:
+                        context.state = new LayoutSystemListBoardState(context);
+                        break;
+                    case LocalizationListBoardState:
+                        context.state = new LocalizationListBoardState(context);
+                        break;
+                    case OtherListBoardState:
+                        context.state = new OtherListBoardState(context);
+                        break;
+                }
             }
         }
-
-        protected abstract void OnHidden();
 
         public override void Cancel()
         {

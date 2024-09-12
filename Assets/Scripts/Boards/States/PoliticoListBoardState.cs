@@ -12,25 +12,27 @@ namespace Boards.States
 
         public PoliticoListBoardState(BoardStateContext context) : base(context) { }
 
-        protected override void Init()
+        public override void Init()
         {
             listBoard.onListElementClicked += OnListElementClicked;
             listBoard.visualTreeAsset = ListBoardResources.GetVisualTreeAsset("PoliticoListBoard");
 
             listBoard.blocksRaycasts = true;
-            if (!listBoard.isVisible)
+            switch (context.previousState)
             {
-                allowShowSkip = true;
-                listBoard.initialVideoClip = ListBoardResources.GetVideoClip("Building");
-                listBoard.Show(() =>
-                {
-                    allowShowSkip = false;
+                case WelcomeDialogBoxBoardState:
+                case LayoutSystemListBoardState:
+                    allowShowSkip = true;
+                    listBoard.initialVideoClip = ListBoardResources.GetVideoClip("Building");
+                    listBoard.Show(() =>
+                    {
+                        allowShowSkip = false;
+                        listBoard.interactable = true;
+                    });
+                    break;
+                case QuitDialogBoxState:
                     listBoard.interactable = true;
-                });
-            }
-            else
-            {
-                listBoard.interactable = true;
+                    break;
             }
 
             m_VideoClips = new List<VideoClip>()
@@ -52,18 +54,8 @@ namespace Boards.States
                 listBoard.Hide(() =>
                 {
                     listBoard.blocksRaycasts = false;
-                    
-                    var interfaceBoard = BoardManager.GetBoard<InterfaceBoard>();
-                    interfaceBoard.interactable = false;
-                    interfaceBoard.Hide(() =>
-                    {
-                        interfaceBoard.blocksRaycasts = true;
-                    });
-
-                    BoardManager.GetBoard<DiamondBarBoard>().Hide(() =>
-                    {
-                        context.state = new InitialBoardState(context);
-                    });
+                    BoardManager.GetBoard<InterfaceBoard>().interactable = false;
+                    context.state = new DiamondBarBoardState(context);
                 });
             }
         }
@@ -88,7 +80,7 @@ namespace Boards.States
             {
                 listBoard.interactable = false;
                 listBoard.onListElementClicked -= OnListElementClicked;
-                context.state = new PoliticoListBoardQuitDialogBoxState(context);
+                context.state = new QuitDialogBoxState(context);
             }
         }
 

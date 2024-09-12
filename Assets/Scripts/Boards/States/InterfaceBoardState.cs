@@ -10,45 +10,37 @@ namespace Boards.States
     public class InterfaceBoardState : BoardState
     {
         InterfaceBoard m_InterfaceBoard;
-        DiamondBarBoard m_DiamondBarBoard;
 
-        public InterfaceBoardState(BoardStateContext context) : base(context)
+        public InterfaceBoardState(BoardStateContext context) : base(context) { }
+
+        public override void Init()
         {
             m_InterfaceBoard = BoardManager.GetBoard<InterfaceBoard>();
-
+            m_InterfaceBoard.interactable = false;
             m_InterfaceBoard.blocksRaycasts = true;
-            if (!m_InterfaceBoard.isVisible)
+            switch (context.previousState)
             {
-                m_InterfaceBoard.Show(() =>
-                {
-                    m_InterfaceBoard.interactable = true;
-                    m_DiamondBarBoard.Show(OnDiamondBarBoardShowCompleted);
-                });
+                case InitialBoardState:
+                    m_InterfaceBoard.Show(() => context.state = new DiamondBarBoardState(context));
+                    break;
+                case DiamondBarBoardState:
+                    m_InterfaceBoard.Hide(() => context.state = new InitialBoardState(context));
+                    break;
             }
-            else
-            {
-                m_InterfaceBoard.interactable = true;
-            }
-
-            m_DiamondBarBoard = BoardManager.GetBoard<DiamondBarBoard>();
-        }
-
-        void OnDiamondBarBoardShowCompleted()
-        {
-            context.state = new WelcomeDialogBoxBoardState(context);
         }
 
         public override void Any()
         {
-            if (!m_InterfaceBoard.isVisible)
+            switch (context.previousState)
             {
-                m_InterfaceBoard.ShowImmediate();
-                m_DiamondBarBoard.Show(OnDiamondBarBoardShowCompleted);
-            }
-            else if (!m_DiamondBarBoard.isVisible)
-            {
-                m_DiamondBarBoard.ShowImmediate();
-                OnDiamondBarBoardShowCompleted();
+                case InitialBoardState:
+                    m_InterfaceBoard.ShowImmediate();
+                    context.state = new DiamondBarBoardState(context);
+                    break;
+                case DiamondBarBoardState:
+                    m_InterfaceBoard.HideImmediate();
+                    context.state = new InitialBoardState(context);
+                    break;
             }
         }
     }

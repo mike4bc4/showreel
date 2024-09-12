@@ -8,11 +8,25 @@ namespace Boards.States
     public class BoardStateContext
     {
         BoardState m_State;
+        BoardState m_PreviousState;
+
+        public BoardState previousState
+        {
+            get
+            {
+                return m_PreviousState;
+            }
+        }
 
         public BoardState state
         {
             get => m_State;
-            set => m_State = value;
+            set
+            {
+                m_PreviousState = m_State;
+                m_State = value;
+                m_State?.Init();
+            }
         }
 
         public void Cancel()

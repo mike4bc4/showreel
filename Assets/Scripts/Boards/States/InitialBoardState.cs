@@ -14,21 +14,24 @@ namespace Boards.States
     public class InitialBoardState : BoardState
     {
         InitialBoard m_InitialBoard;
-        bool m_Interactable;
 
-        public InitialBoardState(BoardStateContext context) : base(context)
+        public InitialBoardState(BoardStateContext context) : base(context) { }
+
+        public override void Init()
         {
-            m_Interactable = true;
             m_InitialBoard = BoardManager.GetBoard<InitialBoard>();
-            if (!m_InitialBoard.isVisible)
+            m_InitialBoard.blocksRaycasts = false;
+            m_InitialBoard.interactable = true;
+
+            if (context.previousState is not QuitDialogBoxState)
             {
-                m_InitialBoard.Show(null);
+                m_InitialBoard.Show();
             }
         }
 
         public override void Any()
         {
-            if (!m_Interactable)
+            if (!m_InitialBoard.interactable)
             {
                 return;
             }
@@ -40,8 +43,11 @@ namespace Boards.States
             }
             else if (!BoardManager.InputManager.cancelAction.WasPerformedThisFrame())
             {
-                m_Interactable = false;
-                m_InitialBoard.Hide(() => context.state = new InterfaceBoardState(context));
+                m_InitialBoard.Hide(() =>
+                {
+                    m_InitialBoard.interactable = false;
+                    context.state = new InterfaceBoardState(context);
+                });
             }
         }
 
@@ -49,7 +55,7 @@ namespace Boards.States
         {
             if (m_InitialBoard.isVisible)
             {
-                context.state = new QuitDialogBoxFromInitialBoardState(context);
+                context.state = new QuitDialogBoxState(context);
             }
         }
     }

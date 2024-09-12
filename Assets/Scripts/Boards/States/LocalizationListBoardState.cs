@@ -12,25 +12,27 @@ namespace Boards.States
 
         public LocalizationListBoardState(BoardStateContext context) : base(context) { }
 
-        protected override void Init()
+        public override void Init()
         {
             listBoard.onListElementClicked += OnListElementClicked;
             listBoard.visualTreeAsset = ListBoardResources.GetVisualTreeAsset("LocalizationListBoard");
 
             listBoard.blocksRaycasts = true;
-            if (!listBoard.isVisible)
+            switch (context.previousState)
             {
-                allowShowSkip = true;
-                listBoard.initialVideoClip = ListBoardResources.GetVideoClip("LocalizationWindow");
-                listBoard.Show(() =>
-                {
-                    allowShowSkip = false;
+                case LayoutSystemListBoardState:
+                case OtherListBoardState:
+                    allowShowSkip = true;
+                    listBoard.initialVideoClip = ListBoardResources.GetVideoClip("LocalizationWindow");
+                    listBoard.Show(() =>
+                    {
+                        allowShowSkip = false;
+                        listBoard.interactable = true;
+                    });
+                    break;
+                case QuitDialogBoxState:
                     listBoard.interactable = true;
-                });
-            }
-            else
-            {
-                listBoard.interactable = true;
+                    break;
             }
 
             m_VideoClips = new List<VideoClip>()
@@ -76,7 +78,7 @@ namespace Boards.States
             {
                 listBoard.interactable = false;
                 listBoard.onListElementClicked -= OnListElementClicked;
-                context.state = new LocalizationListBoardQuitDialogBoxState(context);
+                context.state = new QuitDialogBoxState(context);
             }
         }
 
