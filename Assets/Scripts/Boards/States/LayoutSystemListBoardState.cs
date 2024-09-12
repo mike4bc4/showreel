@@ -24,6 +24,7 @@ namespace Boards.States
                 case LocalizationListBoardState:
                     allowShowSkip = true;
                     listBoard.initialVideoClip = ListBoardResources.GetVideoClip("Component");
+                    diamondBarBoard.activeIndex = 1;
                     listBoard.Show(() =>
                     {
                         allowShowSkip = false;

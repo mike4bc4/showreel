@@ -24,6 +24,7 @@ namespace Boards.States
                 case LayoutSystemListBoardState:
                     allowShowSkip = true;
                     listBoard.initialVideoClip = ListBoardResources.GetVideoClip("Building");
+                    diamondBarBoard.activeIndex = 0;
                     listBoard.Show(() =>
                     {
                         allowShowSkip = false;

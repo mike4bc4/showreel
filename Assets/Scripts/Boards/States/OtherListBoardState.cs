@@ -23,6 +23,7 @@ namespace Boards.States
                 case LocalizationListBoardState:
                     allowShowSkip = true;
                     listBoard.initialVideoClip = ListBoardResources.GetVideoClip("ArcaneLands");
+                    diamondBarBoard.activeIndex = 3;
                     listBoard.Show(() =>
                     {
                         allowShowSkip = false;

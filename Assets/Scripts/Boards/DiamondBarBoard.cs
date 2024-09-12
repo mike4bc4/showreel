@@ -196,8 +196,8 @@ public class DiamondBarBoard : Board
         m_ActiveIndexAnimationPlayer.AddAnimation(CreateActiveIndexAnimation(), k_ActiveIndexAnimationName);
         m_ActiveIndexAnimationPlayer.animation = m_ActiveIndexAnimationPlayer[k_ActiveIndexAnimationName];
 
-        size = DiamondBar.DefaultSize;
-        activeIndex = -1;
+        size = m_DiamondBar.size;
+        activeIndex = m_DiamondBar.activeIndex;
 
         HideImmediate();
         interactable = false;

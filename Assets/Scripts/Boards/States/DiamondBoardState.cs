@@ -17,6 +17,7 @@ namespace Boards.States
             m_DiamondBarBoard = BoardManager.GetBoard<DiamondBarBoard>();
             m_DiamondBarBoard.interactable = false;
             m_DiamondBarBoard.blocksRaycasts = false;
+            m_DiamondBarBoard.activeIndex = -1;
             switch (context.previousState)
             {
                 case InterfaceBoardState:

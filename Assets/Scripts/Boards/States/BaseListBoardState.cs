@@ -8,6 +8,7 @@ namespace Boards.States
     public abstract class BaseListBoardState : BoardState
     {
         ListBoard m_ListBoard;
+        DiamondBarBoard m_DiamondBarBoard;
         bool m_AllowShowSkip;
 
         protected bool allowShowSkip
@@ -26,6 +27,19 @@ namespace Boards.States
                 }
 
                 return m_ListBoard;
+            }
+        }
+
+        protected DiamondBarBoard diamondBarBoard
+        {
+            get
+            {
+                if (m_DiamondBarBoard == null)
+                {
+                    m_DiamondBarBoard = BoardManager.GetBoard<DiamondBarBoard>();
+                }
+
+                return m_DiamondBarBoard;
             }
         }
 
