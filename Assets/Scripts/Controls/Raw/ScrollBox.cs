@@ -46,7 +46,6 @@ namespace Controls.Raw
         VisualElement m_ContentContainer;
         ScrollBarVertical m_ScrollBar;
         int m_LineHeight;
-        float m_NormalizedOffset;
         IVisualElementScheduledItem m_ScrollBarAnimation;
         float m_TargetOffset;
         ScrollMode m_ScrollMode;
@@ -98,12 +97,11 @@ namespace Controls.Raw
 
         public float normalizedOffset
         {
-            get => m_NormalizedOffset;
+            get => -contentContainer.transform.position.y / maxOffset;
             set
             {
-                m_NormalizedOffset = Mathf.Clamp01(value);
-                var position = new Vector3(0f, m_NormalizedOffset * maxOffset, 0f);
-                contentContainer.transform.position = -position;
+                m_ScrollBar.normalizedOffset = value;
+                m_TargetOffset = m_ScrollBar.normalizedOffset;
             }
         }
 
@@ -182,9 +180,15 @@ namespace Controls.Raw
             }
         }
 
+        void UpdateContentContainerPosition()
+        {
+            var offset = Mathf.Clamp01(m_ScrollBar.normalizedOffset) * maxOffset;
+            contentContainer.transform.position = new Vector3(0f, -offset, 0f);
+        }
+
         void OnScrollBarOffsetChanged()
         {
-            normalizedOffset = m_ScrollBar.normalizedOffset;
+            UpdateContentContainerPosition();
             if (m_ScrollBar.pointerCaptured)
             {
                 m_TargetOffset = normalizedOffset;
@@ -193,11 +197,11 @@ namespace Controls.Raw
 
         void OnGeometryChangedEvent(GeometryChangedEvent evt)
         {
-            normalizedOffset = m_ScrollBar.normalizedOffset;
-            UpdateScrollBar();
+            UpdateContentContainerPosition();
+            UpdateScrollBarDisplay();
         }
 
-        void UpdateScrollBar()
+        void UpdateScrollBarDisplay()
         {
             m_ScrollBar.SetEnabled(maxOffset > 0);
             m_ScrollBar.style.display = maxOffset > 0 ? DisplayStyle.Flex : DisplayStyle.None;

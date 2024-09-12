@@ -314,6 +314,7 @@ namespace Boards
 
             title.style.opacity = 0f;
             scrollBox.style.opacity = 0f;
+            scrollBox.normalizedOffset = 0f;
             foreach (var listElement in listElements)
             {
                 listElement.bullet.visible = false;
@@ -657,6 +658,7 @@ namespace Boards
             {
                 if (animation.player.isPlayingForward)
                 {
+                    m_ScrollBox.normalizedOffset = 0f;
                     m_TitleAnimationPlayer.Stop();
                     m_Layer.visible = false;
                     SetPostProcessingLayersVisible(false);
