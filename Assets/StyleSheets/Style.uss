@@ -1,4 +1,5 @@
 :root {
+    --font-size-default: 24px;
     --font-size-header: 42px;
     --font-size-button: 36px;
     font-size: 24px;
@@ -438,6 +439,13 @@
     width: 64px;
 }
 
+.interface__settings {
+    background-image: url("project://database/Assets/Textures/Gear.png?fileID=2800000&guid=ca957b6d9c3509c48b05cda6514a557e&type=3#Gear");
+    height: 64px;
+    margin-right: 8px;
+    width: 64px;
+}
+
 .interface__exit {
     background-image: url("project://database/Assets/Textures/Exit.png?fileID=2800000&guid=4eaf1236cad31d342988f912510af0be&type=3#Exit");
     width: 64px;
@@ -794,4 +802,161 @@
     top: 0;
     bottom: 0;
     right: 0;
+}
+
+.select {
+    flex-direction: row;
+    align-items: center;
+}
+
+.select__label {
+    margin-right: 4px;
+}
+
+.select__option-container {
+}
+
+.select__scroll-box-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.select__scroll-box-container {
+    padding-top: 8px;
+    padding-right: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    background-image: url("project://database/Assets/Textures/Shadow.png?fileID=2800000&guid=e531b988d4f50f64faddbe8662b6731f&type=3#Shadow");
+    -unity-slice-left: 10;
+    -unity-slice-top: 10;
+    -unity-slice-right: 10;
+    -unity-slice-bottom: 10;
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0.1);
+    align-self: flex-start;
+    -unity-slice-scale: 1px;
+    left: -8px;
+    top: -4px;
+}
+
+.select__scroll-box {
+    height: 178px;
+    align-self: flex-start;
+    padding: 8px;
+    border-width: 1px;
+    border-color: var(--color-secondary);
+    background-color: var(--color-background);
+}
+
+.select__scroll-box-content-wrapper {
+    margin-right: 4px;
+}
+
+.select__button {
+    background-color: transparent;
+    transition-property: background-color, scale;
+    transition-duration: 0.2s, 0.1s;
+}
+
+.select__button:hover {
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+.select__button:active {
+    scale: 0.9 0.9;
+}
+
+.select__button > #border {
+    background-color: var(--color-primary);
+    height: 2px;
+    scale: 0 1;
+    transition-property: scale;
+    transition-duration: 0.2s;
+    transform-origin: left;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.select__button:hover > #border {
+    scale: 1 1;
+}
+
+.select__button > #label {
+    transition-property: color;
+    transition-duration: 0.2s;
+    color: var(--color-secondary);
+    margin-left: 24px;
+    margin-right: 24px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.select__button:hover > #label {
+    color: var(--color-primary);
+}
+
+.select__option-button {
+    background-color: transparent;
+    transition-property: background-color, scale;
+    transition-duration: 0.2s, 0.1s;
+    flex-direction: row;
+}
+
+.select__option-button:hover {
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+.select__option-button:active {
+    scale: 0.9 0.9;
+}
+
+.select__option-button > #border {
+    transition-property: left, right, background-color;
+    transition-duration: 0.2s, 0.2s, 0.2s;
+    background-color: var(--color-secondary);
+    left: 8px;
+    right: 8px;
+    bottom: 0;
+    height: 2px;
+    position: absolute;
+}
+
+.select__option-button:hover > #border {
+    background-color: var(--color-primary);
+    left: 0;
+    right: 0;
+}
+
+.select__option-button > #label {
+    transition-property: color;
+    transition-duration: 0.2s;
+    color: var(--color-secondary);
+    margin-left: 24px;
+    margin-right: 0;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.select__option-button:hover > #label {
+    color: var(--color-primary);
+}
+
+.select__option-button > #icon {
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.2s;
+    background-image: url("project://database/Assets/Textures/DropdownArrow.png?fileID=2800000&guid=8c08fcda6ce165d4e9d1788ef8675ca2&type=3#DropdownArrow");
+    -unity-background-image-tint-color: var(--color-secondary);
+    width: 16px;
+    margin-right: 24px;
+    background-position: right center;
+    -unity-background-scale-mode: scale-to-fit;
+    margin-left: 12px;
+}
+
+.select__option-button:hover > #icon {
+    -unity-background-image-tint-color: var(--color-primary);
 }

@@ -34,5 +34,44 @@ namespace Extensions
         {
             return ve?.panel != null ? (GameObject)s_SelectableGameObjectProperty.GetValue(ve.panel) : null;
         }
+
+        public static VisualElement GetRootVisualElement(this VisualElement ve)
+        {
+            if (ve.panel == null || ve.hierarchy.parent == null)
+            {
+                return null;
+            }
+
+            if (ve.panel.contextType == ContextType.Player)
+            {
+                var parent = ve.hierarchy.parent;
+                while (true)
+                {
+                    if (parent.hierarchy.parent == null)
+                    {
+                        return parent;
+                    }
+
+                    parent = parent.hierarchy.parent;
+                }
+            }
+            else
+            {
+                var parent = ve.hierarchy.parent;
+                while (true)
+                {
+                    if (parent == null)
+                    {
+                        return null;
+                    }
+                    else if (parent.name == "document")
+                    {
+                        return parent;
+                    }
+
+                    parent = parent.hierarchy.parent;
+                }
+            }
+        }
     }
 }
