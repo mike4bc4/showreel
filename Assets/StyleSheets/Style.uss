@@ -2,6 +2,7 @@
     --font-size-default: 24px;
     --font-size-header: 42px;
     --font-size-button: 36px;
+    --font-size-h3: 32px;
     font-size: 24px;
     --color-primary: rgb(51, 51, 51);
     --color-secondary: rgb(128, 128, 128);
@@ -842,12 +843,12 @@
 }
 
 .select__scroll-box {
-    height: 178px;
     align-self: flex-start;
     padding: 8px;
     border-width: 1px;
     border-color: var(--color-secondary);
     background-color: var(--color-background);
+    max-height: 178px;
 }
 
 .select__scroll-box-content-wrapper {
@@ -959,4 +960,37 @@
 
 .select__option-button:hover > #icon {
     -unity-background-image-tint-color: var(--color-primary);
+}
+
+.settings__header {
+    flex-direction: row;
+    flex-grow: 1;
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+
+.settings__header #label {
+    font-size: var(--font-size-h3);
+}
+
+.settings__column {
+}
+
+.settings__column > #container {
+    flex-direction: row;
+    margin-bottom: 8px;
+}
+
+.settings__column > #container > #icon {
+    background-image: url("project://database/Assets/Textures/DiamondFill.png?fileID=2800000&guid=f164d7cb61904fa4b9f722e671a217b9&type=3#DiamondFill");
+    -unity-background-image-tint-color: var(--color-primary);
+    width: 12px;
+    -unity-background-scale-mode: scale-to-fit;
+    margin-right: 8px;
+    background-position: left center;
+}
+
+.settings__column > #container > Select {
+    justify-content: space-between;
+    flex-grow: 1;
 }

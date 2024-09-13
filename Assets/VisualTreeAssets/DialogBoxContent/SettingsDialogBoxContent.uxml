@@ -1,0 +1,44 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
+    <ui:VisualElement style="flex-grow: 1; background-color: rgb(229, 229, 229);">
+        <ui:VisualElement name="display-header" class="settings__header" style="margin-top: 0;">
+            <ui:Label tabindex="-1" text="Display" parse-escape-sequences="true" display-tooltip-when-elided="true" name="label" />
+        </ui:VisualElement>
+        <ui:VisualElement name="settings-column" class="settings__column">
+            <ui:VisualElement name="container" style="flex-grow: 1;">
+                <ui:VisualElement name="icon" />
+                <Controls.Raw.Select choices="Fullscreen,Windowed" index="0" label="Window Mode" name="window-mode-select" />
+            </ui:VisualElement>
+            <ui:VisualElement name="container" style="flex-grow: 1;">
+                <ui:VisualElement name="icon" />
+                <Controls.Raw.Select choices="1920x1080,3840x2160,2560x1440,2560x1600,1920x1200,1366x768,1280x720,1024x768" index="0" label="Resolution" name="resolution-select" />
+            </ui:VisualElement>
+            <ui:VisualElement name="container" style="flex-grow: 1;">
+                <ui:VisualElement name="icon" />
+                <Controls.Raw.Select choices="30Hz,60Hz,120Hz,144Hz,240Hz" index="0" label="Refresh Rate" name="refresh-rate-select" />
+            </ui:VisualElement>
+            <ui:VisualElement name="container" style="flex-grow: 1;">
+                <ui:VisualElement name="icon" />
+                <Controls.Raw.Select choices="Off,On" index="0" label="Vertical Sync" name="vertical-sync-select" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="effects-header" class="settings__header">
+            <ui:Label tabindex="-1" text="Effects" parse-escape-sequences="true" display-tooltip-when-elided="true" name="label" />
+        </ui:VisualElement>
+        <ui:VisualElement name="settings-column" class="settings__column">
+            <ui:VisualElement name="container" style="flex-grow: 1;">
+                <ui:VisualElement name="icon" />
+                <Controls.Raw.Select choices="Low,Medium,High" index="0" label="Blur Quality" name="blur-quality-select" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="other-header" class="settings__header">
+            <ui:Label tabindex="-1" text="Other" parse-escape-sequences="true" display-tooltip-when-elided="true" name="label" />
+        </ui:VisualElement>
+        <ui:VisualElement name="settings-column" class="settings__column">
+            <ui:VisualElement name="container" style="flex-grow: 1;">
+                <ui:VisualElement name="icon" />
+                <Controls.Raw.Select choices="Yes,No" index="0" label="Show Welcome Window" name="show-welcome-window-select" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

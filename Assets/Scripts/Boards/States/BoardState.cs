@@ -26,5 +26,6 @@ namespace Boards.States
         public virtual void Left() { }
         public virtual void Right() { }
         public virtual void Info() { }
+        public virtual void Settings() { }
     }
 }

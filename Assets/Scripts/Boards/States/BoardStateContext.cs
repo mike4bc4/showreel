@@ -58,5 +58,10 @@ namespace Boards.States
         {
             m_State.Info();
         }
+
+        public void Settings()
+        {
+            m_State.Settings();
+        }
     }
 }

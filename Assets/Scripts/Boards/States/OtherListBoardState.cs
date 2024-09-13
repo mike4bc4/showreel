@@ -75,6 +75,16 @@ namespace Boards.States
             }
         }
 
+        public override void Settings()
+        {
+            if (listBoard.interactable)
+            {
+                listBoard.interactable = false;
+                listBoard.onListElementClicked -= OnListElementClicked;
+                context.state = new SettingsDialogBoxState(context);
+            }
+        }
+
         void OnListElementClicked(int index)
         {
             var videoClip = m_VideoClips.ElementAtOrDefault(index);

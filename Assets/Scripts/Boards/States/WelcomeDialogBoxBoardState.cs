@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 namespace Boards.States
 {
-    public class WelcomeDialogBoxBoardState : BoardState
+    public class WelcomeDialogBoxState : BoardState
     {
         public const int DisplaySortOrder = 2000;
 
@@ -15,7 +15,7 @@ namespace Boards.States
         DialogBox m_DialogBox;
         bool m_Interactable;
 
-        public WelcomeDialogBoxBoardState(BoardStateContext context) : base(context) { }
+        public WelcomeDialogBoxState(BoardStateContext context) : base(context) { }
 
         public override void Init()
         {

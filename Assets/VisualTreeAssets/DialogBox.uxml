@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="SettingsDialogBoxContent" src="project://database/Assets/VisualTreeAssets/DialogBoxContent/SettingsDialogBoxContent.uxml?fileID=9197481963319205126&amp;guid=cf4f310ca51f23343967735a43ce23a7&amp;type=3#SettingsDialogBoxContent" />
     <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
     <Controls.Raw.DialogBox>
-        <ui:Label tabindex="-1" text="Do you really want to quit?" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-text-align: middle-center; margin-top: 32px; margin-bottom: 32px;" />
+        <ui:Instance template="SettingsDialogBoxContent" name="SettingsDialogBoxContent" />
     </Controls.Raw.DialogBox>
 </ui:UXML>

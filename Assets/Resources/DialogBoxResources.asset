@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d662ee8ca18530a49ae390ed73360d11, type: 3}
   m_Name: DialogBoxResources
   m_EditorClassIdentifier: 
-  m_InfoDialogBoxContentVta: {fileID: 9197481963319205126, guid: 9813b250b24bf2447a3bf92f8769a9b3, type: 3}
-  m_WelcomeDialogBoxContentVta: {fileID: 9197481963319205126, guid: a08837e58c9afa946a97cdb2317e190f, type: 3}
+  m_ContentVisualTreeAsset:
+  - {fileID: 9197481963319205126, guid: 9813b250b24bf2447a3bf92f8769a9b3, type: 3}
+  - {fileID: 9197481963319205126, guid: cf4f310ca51f23343967735a43ce23a7, type: 3}
+  - {fileID: 9197481963319205126, guid: a08837e58c9afa946a97cdb2317e190f, type: 3}

@@ -21,6 +21,7 @@ namespace Boards
         const string k_LeftActionName = "Left";
         const string k_RightActionName = "Right";
         const string k_InfoActionName = "Info";
+        const string k_SettingsActionName = "Settings";
 
         InputActionAsset m_InputActionAsset;
         InputActionMap m_ActionMap;
@@ -30,6 +31,7 @@ namespace Boards
         InputAction m_LeftAction;
         InputAction m_RightAction;
         InputAction m_InfoAction;
+        InputAction m_SettingsAction;
 
         public InputActionMap actionMap => m_ActionMap;
         public InputAction anyAction => m_AnyAction;
@@ -38,6 +40,7 @@ namespace Boards
         public InputAction leftAction => m_LeftAction;
         public InputAction rightAction => m_RightAction;
         public InputAction infoAction => m_InfoAction;
+        public InputAction settingsAction => m_SettingsAction;
 
         public InputManager(InputActionAsset inputActionAsset)
         {
@@ -51,6 +54,7 @@ namespace Boards
             m_LeftAction = m_ActionMap[k_LeftActionName];
             m_RightAction = m_ActionMap[k_RightActionName];
             m_InfoAction = m_ActionMap[k_InfoActionName];
+            m_SettingsAction = m_ActionMap[k_SettingsActionName];
         }
     }
 
@@ -86,6 +90,7 @@ namespace Boards
             m_InputManager.leftAction.GetHelper().performed += (ctx) => m_StateContext.Left();
             m_InputManager.rightAction.GetHelper().performed += (ctx) => m_StateContext.Right();
             m_InputManager.infoAction.GetHelper().performed += (ctx) => m_StateContext.Info();
+            m_InputManager.settingsAction.GetHelper().performed += (ctx) => m_StateContext.Settings();
         }
 
         void Start()

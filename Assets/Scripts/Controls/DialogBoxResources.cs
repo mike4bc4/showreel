@@ -9,9 +9,18 @@ public class DialogBoxResources : ScriptableSingleton<DialogBoxResources>
 {
     static DialogBoxResources s_Instance;
 
-    [SerializeField] VisualTreeAsset m_InfoDialogBoxContentVta;
-    [SerializeField] VisualTreeAsset m_WelcomeDialogBoxContentVta;
+    [SerializeField] List<VisualTreeAsset> m_ContentVisualTreeAsset;
 
-    public VisualTreeAsset infoDialogBoxContentVta => m_InfoDialogBoxContentVta;
-    public VisualTreeAsset welcomeDialogBoxContentVta => m_WelcomeDialogBoxContentVta;
+    public static VisualTreeAsset GetContentVisualTreeAsset(string name)
+    {
+        foreach (var vta in Instance.m_ContentVisualTreeAsset)
+        {
+            if (vta.name == name)
+            {
+                return vta;
+            }
+        }
+
+        return null;
+    }
 }

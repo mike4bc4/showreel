@@ -47,6 +47,7 @@ namespace Controls
         AnimationPlayer m_TitleAnimationPlayer;
         List<Action> m_ClickDelegates = new List<Action>();
         Status m_Status;
+        Action m_HideCompletedCallback;
 
         public bool isHidden => status == Status.Hidden;
         public bool isHiding => status == Status.Hiding;
@@ -182,8 +183,9 @@ namespace Controls
             status = Status.Showing;
         }
 
-        public void Hide()
+        public void Hide(Action onCompleted = null)
         {
+            m_HideCompletedCallback += onCompleted;
             if (isHidden)
             {
                 return;
@@ -239,6 +241,7 @@ namespace Controls
                     m_TitleAnimationPlayer.animationTime = 0f;
 
                     status = Status.Hidden;
+                    m_HideCompletedCallback?.Invoke();
                 }
             });
             var t1 = animation.AddTrack((float t) => m_BackgroundPostProcessingLayer.tint = Color.Lerp(Color.white, s_BackgroundLayerColor, t));
@@ -364,10 +367,7 @@ namespace Controls
             dialogBox.titleLabel = "Info";
             dialogBox.buttonDisplay = ButtonDisplay.LeftCenter;
             dialogBox.leftButtonLabel = "OK";
-
-            var contentVisualTreeAsset = DialogBoxResources.Instance.infoDialogBoxContentVta;
-            dialogBox.contentContainer.Add(contentVisualTreeAsset.Instantiate());
-
+            dialogBox.contentContainer.Add(DialogBoxResources.GetContentVisualTreeAsset("InfoDialogBoxContent").Instantiate());
             return dialogBox;
         }
 
@@ -378,10 +378,17 @@ namespace Controls
             dialogBox.titleLabel = "Welcome!";
             dialogBox.buttonDisplay = ButtonDisplay.LeftCenter;
             dialogBox.leftButtonLabel = "Continue";
+            dialogBox.contentContainer.Add(DialogBoxResources.GetContentVisualTreeAsset("WelcomeDialogBoxContent").Instantiate());
+            return dialogBox;
+        }
 
-            var contentVisualTreeAsset = DialogBoxResources.Instance.welcomeDialogBoxContentVta;
-            dialogBox.contentContainer.Add(contentVisualTreeAsset.Instantiate());
-
+        public static DialogBox CreateSettingsDialogBox()
+        {
+            var dialogBox = new DialogBox();
+            dialogBox.titleLabel = "Settings";
+            dialogBox.leftButtonLabel = "Save";
+            dialogBox.rightButtonLabel = "Cancel";
+            dialogBox.contentContainer.Add(DialogBoxResources.GetContentVisualTreeAsset("SettingsDialogBoxContent").Instantiate());
             return dialogBox;
         }
     }

@@ -1,8 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:Template name="InfoDialogBoxContent" src="project://database/Assets/VisualTreeAssets/InfoDialogBoxContent.uxml?fileID=9197481963319205126&amp;guid=9813b250b24bf2447a3bf92f8769a9b3&amp;type=3#InfoDialogBoxContent" />
-    <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
-    <ui:VisualElement name="background" style="flex-grow: 1; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgb(229, 229, 229);" />
-    <Controls.Raw.DialogBox name="DialogBox">
-        <ui:Instance template="InfoDialogBoxContent" name="InfoDialogBoxContent" />
-    </Controls.Raw.DialogBox>
-</ui:UXML>

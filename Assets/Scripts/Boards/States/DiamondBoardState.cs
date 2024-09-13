@@ -21,7 +21,7 @@ namespace Boards.States
             switch (context.previousState)
             {
                 case InterfaceBoardState:
-                    m_DiamondBarBoard.Show(() => context.state = new WelcomeDialogBoxBoardState(context));
+                    m_DiamondBarBoard.Show(() => context.state = new WelcomeDialogBoxState(context));
                     break;
                 case PoliticoListBoardState:
                     m_DiamondBarBoard.Hide(() => context.state = new InterfaceBoardState(context));
@@ -35,7 +35,7 @@ namespace Boards.States
             {
                 case InterfaceBoardState:
                     m_DiamondBarBoard.ShowImmediate();
-                    context.state = new WelcomeDialogBoxBoardState(context);
+                    context.state = new WelcomeDialogBoxState(context);
                     break;
                 case PoliticoListBoardState:
                     m_DiamondBarBoard.HideImmediate();

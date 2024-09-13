@@ -20,7 +20,7 @@ namespace Boards.States
             listBoard.blocksRaycasts = true;
             switch (context.previousState)
             {
-                case WelcomeDialogBoxBoardState:
+                case WelcomeDialogBoxState:
                 case LayoutSystemListBoardState:
                     allowShowSkip = true;
                     listBoard.initialVideoClip = ListBoardResources.GetVideoClip("Building");
@@ -31,6 +31,7 @@ namespace Boards.States
                         listBoard.interactable = true;
                     });
                     break;
+                case SettingsDialogBoxState:
                 case QuitDialogBoxState:
                     listBoard.interactable = true;
                     break;
@@ -82,6 +83,16 @@ namespace Boards.States
                 listBoard.interactable = false;
                 listBoard.onListElementClicked -= OnListElementClicked;
                 context.state = new QuitDialogBoxState(context);
+            }
+        }
+
+        public override void Settings()
+        {
+            if (listBoard.interactable)
+            {
+                listBoard.interactable = false;
+                listBoard.onListElementClicked -= OnListElementClicked;
+                context.state = new SettingsDialogBoxState(context);
             }
         }
 

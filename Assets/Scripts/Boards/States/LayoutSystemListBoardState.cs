@@ -79,9 +79,19 @@ namespace Boards.States
         {
             if (listBoard.interactable)
             {
-                listBoard.blocksRaycasts = false;
+                listBoard.interactable = false;
                 listBoard.onListElementClicked -= OnListElementClicked;
                 context.state = new QuitDialogBoxState(context);
+            }
+        }
+
+        public override void Settings()
+        {
+            if (listBoard.interactable)
+            {
+                listBoard.interactable = false;
+                listBoard.onListElementClicked -= OnListElementClicked;
+                context.state = new SettingsDialogBoxState(context);
             }
         }
 
