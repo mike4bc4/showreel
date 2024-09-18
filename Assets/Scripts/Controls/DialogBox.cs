@@ -54,6 +54,11 @@ namespace Controls
         public bool isShown => status == Status.Shown;
         public bool isShowing => status == Status.Showing;
 
+        public VisualElement rootVisualElement
+        {
+            get => m_DialogBox;
+        }
+
         public Status status
         {
             get => m_Status;

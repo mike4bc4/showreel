@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Utility;
 
 namespace Layers
 {
@@ -14,6 +15,7 @@ namespace Layers
 
         const string k_BlurEnabledKeyword = "_BLUR_ENABLED";
         const string k_BlurSizeProperty = "_BlurSize";
+        const string k_BlurQualityProperty = "_BlurQuality";
         const string k_TintProperty = "_Tint";
         const string k_CropRectProperty = "_CropRect";
         const string k_UseCropRectKeyword = "_USE_CROP_RECT";
@@ -35,6 +37,7 @@ namespace Layers
         float m_Alpha;
         VisualElement m_MaskElement;
         float m_BlurSize;
+        float m_BlurQuality;
         Overscan m_Overscan;
         bool m_Visible;
         string m_LayerName;
@@ -139,6 +142,16 @@ namespace Layers
             }
         }
 
+        public float blurQuality
+        {
+            get => m_BlurQuality;
+            set
+            {
+                m_BlurQuality = value;
+                material.SetFloat(k_BlurQualityProperty, m_BlurQuality);
+            }
+        }
+
         public Overscan overscan
         {
             get => m_Overscan;
@@ -156,9 +169,12 @@ namespace Layers
                 throw new Exception("Cannot initialize multiple times.");
             }
 
+            SettingsManager.OnSettingsApplied += OnSettingsApplied;
+
             m_Visible = true;
             m_Material = material;
             blurSize = 0;
+            blurQuality = SettingsManager.BlurQuality.option.secondaryValue;
             tint = Color.white;
             alpha = 1f;
 
@@ -175,6 +191,7 @@ namespace Layers
 
         void OnDestroy()
         {
+            SettingsManager.OnSettingsApplied -= OnSettingsApplied;
             Destroy(m_Material);
         }
 
@@ -185,6 +202,11 @@ namespace Layers
                 var rect = m_MaskElement.worldBound;
                 material.SetVector(k_CropRectProperty, new Vector4(rect.x, Camera.main.pixelHeight - rect.yMax, rect.width, rect.height));
             }
+        }
+
+        void OnSettingsApplied()
+        {
+            blurQuality = SettingsManager.BlurQuality.option.secondaryValue;
         }
     }
 }

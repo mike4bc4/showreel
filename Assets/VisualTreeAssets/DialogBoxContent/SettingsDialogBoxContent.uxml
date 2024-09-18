@@ -11,7 +11,7 @@
             </ui:VisualElement>
             <ui:VisualElement name="container" style="flex-grow: 1;">
                 <ui:VisualElement name="icon" />
-                <Controls.Raw.Select choices="1920x1080,3840x2160,2560x1440,2560x1600,1920x1200,1366x768,1280x720,1024x768" index="0" label="Resolution" name="resolution-select" />
+                <Controls.Raw.Select choices="1,2,3,4,5" index="0" label="Resolution" name="resolution-select" />
             </ui:VisualElement>
             <ui:VisualElement name="container" style="flex-grow: 1;">
                 <ui:VisualElement name="icon" />
