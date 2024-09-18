@@ -9,70 +9,71 @@ namespace Utility
     [Serializable]
     public class SaveObject
     {
+        struct DataWrapper<T>
+        {
+            public T value;
+
+            public DataWrapper(T value)
+            {
+                this.value = value;
+            }
+        }
+
         [Serializable]
         public struct DataEntry
         {
             public string key;
             public string value;
-            public string type;
         }
 
         public List<DataEntry> m_Data;
 
-        public object this[string key]
-        {
-            get
-            {
-                string keyInvariant = key.ToLowerInvariant();
-                foreach (var entry in m_Data)
-                {
-                    if (entry.key == keyInvariant)
-                    {
-                        if (string.IsNullOrEmpty(entry.value) || string.IsNullOrEmpty(entry.type))
-                        {
-                            break;
-                        }
-
-                        try
-                        {
-                            return Convert.ChangeType(entry.value, Type.GetType(entry.type));
-                        }
-                        catch (Exception)
-                        {
-                            Debug.LogWarning($"Failed to convert '{entry.value}' into '{entry.type}'.");
-                            return entry.value;
-                        }
-                    }
-                }
-
-                return null;
-            }
-            set
-            {
-                string keyInvariant = key.ToLowerInvariant();
-                for (int i = 0; i < m_Data.Count; i++)
-                {
-                    DataEntry entry = m_Data[i];
-                    if (entry.key == keyInvariant)
-                    {
-                        entry.value = value?.ToString();
-                        entry.type = value?.GetType().FullName;
-                        return;
-                    }
-                }
-
-                m_Data.Add(new DataEntry()
-                {
-                    key = keyInvariant,
-                    value = value?.ToString(),
-                    type = value?.GetType().FullName,
-                });
-            }
-        }
-
         public SaveObject()
         {
             m_Data = new List<DataEntry>();
+        }
+
+        public void SetValue<T>(string key, T value)
+        {
+            var keyInvariant = key.ToLowerInvariant();
+            for (int i = 0; i < m_Data.Count; i++)
+            {
+                DataEntry entry = m_Data[i];
+                if (entry.key == keyInvariant)
+                {
+                    entry.value = JsonUtility.ToJson(new DataWrapper<T>(value));
+                    return;
+                }
+            }
+
+            m_Data.Add(new DataEntry()
+            {
+                key = keyInvariant,
+                value = JsonUtility.ToJson(new DataWrapper<T>(value)),
+            });
+        }
+
+        public bool TryGetValue<T>(string key, out T value)
+        {
+            var keyInvariant = key.ToLowerInvariant();
+            foreach (var entry in m_Data)
+            {
+                if (entry.key == keyInvariant)
+                {
+                    try
+                    {
+                        value = JsonUtility.FromJson<DataWrapper<T>>(entry.value).value;
+                        return true;
+                    }
+                    catch (Exception)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            value = default;
+            return false;
         }
 
         public void Write(string path)
