@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Extensions;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Utility;
 
 namespace Controls.Raw
 {
@@ -38,6 +40,8 @@ namespace Controls.Raw
             }
         }
 
+        public event Action onChoiceChanged;
+
         Label m_Label;
         VisualElement m_OptionContainer;
         Button m_OptionButton;
@@ -58,20 +62,13 @@ namespace Controls.Raw
         public int index
         {
             get => m_Index;
-            set
-            {
+            set => SetIndexInternal(value);
+        }
 
-                m_Index = Mathf.Clamp(value, -1, m_Choices.Count - 1);
-                string choice = m_Choices.ElementAtOrDefault(m_Index);
-                if (choice != default)
-                {
-                    m_OptionButtonLabel.text = choice;
-                }
-                else
-                {
-                    m_OptionButtonLabel.text = string.Empty;
-                }
-            }
+        public string choice
+        {
+            get => (0 <= m_Index && m_Index < m_Choices.Count) ? m_Choices[m_Index] : null;
+            set => SetIndexInternal(m_Choices.IndexOf(value));
         }
 
         public string label
@@ -142,6 +139,17 @@ namespace Controls.Raw
             m_OptionContainer.RegisterCallback<ClickEvent>(evt => AttachScrollBoxOverlay());
         }
 
+        void SetIndexInternal(int index)
+        {
+            var previousIndex = m_Index;
+            m_Index = Mathf.Clamp(index, -1, m_Choices.Count - 1);
+            m_OptionButtonLabel.text = m_Index >= 0 ? m_Choices[m_Index] : null;
+            if (m_Index != previousIndex)
+            {
+                onChoiceChanged?.Invoke();
+            }
+        }
+
         void AttachScrollBoxOverlay()
         {
             var root = this.GetRootVisualElement();
@@ -151,8 +159,54 @@ namespace Controls.Raw
             }
 
             root.Add(m_ScrollBoxOverlay);
+
+            // When ScrollBox is attached to the panel for the first time its layout properties are
+            // NaN and are useless until GeometryChangedEvent is invoked. Even though we could simply 
+            // wait for such event, it introduces another problem of not knowing whether geometry has 
+            // actually been changed thus it's not possible to detect if callback can be invoked 
+            // synchronously. The major issue here is that any further changes of geometry are not
+            // resetting layout properties to NaN, so simple 'if NaN' will not work. What's even more
+            // annoying layout will return old values until next frame, that's why we are making use
+            // of scheduler and delayed calls in editor mode.
+            switch (m_ScrollBoxOverlay.panel.contextType)
+            {
+                case ContextType.Player:
+                    Scheduler.delayCall += FocusCurrentChoice;
+                    break;
+#if UNITY_EDITOR
+                case ContextType.Editor:
+                    UnityEditor.EditorApplication.delayCall += FocusCurrentChoice;
+                    break;
+#endif
+            }
+
             UpdateListPosition();
             m_ListPositionUpdater = m_ScrollBoxContainer.schedule.Execute(UpdateListPosition).Every(k_ListPositionUpdateInterval);
+        }
+
+        void FocusCurrentChoice()
+        {
+            if (m_Choices.Count > 1)
+            {
+                var c = (float)m_Choices.Count;
+                var h = m_ScrollBox.contentContainer.localBound.height;
+                var v = m_ScrollBox.viewport.localBound.height;
+
+                // This is amount of choices that can be focused by ScrollBox viewport. The higher 
+                // it is, the less choices can be focused.
+                var n = (h - v) / h * c;
+
+                if (n > 0)
+                {
+                    // We have to remap ScrollBox offset using steeper linear function, here we are
+                    // calculating it's slope factor (tangent of slope angle).
+                    var tg = (c - 1f) / n;
+
+                    var t = m_Index / (c - 1f);
+                    var f = (tg - 1f) / 2f;
+                    m_ScrollBox.normalizedOffset = Mathf.Lerp(-f, 1f + f, t);
+                }
+            }
         }
 
         void UpdateListPosition()
@@ -167,54 +221,59 @@ namespace Controls.Raw
             m_ScrollBoxContainer.transform.position = position;
         }
 
-        void DetachScrollBoxOverlay()
+        public void DetachScrollBoxOverlay()
         {
             m_ScrollBoxOverlay.RemoveFromHierarchy();
             m_ListPositionUpdater.Pause();
             m_ListPositionUpdater = null;
         }
 
-
-        void SetChoices(string choicesString)
+        public void SetChoices(string choicesString)
         {
             SetChoices(choicesString.Split(',').Select(c => c.Trim()).ToList());
         }
 
-        void SetChoices(params string[] choices)
+        public void SetChoices(params string[] choices)
         {
             SetChoices(choices.ToList());
         }
 
-        void SetChoices(List<string> choices)
+        public void SetChoices(List<string> choices)
         {
             m_ScrollBoxContentWrapper.Clear();
-            m_Choices.Clear();
-            for (int i = 0; i < choices.Count; i++)
+            m_Choices = choices.Where(ch => !string.IsNullOrEmpty(ch)).Distinct().ToList();
+            for (int i = 0; i < m_Choices.Count; i++)
             {
-                int idx = i;
-                string choice = choices[i];
-                m_Choices.Add(choice);
-
-                var button = new Button();
-                button.name = "button-" + i;
-                button.AddToClassList(k_ButtonUssClassName);
-                button.clicked += () =>
-                {
-                    index = idx;
-                    DetachScrollBoxOverlay();
-                };
-
+                var button = CreateChoiceButton(i, m_Choices[i]);
                 m_ScrollBoxContentWrapper.Add(button);
-
-                var label = new Label();
-                label.name = "label";
-                label.text = choice;
-                button.Add(label);
-
-                var border = new VisualElement();
-                border.name = "border";
-                button.Add(border);
             }
+
+            SetIndexInternal(m_Index);
+        }
+
+        Button CreateChoiceButton(int index, string choice)
+        {
+            var button = new Button() { name = "button-" + index };
+            button.AddToClassList(k_ButtonUssClassName);
+
+            var label = new Label()
+            {
+                name = "label",
+                text = choice
+            };
+            
+            button.Add(label);
+
+            var border = new VisualElement() { name = "border" };
+            button.Add(border);
+
+            button.clicked += () =>
+            {
+                SetIndexInternal(index);
+                DetachScrollBoxOverlay();
+            };
+
+            return button;
         }
     }
 }
