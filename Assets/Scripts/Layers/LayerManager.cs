@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Settings;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -51,6 +52,7 @@ namespace Layers
 
             s_Instance = this;
             m_Layers = new List<BaseLayer>();
+            SettingsManager.onScreenSizeChanged += OnScreenSizeChanged;
         }
 
         void LateUpdate()
@@ -58,6 +60,20 @@ namespace Layers
             if (m_CommandBufferDirty)
             {
                 RebuildCommandBuffer();
+            }
+        }
+
+        void OnScreenSizeChanged()
+        {
+            foreach (var baseLayer in layers)
+            {
+                if (baseLayer is Layer layer)
+                {
+                    RenderTexture.ReleaseTemporary(layer.uiDocument.panelSettings.targetTexture);
+                    var renderTexture = RenderTexture.GetTemporary(SettingsManager.Resolution.option.value.x, SettingsManager.Resolution.option.value.y);
+                    layer.uiDocument.panelSettings.targetTexture = renderTexture;
+                    MarkCommandBufferDirty();
+                }
             }
         }
 
@@ -83,7 +99,7 @@ namespace Layers
 
         public static Layer CreateLayer(string name = "Unnamed")
         {
-            var renderTexture = RenderTexture.GetTemporary(Camera.main.pixelWidth, Camera.main.pixelHeight);
+            var renderTexture = RenderTexture.GetTemporary(SettingsManager.Resolution.option.value.x, SettingsManager.Resolution.option.value.y);
 
             var ps = Instantiate(panelSettings);
             ps.targetTexture = renderTexture;
