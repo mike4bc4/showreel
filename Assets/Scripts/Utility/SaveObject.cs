@@ -26,7 +26,7 @@ namespace Utility
             public string value;
         }
 
-        public List<DataEntry> m_Data;
+        [SerializeField] List<DataEntry> m_Data;
 
         public SaveObject()
         {
