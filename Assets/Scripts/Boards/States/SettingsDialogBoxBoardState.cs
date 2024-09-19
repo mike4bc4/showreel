@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Controls;
 using Controls.Raw;
+using Settings;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Utility;
 
 namespace Boards.States
 {
@@ -36,25 +36,32 @@ namespace Boards.States
 
             m_ResolutionSelect.onChoiceChanged += OnResolutionChanged;
 
-            m_WindowModeSelect.SetChoices(SettingsManager.WindowMode.options);
             m_ResolutionSelect.SetChoices(SettingsManager.Resolution.options);
             m_RefreshRateSelect.SetChoices(SettingsManager.RefreshRate.options);
             m_VerticalSyncSelect.SetChoices(SettingsManager.VerticalSync.options);
             m_BlurQualitySelect.SetChoices(SettingsManager.BlurQuality.options);
             m_ShowWelcomeWindowSelect.SetChoices(SettingsManager.ShowWelcomeWindow.options);
 
-            m_WindowModeSelect.choice = SettingsManager.WindowMode.option.name;
             m_ResolutionSelect.choice = SettingsManager.Resolution.option.name;
             m_RefreshRateSelect.choice = SettingsManager.RefreshRate.option.name;
             m_VerticalSyncSelect.choice = SettingsManager.VerticalSync.option.name;
             m_BlurQualitySelect.choice = SettingsManager.BlurQuality.option.name;
             m_ShowWelcomeWindowSelect.choice = SettingsManager.ShowWelcomeWindow.option.name;
 
+            SettingsManager.WindowMode.onChanged += UpdateWindowModeSelect;
+            UpdateWindowModeSelect();
+
             m_DialogBox.displaySortOrder = k_DefaultDisplaySortOrder;
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Left, Confirm);
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Right, Cancel);
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Background, Cancel);
             m_DialogBox.Show();
+        }
+
+        void UpdateWindowModeSelect()
+        {
+            m_WindowModeSelect.SetChoices(SettingsManager.WindowMode.options);
+            m_WindowModeSelect.choice = SettingsManager.WindowMode.option.name;
         }
 
         void OnResolutionChanged()
@@ -70,6 +77,7 @@ namespace Boards.States
 
         void Close()
         {
+            SettingsManager.WindowMode.onChanged -= UpdateWindowModeSelect;
             m_DialogBox.Hide(() =>
             {
                 m_DialogBox.Dispose();

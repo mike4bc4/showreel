@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Utility
+namespace Settings
 {
     // Normally we could use simple inheritance between single parameter option list and double
     // parameter option list, but this would require to recreate inspector as serialized properties

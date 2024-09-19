@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using Utility;
 
-namespace Utility
+namespace Settings
 {
     public enum WindowMode
     {
@@ -31,6 +32,7 @@ namespace Utility
         const string k_BlurQualityKey = "BlurQuality";
         const string k_ShowWelcomeWindowKey = "ShowWelcomeWindow";
         const string k_SavePath = "Settings";
+        const float k_WindowModeUpdateInterval = 0.5f;
         static SettingsManager s_Instance;
 
 
@@ -41,6 +43,7 @@ namespace Utility
         Setting<Quality, float> m_BlurQuality;
         Setting<bool> m_ShowWelcomeWindow;
         SaveObject m_SaveObject;
+        FullScreenMode m_PreviousFullScreenMode;
 
         public static SettingsManager Instance
         {
@@ -92,11 +95,14 @@ namespace Utility
             m_VerticalSync = new Setting<bool>(SettingsManagerResources.Instance.verticalSyncOptions);
             m_BlurQuality = new Setting<Quality, float>(SettingsManagerResources.Instance.blurQualityOptions);
             m_ShowWelcomeWindow = new Setting<bool>(SettingsManagerResources.Instance.showWelcomeWindowOptions);
+
+            Scheduler.RegisterCallbackEvery(UpdateWindowMode, k_WindowModeUpdateInterval);
         }
 
         void Init()
         {
             Read();
+            Apply();
             if (m_SaveObject == null)
             {
                 Write();
@@ -118,6 +124,16 @@ namespace Utility
             m_RefreshRate.SetOption(nearestRefreshRate);
         }
 
+        void UpdateWindowMode()
+        {
+            if (Screen.fullScreenMode != m_PreviousFullScreenMode)
+            {
+                m_PreviousFullScreenMode = Screen.fullScreenMode;
+                m_WindowMode.SetOption(Screen.fullScreenMode.ToWindowMode());
+                Write();
+            }
+        }
+
         public static void Reset()
         {
             foreach (var setting in settings)
@@ -128,18 +144,7 @@ namespace Utility
 
         public static void Apply()
         {
-            FullScreenMode fullScreenMode = FullScreenMode.FullScreenWindow;
-            switch (WindowMode.option.value)
-            {
-                case Utility.WindowMode.Fullscreen:
-                    fullScreenMode = FullScreenMode.FullScreenWindow;
-                    break;
-                case Utility.WindowMode.Windowed:
-                    fullScreenMode = FullScreenMode.Windowed;
-                    break;
-            }
-
-            Screen.SetResolution(Resolution.option.value.x, Resolution.option.value.y, fullScreenMode);
+            Screen.SetResolution(Resolution.option.value.x, Resolution.option.value.y, WindowMode.option.value.ToFullScreenMode());
             Application.targetFrameRate = Mathf.RoundToInt(RefreshRate.option.value);
 
             QualitySettings.vSyncCount = VerticalSync.option.value ? 1 : 0;

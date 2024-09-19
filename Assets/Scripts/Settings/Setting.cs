@@ -5,7 +5,7 @@ using System.Linq;
 using Extensions;
 using UnityEngine;
 
-namespace Utility
+namespace Settings
 {
     public abstract class Setting
     {

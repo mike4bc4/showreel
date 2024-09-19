@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Settings;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Utility;
 
 namespace Layers
 {

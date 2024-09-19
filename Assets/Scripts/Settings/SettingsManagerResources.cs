@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using Utility;
 
-namespace Utility
+namespace Settings
 {
     [CreateAssetMenu(fileName = "SettingsManagerResources ", menuName = "Scriptable Objects/Settings Manager Resources")]
     public class SettingsManagerResources : ScriptableSingleton<SettingsManagerResources>
