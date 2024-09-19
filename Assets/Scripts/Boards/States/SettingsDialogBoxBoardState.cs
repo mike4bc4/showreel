@@ -24,7 +24,6 @@ namespace Boards.States
 
         public override void Init()
         {
-            Debug.Log(Screen.fullScreenMode);
             m_DialogBox = DialogBox.CreateSettingsDialogBox();
 
             m_WindowModeSelect = m_DialogBox.rootVisualElement.Q<Select>("window-mode-select");
