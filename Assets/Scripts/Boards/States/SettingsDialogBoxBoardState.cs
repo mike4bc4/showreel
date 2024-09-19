@@ -35,17 +35,17 @@ namespace Boards.States
 
             m_ResolutionSelect.onChoiceChanged += OnResolutionChanged;
 
-            m_ResolutionSelect.SetChoices(SettingsManager.Resolution.options);
-            m_RefreshRateSelect.SetChoices(SettingsManager.RefreshRate.options);
-            m_VerticalSyncSelect.SetChoices(SettingsManager.VerticalSync.options);
-            m_BlurQualitySelect.SetChoices(SettingsManager.BlurQuality.options);
-            m_ShowWelcomeWindowSelect.SetChoices(SettingsManager.ShowWelcomeWindow.options);
+            m_ResolutionSelect.SetChoices(SettingsManager.Resolution.choices);
+            m_RefreshRateSelect.SetChoices(SettingsManager.RefreshRate.choices);
+            m_VerticalSyncSelect.SetChoices(SettingsManager.VerticalSync.choices);
+            m_BlurQualitySelect.SetChoices(SettingsManager.BlurQuality.choices);
+            m_ShowWelcomeWindowSelect.SetChoices(SettingsManager.ShowWelcomeWindow.choices);
 
-            m_ResolutionSelect.choice = SettingsManager.Resolution.option.name;
-            m_RefreshRateSelect.choice = SettingsManager.RefreshRate.option.name;
-            m_VerticalSyncSelect.choice = SettingsManager.VerticalSync.option.name;
-            m_BlurQualitySelect.choice = SettingsManager.BlurQuality.option.name;
-            m_ShowWelcomeWindowSelect.choice = SettingsManager.ShowWelcomeWindow.option.name;
+            m_ResolutionSelect.choice = SettingsManager.Resolution.name;
+            m_RefreshRateSelect.choice = SettingsManager.RefreshRate.name;
+            m_VerticalSyncSelect.choice = SettingsManager.VerticalSync.name;
+            m_BlurQualitySelect.choice = SettingsManager.BlurQuality.name;
+            m_ShowWelcomeWindowSelect.choice = SettingsManager.ShowWelcomeWindow.name;
 
             SettingsManager.WindowMode.onChanged += UpdateWindowModeSelect;
             UpdateWindowModeSelect();
@@ -59,8 +59,8 @@ namespace Boards.States
 
         void UpdateWindowModeSelect()
         {
-            m_WindowModeSelect.SetChoices(SettingsManager.WindowMode.options);
-            m_WindowModeSelect.choice = SettingsManager.WindowMode.option.name;
+            m_WindowModeSelect.SetChoices(SettingsManager.WindowMode.choices);
+            m_WindowModeSelect.choice = SettingsManager.WindowMode.name;
         }
 
         void OnResolutionChanged()
@@ -68,10 +68,10 @@ namespace Boards.States
             // Setting resolution causes refresh rate setting to update, as list of refresh rate 
             // setting options changes. This means that we only have to update 'view' part here
             // that is; it's necessary to pass new set of refresh rate options and new choice.
-            SettingsManager.Resolution.SetOption(m_ResolutionSelect.choice);
+            SettingsManager.Resolution.SetValue(m_ResolutionSelect.choice);
 
-            m_RefreshRateSelect.SetChoices(SettingsManager.RefreshRate.options);
-            m_RefreshRateSelect.choice = SettingsManager.RefreshRate.option.name;
+            m_RefreshRateSelect.SetChoices(SettingsManager.RefreshRate.choices);
+            m_RefreshRateSelect.choice = SettingsManager.RefreshRate.name;
         }
 
         void Close()
@@ -100,12 +100,12 @@ namespace Boards.States
 
         public override void Confirm()
         {
-            SettingsManager.WindowMode.SetOption(m_WindowModeSelect.choice);
-            SettingsManager.Resolution.SetOption(m_ResolutionSelect.choice);
-            SettingsManager.RefreshRate.SetOption(m_RefreshRateSelect.choice);
-            SettingsManager.VerticalSync.SetOption(m_VerticalSyncSelect.choice);
-            SettingsManager.BlurQuality.SetOption(m_BlurQualitySelect.choice);
-            SettingsManager.ShowWelcomeWindow.SetOption(m_ShowWelcomeWindowSelect.choice);
+            SettingsManager.WindowMode.SetValue(m_WindowModeSelect.choice);
+            SettingsManager.Resolution.SetValue(m_ResolutionSelect.choice);
+            SettingsManager.RefreshRate.SetValue(m_RefreshRateSelect.choice);
+            SettingsManager.VerticalSync.SetValue(m_VerticalSyncSelect.choice);
+            SettingsManager.BlurQuality.SetValue(m_BlurQualitySelect.choice);
+            SettingsManager.ShowWelcomeWindow.SetValue(m_ShowWelcomeWindowSelect.choice);
             SettingsManager.Apply();
             SettingsManager.Write();
             Close();

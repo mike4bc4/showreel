@@ -174,7 +174,7 @@ namespace Layers
             m_Visible = true;
             m_Material = material;
             blurSize = 0;
-            blurQuality = SettingsManager.BlurQuality.option.secondaryValue;
+            blurQuality = SettingsManager.BlurQuality.value;
             tint = Color.white;
             alpha = 1f;
 
@@ -206,7 +206,7 @@ namespace Layers
 
         void OnSettingsApplied()
         {
-            blurQuality = SettingsManager.BlurQuality.option.secondaryValue;
+            blurQuality = SettingsManager.BlurQuality.value;
         }
     }
 }

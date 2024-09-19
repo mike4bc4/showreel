@@ -10,17 +10,18 @@ namespace Settings
     [CreateAssetMenu(fileName = "SettingsManagerResources ", menuName = "Scriptable Objects/Settings Manager Resources")]
     public class SettingsManagerResources : ScriptableSingleton<SettingsManagerResources>
     {
-        [SerializeField] OptionList<WindowMode> m_WindowModeOptions;
-        [SerializeField] OptionList<bool> m_VerticalSyncOptions;
-        [SerializeField] OptionList<Quality, float> m_BlurQualityOptions;
-        [SerializeField] OptionList<bool> m_ShowWelcomeWindowOptions;
 
-        public OptionList<WindowMode> windowModeOptions => m_WindowModeOptions;
-        public OptionList<bool> verticalSyncOptions => m_VerticalSyncOptions;
-        public OptionList<Quality, float> blurQualityOptions => m_BlurQualityOptions;
-        public OptionList<bool> showWelcomeWindowOptions => m_ShowWelcomeWindowOptions;
+        [SerializeField] OptionSet<WindowMode> m_WindowModeOptions;
+        [SerializeField] OptionSet<bool> m_VerticalSyncOptions;
+        [SerializeField] OptionSet<float> m_BlurQualityOptions;
+        [SerializeField] OptionSet<bool> m_ShowWelcomeWindowOptions;
 
-        public OptionList<Vector2Int> resolutionOptions
+        public OptionSet<WindowMode> windowModeOptions => m_WindowModeOptions;
+        public OptionSet<bool> verticalSyncOptions => m_VerticalSyncOptions;
+        public OptionSet<float> blurQualityOptions => m_BlurQualityOptions;
+        public OptionSet<bool> showWelcomeWindowOptions => m_ShowWelcomeWindowOptions;
+
+        public OptionSet<Vector2Int> resolutionOptions
         {
             get
             {
@@ -42,11 +43,11 @@ namespace Settings
                     }
                 }
 
-                return new OptionList<Vector2Int>(options, defaultOptionIndex);
+                return new OptionSet<Vector2Int>(defaultOptionIndex, options);
             }
         }
 
-        public OptionList<float> GetRefreshRateOptions(Vector2Int resolution)
+        public OptionSet<float> GetRefreshRateOptions(Vector2Int resolution)
         {
             var options = new List<Option<float>>();
             foreach (var res in Screen.resolutions)
@@ -70,7 +71,7 @@ namespace Settings
                 }
             }
 
-            return new OptionList<float>(options, defaultOptionIndex);
+            return new OptionSet<float>(defaultOptionIndex, options);
         }
     }
 }

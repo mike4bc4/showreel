@@ -7,85 +7,113 @@ using UnityEngine;
 
 namespace Settings
 {
-    public abstract class Setting
+    public class Setting<T>
     {
         public event Action onChanged;
 
-        Option m_Option;
-        Func<OptionList> m_OptionListGetter;
-        OptionList m_OptionList;
+        Func<OptionSet<T>> m_OptionsGetter;
+        Option<T> m_DefaultOption;
+        OptionSet<T> m_OptionSet;
+        Option<T> m_SelectedOption;
 
-        public Option option
+        public OptionSet<T> optionSet
         {
-            get => m_Option;
-            protected set
+            get => m_OptionSet ?? m_OptionsGetter?.Invoke();
+        }
+
+        public IReadOnlyList<Option<T>> options
+        {
+            get => optionSet.options;
+        }
+
+        public string name
+        {
+            get => m_SelectedOption.name;
+        }
+
+        public T value
+        {
+            get => m_SelectedOption.value;
+        }
+
+        public Option<T> defaultOption
+        {
+            get => m_DefaultOption;
+        }
+
+        Option<T> selectedOption
+        {
+            get => m_SelectedOption;
+            set
             {
-                var previousOption = m_Option;
-                if (value != previousOption)
+                var previousOption = m_SelectedOption;
+                if (previousOption != value)
                 {
-                    m_Option = value;
+                    m_SelectedOption = value;
                     onChanged?.Invoke();
                 }
             }
         }
 
-        public OptionList options => m_OptionListGetter?.Invoke() ?? m_OptionList;
-
-        public Setting(Func<OptionList> optionListGetter)
+        public List<string> choices
         {
-            m_OptionListGetter = optionListGetter;
-            m_Option = options.defaultOption;
+            get
+            {
+                var choices = new List<string>();
+                foreach (var option in options)
+                {
+                    choices.Add(option.name);
+                }
+
+                return choices;
+            }
         }
 
-        public Setting(OptionList optionList)
+        public Setting(OptionSet<T> optionSet)
         {
-            m_OptionList = optionList;
-            m_Option = options.defaultOption;
+            m_OptionSet = optionSet;
+            m_DefaultOption = options[optionSet.defaultOptionIndex];
+            m_SelectedOption = m_DefaultOption;
         }
 
-        public void SetOption(string name)
+        public Setting(Func<OptionSet<T>> optionsSetGetter)
         {
-            option = options[name] ?? options.defaultOption;
+            m_OptionsGetter = optionsSetGetter;
+            m_DefaultOption = options[optionSet.defaultOptionIndex];
+            m_SelectedOption = m_DefaultOption;
+        }
+
+        public void SetValue(string name)
+        {
+            foreach (var option in options)
+            {
+                if (option.name == name)
+                {
+                    selectedOption = option;
+                    return;
+                }
+            }
+
+            Reset();
+        }
+
+        public void SetValue(T value)
+        {
+            foreach (var option in options)
+            {
+                if (option.value.Equals(value))
+                {
+                    selectedOption = option;
+                    return;
+                }
+            }
+
+            Reset();
         }
 
         public void Reset()
         {
-            option = options.defaultOption;
-        }
-
-        protected void PerformOnChanged()
-        {
-            onChanged?.Invoke();
-        }
-    }
-
-    public class Setting<T> : Setting
-    {
-        public new Option<T> option => (Option<T>)base.option;
-        public new OptionList<T> options => (OptionList<T>)base.options;
-
-        public Setting(Func<OptionList<T>> optionListGetter) : base(optionListGetter) { }
-        public Setting(OptionList<T> optionList) : base(optionList) { }
-
-        public void SetOption(T value)
-        {
-            var option = ((OptionList<T>)options)[value];
-            base.option = option ?? options.defaultOption;
-        }
-    }
-
-    public class Setting<T1, T2> : Setting
-    {
-        public new Option<T1, T2> option => (Option<T1, T2>)base.option;
-        public new OptionList<T1, T2> options => (OptionList<T1, T2>)base.options;
-
-        public Setting(Func<OptionList<T1, T2>> optionListGetter) : base(optionListGetter) { }
-        public Setting(OptionList<T1, T2> optionList) : base(optionList) { }
-
-        public void SetOption(T1 value)
-        {
-            var option = ((OptionList<T1, T2>)options)[value];
-            base.option = option ?? options.defaultOption;
+            selectedOption = m_DefaultOption;
         }
     }
 }

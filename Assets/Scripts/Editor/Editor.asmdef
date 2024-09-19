@@ -1,7 +1,9 @@
 {
-    "name": "Refresher",
+    "name": "Editor",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:183cb49d26e5c2f40a9eccfbd004b894"
+    ],
     "includePlatforms": [
         "Editor"
     ],

@@ -5,44 +5,35 @@ using UnityEngine;
 
 namespace Settings
 {
-    public abstract class Option
+    [Serializable]
+    public class Option<T>
     {
         [SerializeField] string m_Name;
+        [SerializeField] T m_Value;
 
         public string name => m_Name;
+        public T value => m_Value;
 
-        public Option(string name)
+        public Option(string name, T value)
         {
             m_Name = name;
+            m_Value = value;
         }
     }
 
     [Serializable]
-    public class Option<T> : Option
+    public class OptionSet<T>
     {
-        [SerializeField] T m_value;
+        [SerializeField] int m_DefaultOptionIndex;
+        [SerializeField] List<Option<T>> m_Options;
 
-        public T value => m_value;
+        public int defaultOptionIndex => Mathf.Clamp(m_DefaultOptionIndex, 0, m_Options.Count - 1);
+        public IReadOnlyList<Option<T>> options => m_Options.AsReadOnly();
 
-        public Option(string name, T primaryValue) : base(name)
+        public OptionSet(int defaultOptionIndex, List<Option<T>> options)
         {
-            m_value = primaryValue;
-        }
-    }
-
-    [Serializable]
-    public class Option<T1, T2> : Option
-    {
-        [SerializeField] T1 m_PrimaryValue;
-        [SerializeField] T2 m_SecondaryValue;
-
-        public T1 primaryValue => m_PrimaryValue;
-        public T2 secondaryValue => m_SecondaryValue;
-
-        public Option(string name, T1 primaryValue, T2 secondaryValue) : base(name)
-        {
-            m_PrimaryValue = primaryValue;
-            m_SecondaryValue = secondaryValue;
+            m_DefaultOptionIndex = defaultOptionIndex;
+            m_Options = options;
         }
     }
 }

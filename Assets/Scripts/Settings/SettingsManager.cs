@@ -14,13 +14,6 @@ namespace Settings
         Windowed = 1,
     }
 
-    public enum Quality
-    {
-        Low = 0,
-        Medium = 1,
-        High = 2,
-    }
-
     public sealed class SettingsManager
     {
         public static event Action OnSettingsApplied;
@@ -40,7 +33,7 @@ namespace Settings
         Setting<Vector2Int> m_Resolution;
         Setting<float> m_RefreshRate;
         Setting<bool> m_VerticalSync;
-        Setting<Quality, float> m_BlurQuality;
+        Setting<float> m_BlurQuality;
         Setting<bool> m_ShowWelcomeWindow;
         SaveObject m_SaveObject;
         FullScreenMode m_PreviousFullScreenMode;
@@ -53,7 +46,6 @@ namespace Settings
                 if (s_Instance == null)
                 {
                     s_Instance = new SettingsManager();
-                    s_Instance.Init();
                 }
 
                 return s_Instance;
@@ -64,7 +56,7 @@ namespace Settings
         public static Setting<Vector2Int> Resolution => Instance.m_Resolution;
         public static Setting<float> RefreshRate => Instance.m_RefreshRate;
         public static Setting<bool> VerticalSync => Instance.m_VerticalSync;
-        public static Setting<Quality, float> BlurQuality => Instance.m_BlurQuality;
+        public static Setting<float> BlurQuality => Instance.m_BlurQuality;
         public static Setting<bool> ShowWelcomeWindow => Instance.m_ShowWelcomeWindow;
 
         static SaveObject saveObject
@@ -73,28 +65,18 @@ namespace Settings
             set => Instance.m_SaveObject = value;
         }
 
-        static List<Setting> settings
-        {
-            get => new List<Setting>()
-            {
-                WindowMode,
-                Resolution,
-                RefreshRate,
-                VerticalSync,
-                BlurQuality,
-                ShowWelcomeWindow,
-            };
-        }
-
         SettingsManager()
         {
+            // Set instance to avoid problems with reference being null during constructor's execution.
+            s_Instance = this;
+
             m_WindowMode = new Setting<WindowMode>(SettingsManagerResources.Instance.windowModeOptions);
             m_Resolution = new Setting<Vector2Int>(() => SettingsManagerResources.Instance.resolutionOptions);
             m_Resolution.onChanged += OnResolutionChanged;
 
-            m_RefreshRate = new Setting<float>(() => SettingsManagerResources.Instance.GetRefreshRateOptions(m_Resolution.option.value));
+            m_RefreshRate = new Setting<float>(() => SettingsManagerResources.Instance.GetRefreshRateOptions(m_Resolution.value));
             m_VerticalSync = new Setting<bool>(SettingsManagerResources.Instance.verticalSyncOptions);
-            m_BlurQuality = new Setting<Quality, float>(SettingsManagerResources.Instance.blurQualityOptions);
+            m_BlurQuality = new Setting<float>(SettingsManagerResources.Instance.blurQualityOptions);
             m_ShowWelcomeWindow = new Setting<bool>(SettingsManagerResources.Instance.showWelcomeWindowOptions);
 
             m_PreviousFullScreenMode = Screen.fullScreenMode;
@@ -102,10 +84,7 @@ namespace Settings
 
             m_PreviousScreenSize = new Vector2Int(Screen.width, Screen.height);
             Scheduler.RegisterCallbackEvery(UpdateScreenSize, k_WindowModeUpdateInterval);
-        }
 
-        void Init()
-        {
             Read();
             Apply();
             if (m_SaveObject == null)
@@ -120,13 +99,13 @@ namespace Settings
             for (int i = 1; i < m_RefreshRate.options.Count; i++)
             {
                 var refreshRate = m_RefreshRate.options[i].value;
-                if (Mathf.Abs(m_RefreshRate.option.value - refreshRate) < Mathf.Abs(nearestRefreshRate - refreshRate))
+                if (Mathf.Abs(m_RefreshRate.value - refreshRate) < Mathf.Abs(nearestRefreshRate - refreshRate))
                 {
                     nearestRefreshRate = refreshRate;
                 }
             }
 
-            m_RefreshRate.SetOption(nearestRefreshRate);
+            m_RefreshRate.SetValue(nearestRefreshRate);
         }
 
         void UpdateScreenSize()
@@ -135,7 +114,7 @@ namespace Settings
             if (screenSize != m_PreviousScreenSize)
             {
                 m_PreviousScreenSize = screenSize;
-                m_Resolution.SetOption(screenSize);
+                m_Resolution.SetValue(screenSize);
                 Write();
                 onScreenSizeChanged?.Invoke();
             }
@@ -146,25 +125,17 @@ namespace Settings
             if (Screen.fullScreenMode != m_PreviousFullScreenMode)
             {
                 m_PreviousFullScreenMode = Screen.fullScreenMode;
-                m_WindowMode.SetOption(Screen.fullScreenMode.ToWindowMode());
+                m_WindowMode.SetValue(Screen.fullScreenMode.ToWindowMode());
                 Write();
-            }
-        }
-
-        public static void Reset()
-        {
-            foreach (var setting in settings)
-            {
-                setting.Reset();
             }
         }
 
         public static void Apply()
         {
-            Screen.SetResolution(Resolution.option.value.x, Resolution.option.value.y, WindowMode.option.value.ToFullScreenMode());
-            Application.targetFrameRate = Mathf.RoundToInt(RefreshRate.option.value);
+            Screen.SetResolution(Resolution.value.x, Resolution.value.y, WindowMode.value.ToFullScreenMode());
+            Application.targetFrameRate = Mathf.RoundToInt(RefreshRate.value);
 
-            QualitySettings.vSyncCount = VerticalSync.option.value ? 1 : 0;
+            QualitySettings.vSyncCount = VerticalSync.value ? 1 : 0;
             OnSettingsApplied?.Invoke();
         }
 
@@ -175,23 +146,23 @@ namespace Settings
                 return;
             }
 
-            WindowMode.SetOption(saveObject.TryGetValue(k_WindowModeKey, out WindowMode windowMode) ? windowMode : WindowMode.options.defaultOption.value);
-            Resolution.SetOption(saveObject.TryGetValue(k_ResolutionKey, out Vector2Int resolution) ? resolution : Resolution.options.defaultOption.value);
-            RefreshRate.SetOption(saveObject.TryGetValue(k_RefreshRateKey, out float refreshRate) ? refreshRate : RefreshRate.options.defaultOption.value);
-            VerticalSync.SetOption(saveObject.TryGetValue(k_VerticalSyncKey, out bool verticalSync) ? verticalSync : VerticalSync.options.defaultOption.value);
-            BlurQuality.SetOption(saveObject.TryGetValue(k_BlurQualityKey, out Quality blurQuality) ? blurQuality : BlurQuality.options.defaultOption.primaryValue);
-            ShowWelcomeWindow.SetOption(saveObject.TryGetValue(k_ShowWelcomeWindowKey, out bool showWelcomeWindow) ? showWelcomeWindow : ShowWelcomeWindow.options.defaultOption.value);
+            WindowMode.SetValue(saveObject.TryGetValue(k_WindowModeKey, out WindowMode windowMode) ? windowMode : WindowMode.defaultOption.value);
+            Resolution.SetValue(saveObject.TryGetValue(k_ResolutionKey, out Vector2Int resolution) ? resolution : Resolution.defaultOption.value);
+            RefreshRate.SetValue(saveObject.TryGetValue(k_RefreshRateKey, out float refreshRate) ? refreshRate : RefreshRate.defaultOption.value);
+            VerticalSync.SetValue(saveObject.TryGetValue(k_VerticalSyncKey, out bool verticalSync) ? verticalSync : VerticalSync.defaultOption.value);
+            BlurQuality.SetValue(saveObject.TryGetValue(k_BlurQualityKey, out float blurQuality) ? blurQuality : BlurQuality.defaultOption.value);
+            ShowWelcomeWindow.SetValue(saveObject.TryGetValue(k_ShowWelcomeWindowKey, out bool showWelcomeWindow) ? showWelcomeWindow : ShowWelcomeWindow.defaultOption.value);
         }
 
         public static void Write()
         {
             saveObject = new SaveObject();
-            saveObject.SetValue(k_WindowModeKey, WindowMode.option.value);
-            saveObject.SetValue(k_ResolutionKey, Resolution.option.value);
-            saveObject.SetValue(k_RefreshRateKey, RefreshRate.option.value);
-            saveObject.SetValue(k_VerticalSyncKey, VerticalSync.option.value);
-            saveObject.SetValue(k_BlurQualityKey, BlurQuality.option.primaryValue);
-            saveObject.SetValue(k_ShowWelcomeWindowKey, ShowWelcomeWindow.option.value);
+            saveObject.SetValue(k_WindowModeKey, WindowMode.value);
+            saveObject.SetValue(k_ResolutionKey, Resolution.value);
+            saveObject.SetValue(k_RefreshRateKey, RefreshRate.value);
+            saveObject.SetValue(k_VerticalSyncKey, VerticalSync.value);
+            saveObject.SetValue(k_BlurQualityKey, BlurQuality.value);
+            saveObject.SetValue(k_ShowWelcomeWindowKey, ShowWelcomeWindow.value);
             saveObject.Write(k_SavePath);
         }
 
