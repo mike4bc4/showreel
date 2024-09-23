@@ -199,8 +199,14 @@ namespace Layers
         {
             if (m_MaskElement != null)
             {
+                var scale = new Vector2(Screen.width, Screen.height) / m_MaskElement.panel.visualTree.worldBound.size;
                 var rect = m_MaskElement.worldBound;
-                material.SetVector(k_CropRectProperty, new Vector4(rect.x, Camera.main.pixelHeight - rect.yMax, rect.width, rect.height));
+                var x = rect.x * scale.x;
+                var y = Screen.height - rect.yMax * scale.y;
+                var w = rect.width * scale.x;
+                var h = rect.height * scale.y;
+
+                material.SetVector(k_CropRectProperty, new Vector4(x, y, w, h));
             }
         }
 
