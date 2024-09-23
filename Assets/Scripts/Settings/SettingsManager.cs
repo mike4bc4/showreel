@@ -17,7 +17,6 @@ namespace Settings
     public sealed class SettingsManager
     {
         public static event Action OnSettingsApplied;
-        public static event Action onScreenSizeChanged;
 
         const string k_WindowModeKey = "WindowMode";
         const string k_ResolutionKey = "Resolution";
@@ -26,7 +25,6 @@ namespace Settings
         const string k_BlurQualityKey = "BlurQuality";
         const string k_ShowWelcomeWindowKey = "ShowWelcomeWindow";
         const string k_SavePath = "Settings";
-        const float k_WindowModeUpdateInterval = 0.5f;
         static SettingsManager s_Instance;
 
         Setting<WindowMode> m_WindowMode;
@@ -36,8 +34,6 @@ namespace Settings
         Setting<float> m_BlurQuality;
         Setting<bool> m_ShowWelcomeWindow;
         SaveObject m_SaveObject;
-        FullScreenMode m_PreviousFullScreenMode;
-        Vector2Int m_PreviousScreenSize;
 
         public static SettingsManager Instance
         {
@@ -79,12 +75,6 @@ namespace Settings
             m_BlurQuality = new Setting<float>(SettingsManagerResources.Instance.blurQualityOptions);
             m_ShowWelcomeWindow = new Setting<bool>(SettingsManagerResources.Instance.showWelcomeWindowOptions);
 
-            m_PreviousFullScreenMode = Screen.fullScreenMode;
-            Scheduler.RegisterCallbackEvery(UpdateWindowMode, k_WindowModeUpdateInterval);
-
-            m_PreviousScreenSize = new Vector2Int(Screen.width, Screen.height);
-            Scheduler.RegisterCallbackEvery(UpdateScreenSize, k_WindowModeUpdateInterval);
-
             Read();
             Apply();
             if (m_SaveObject == null)
@@ -106,28 +96,6 @@ namespace Settings
             }
 
             m_RefreshRate.SetValue(nearestRefreshRate);
-        }
-
-        void UpdateScreenSize()
-        {
-            var screenSize = new Vector2Int(Screen.width, Screen.height);
-            if (screenSize != m_PreviousScreenSize)
-            {
-                m_PreviousScreenSize = screenSize;
-                m_Resolution.SetValue(screenSize);
-                Write();
-                onScreenSizeChanged?.Invoke();
-            }
-        }
-
-        void UpdateWindowMode()
-        {
-            if (Screen.fullScreenMode != m_PreviousFullScreenMode)
-            {
-                m_PreviousFullScreenMode = Screen.fullScreenMode;
-                m_WindowMode.SetValue(Screen.fullScreenMode.ToWindowMode());
-                Write();
-            }
         }
 
         public static void Apply()

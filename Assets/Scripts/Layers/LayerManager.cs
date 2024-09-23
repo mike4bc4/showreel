@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
+using Utility;
 
 namespace Layers
 {
@@ -13,6 +14,7 @@ namespace Layers
     {
         const string k_CommandBufferName = "UIDocumentCommandBuffer";
         const CameraEvent k_CameraEvent = CameraEvent.AfterEverything;
+        const int m_IntervalDelayMs = 500;
         static LayerManager s_Instance;
 
         [SerializeField] Shader m_LayerShader;
@@ -22,6 +24,7 @@ namespace Layers
         List<BaseLayer> m_Layers;
         CommandBuffer m_CommandBuffer;
         bool m_CommandBufferDirty;
+        Vector2Int m_PreviousScreenSize;
 
         public static int layerCount => layers.Count;
 
@@ -52,7 +55,8 @@ namespace Layers
 
             s_Instance = this;
             m_Layers = new List<BaseLayer>();
-            SettingsManager.onScreenSizeChanged += OnScreenSizeChanged;
+            m_PreviousScreenSize = new Vector2Int(Screen.width, Screen.height);
+            Scheduler.SetInterval(TrackScreenSizeChanges, m_IntervalDelayMs);
         }
 
         void LateUpdate()
@@ -60,6 +64,16 @@ namespace Layers
             if (m_CommandBufferDirty)
             {
                 RebuildCommandBuffer();
+            }
+        }
+
+        void TrackScreenSizeChanges()
+        {
+            var screenSize = new Vector2Int(Screen.width, Screen.height);
+            if (m_PreviousScreenSize != screenSize)
+            {
+                m_PreviousScreenSize = screenSize;
+                OnScreenSizeChanged();
             }
         }
 
