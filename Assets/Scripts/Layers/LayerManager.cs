@@ -84,7 +84,7 @@ namespace Layers
                 if (baseLayer is Layer layer)
                 {
                     RenderTexture.ReleaseTemporary(layer.uiDocument.panelSettings.targetTexture);
-                    var renderTexture = RenderTexture.GetTemporary(SettingsManager.Resolution.value.x, SettingsManager.Resolution.value.y);
+                    var renderTexture = RenderTexture.GetTemporary(Screen.width, Screen.height);
                     layer.uiDocument.panelSettings.targetTexture = renderTexture;
                     MarkCommandBufferDirty();
                 }
@@ -113,7 +113,7 @@ namespace Layers
 
         public static Layer CreateLayer(string name = "Unnamed")
         {
-            var renderTexture = RenderTexture.GetTemporary(SettingsManager.Resolution.value.x, SettingsManager.Resolution.value.y);
+            var renderTexture = RenderTexture.GetTemporary(Screen.width, Screen.height);
 
             var ps = Instantiate(panelSettings);
             ps.targetTexture = renderTexture;
