@@ -7,29 +7,19 @@ namespace Utility
 {
     public class Scheduler : MonoBehaviour
     {
-        class CallbackObject
+        class Interval
         {
-            Action m_Action;
-            float m_Interval;
-            float m_Delta;
+            public Guid id { get; }
+            public Action func { get; }
+            public int delay { get; }
+            public float delta { get; set; }
 
-            public Action action => m_Action;
-            public float interval
+            public Interval(Action func, int delay)
             {
-                get => m_Interval;
-                set => m_Interval = Mathf.Max(0f, value);
-            }
-
-            public float delta
-            {
-                get => m_Delta;
-                set => m_Delta = value;
-            }
-
-            public CallbackObject(Action action, float interval)
-            {
-                m_Action = action;
-                m_Interval = interval;
+                this.id = System.Guid.NewGuid();
+                this.func = func;
+                this.delay = delay;
+                this.delta = 0;
             }
         }
 
@@ -56,7 +46,7 @@ namespace Utility
         Action m_OnUpdate;
         Action m_OnLateUpdate;
         List<Action> m_DelayedCalls;
-        List<CallbackObject> m_CallbackObjects;
+        Dictionary<Guid, Interval> m_Intervals;
 
         static Scheduler Instance
         {
@@ -92,13 +82,13 @@ namespace Utility
             }
 
             m_DelayedCalls = new List<Action>();
-            m_CallbackObjects = new List<CallbackObject>();
+            m_Intervals = new Dictionary<Guid, Interval>();
         }
 
         void Update()
         {
             m_OnUpdate?.Invoke();
-            UpdateCallbackObjects();
+            UpdateIntervals();
         }
 
         void LateUpdate()
@@ -113,62 +103,30 @@ namespace Utility
             }
         }
 
-        void UpdateCallbackObjects()
+        void UpdateIntervals()
         {
-            for (int i = 0; i < m_CallbackObjects.Count; i++)
+            foreach (var kv in m_Intervals)
             {
-                CallbackObject callbackObject = m_CallbackObjects[i];
-                if (callbackObject.action == null)
+                var interval = kv.Value;
+                interval.delta += Time.deltaTime;
+                if (interval.delta * 1000f >= interval.delay)
                 {
-                    m_CallbackObjects.RemoveAt(i);
-                }
-                else
-                {
-                    callbackObject.delta += Time.deltaTime;
-                    if (callbackObject.delta >= callbackObject.interval)
-                    {
-                        callbackObject.delta = 0f;
-                        callbackObject.action?.Invoke();
-                    }
+                    interval.delta = 0;
+                    interval.func?.Invoke();
                 }
             }
         }
 
-        public static void RegisterCallbackEvery(Action action, float interval)
+        public static Guid SetInterval(Action func, int delay)
         {
-            var callbackObjectIndex = GetCallbackObjectIndex(action);
-            if (callbackObjectIndex < 0)
-            {
-                var callbackObject = new CallbackObject(action, interval);
-                Instance.m_CallbackObjects.Add(callbackObject);
-            }
-            else
-            {
-                Instance.m_CallbackObjects[callbackObjectIndex].interval = interval;
-            }
+            var interval = new Interval(func, delay);
+            Instance.m_Intervals.Add(interval.id, interval);
+            return interval.id;
         }
 
-        public static void UnregisterCallbackEvery(Action action)
+        public static void ClearInterval(Guid id)
         {
-            var callbackObjectIndex = GetCallbackObjectIndex(action);
-            if (callbackObjectIndex >= 0)
-            {
-                Instance.m_CallbackObjects.RemoveAt(callbackObjectIndex);
-            }
-        }
-
-        static int GetCallbackObjectIndex(Action action)
-        {
-            for (int i = 0; i < Instance.m_CallbackObjects.Count; i++)
-            {
-                CallbackObject callbackObject = Instance.m_CallbackObjects[i];
-                if (callbackObject.action == action)
-                {
-                    return i;
-                }
-            }
-
-            return -1;
+            Instance.m_Intervals.Remove(id);
         }
     }
 }
