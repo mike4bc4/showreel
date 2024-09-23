@@ -29,5 +29,10 @@ namespace Settings
                 return WindowMode.Windowed;
             }
         }
+
+        public static Vector2Int GetSize(this Resolution resolution)
+        {
+            return new Vector2Int(resolution.width, resolution.height);
+        }
     }
 }

@@ -28,7 +28,7 @@ namespace Settings
                 var options = new List<Option<Vector2Int>>();
                 foreach (var resolution in Screen.resolutions)
                 {
-                    options.Add(new Option<Vector2Int>(resolution.width + "x" + resolution.height, new Vector2Int(resolution.width, resolution.height)));
+                    options.Add(new Option<Vector2Int>(resolution.width + "x" + resolution.height, resolution.GetSize()));
                 }
 
                 options = options.Distinct().ToList();
