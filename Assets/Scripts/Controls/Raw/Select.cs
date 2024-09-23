@@ -29,6 +29,8 @@ namespace Controls.Raw
             UxmlStringAttributeDescription m_Label = new UxmlStringAttributeDescription() { name = "label", defaultValue = "Select" };
             UxmlStringAttributeDescription m_Choices = new UxmlStringAttributeDescription() { name = "choices" };
             UxmlIntAttributeDescription m_Index = new UxmlIntAttributeDescription() { name = "index", defaultValue = -1 };
+            UxmlFloatAttributeDescription m_OffsetX = new UxmlFloatAttributeDescription() { name = "offset-x", defaultValue = -8f };
+            UxmlFloatAttributeDescription m_OffsetY = new UxmlFloatAttributeDescription() { name = "offset-y", defaultValue = -4f };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
@@ -37,6 +39,8 @@ namespace Controls.Raw
                 select.label = m_Label.GetValueFromBag(bag, cc);
                 select.SetChoices(m_Choices.GetValueFromBag(bag, cc));
                 select.index = m_Index.GetValueFromBag(bag, cc);
+                select.offsetX = m_OffsetX.GetValueFromBag(bag, cc);
+                select.offsetY = m_OffsetY.GetValueFromBag(bag, cc);
             }
         }
 
@@ -53,6 +57,10 @@ namespace Controls.Raw
         IVisualElementScheduledItem m_ListPositionUpdater;
         int m_Index;
         List<string> m_Choices;
+
+        float offsetX { get; set; }
+
+        float offsetY { get; set; }
 
         public IReadOnlyList<string> choices
         {
@@ -172,15 +180,16 @@ namespace Controls.Raw
             {
                 case ContextType.Player:
                     Scheduler.delayCall += FocusCurrentChoice;
+                    Scheduler.delayCall += UpdateListPosition;
                     break;
 #if UNITY_EDITOR
                 case ContextType.Editor:
                     UnityEditor.EditorApplication.delayCall += FocusCurrentChoice;
+                    UnityEditor.EditorApplication.delayCall += UpdateListPosition;
                     break;
 #endif
             }
 
-            UpdateListPosition();
             m_ListPositionUpdater = m_ScrollBoxContainer.schedule.Execute(UpdateListPosition).Every(k_ListPositionUpdateInterval);
         }
 
@@ -211,14 +220,22 @@ namespace Controls.Raw
 
         void UpdateListPosition()
         {
-            var offset = worldBound.position - m_ScrollBoxOverlay.worldBound.position;
-            var scale = worldBound.width / localBound.width;
+            var offset = m_ScrollBoxOverlay.worldBound.position - m_OptionContainer.worldBound.position;
 
-            var position = offset / scale;
-            position.x += m_OptionContainer.localBound.position.x;
-            position.y += localBound.height;
+            // Viewport scale is useful when entire root size is changed through style's translation
+            // property, e.g. when user is zooming in and out in builder mode.
+            var viewportScale = m_ScrollBoxOverlay.worldBound.width / m_ScrollBoxOverlay.localBound.width;
+
+            // This is final scale of select element (after all parent transformations applied), it
+            // should affect size of scroll box container.
+            var localScale = (worldBound.size / localBound.size) / viewportScale;
+
+            var position = -offset / viewportScale;
+            position.y += (localBound.height + offsetY) * localScale.y;
+            position.x += offsetX * localScale.x;
 
             m_ScrollBoxContainer.transform.position = position;
+            m_ScrollBoxContainer.transform.scale = Vector2.one * localScale;
         }
 
         public void DetachScrollBoxOverlay()

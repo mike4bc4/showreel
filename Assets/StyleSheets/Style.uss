@@ -838,8 +838,7 @@
     -unity-background-image-tint-color: rgba(0, 0, 0, 0.1);
     align-self: flex-start;
     -unity-slice-scale: 1px;
-    left: -8px;
-    top: -4px;
+    transform-origin: left top;
 }
 
 .select__scroll-box {
