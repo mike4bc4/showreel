@@ -21,7 +21,7 @@ namespace Boards
 
         [SerializeField] VisualTreeAsset m_InterfaceBoardVisualTreeAsset;
 
-        Layer m_Layer;
+        UILayer m_Layer;
         AnimationPlayer m_ShowHideAnimationPlayer;
         DialogBox m_InfoDialogBox;
         DialogBox m_QuitDialogBox;
@@ -48,7 +48,7 @@ namespace Boards
             m_ShowHideAnimationPlayer.AddAnimation(CreateShowHideAnimation(), k_ShowHideAnimationName);
             m_ShowHideAnimationPlayer.animation = m_ShowHideAnimationPlayer[k_ShowHideAnimationName];
 
-            m_Layer = LayerManager.CreateLayer("Interface");
+            m_Layer = LayerManager.CreateUILayer("Interface");
             m_Layer.AddTemplateFromVisualTreeAsset(m_InterfaceBoardVisualTreeAsset);
             m_Layer.displaySortOrder = DisplaySortOrder;
 
@@ -111,7 +111,7 @@ namespace Boards
             t1.AddKeyframe(20, 1f);
 
             var t2 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
-            t2.AddKeyframe(10, Layer.DefaultBlurSize);
+            t2.AddKeyframe(10, UILayer.DefaultBlurSize);
             t2.AddKeyframe(30, 0f);
 
             animation.AddEvent(30, () =>

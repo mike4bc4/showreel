@@ -14,7 +14,7 @@ public abstract class AnimationDescriptor
     {
         get => new AnimationDescriptor<float>()
         {
-            property = nameof(Layer.alpha),
+            property = nameof(UILayer.alpha),
             targetValue = 1f,
             time = 1f,
         };
@@ -24,7 +24,7 @@ public abstract class AnimationDescriptor
     {
         get => new AnimationDescriptor<float>()
         {
-            property = nameof(Layer.alpha),
+            property = nameof(UILayer.alpha),
             targetValue = 0f,
             time = 1f,
         };
@@ -34,7 +34,7 @@ public abstract class AnimationDescriptor
     {
         get => new AnimationDescriptor<float>()
         {
-            property = nameof(Layer.blurSize),
+            property = nameof(UILayer.blurSize),
             targetValue = 0f,
             time = 1f,
         };
@@ -44,8 +44,8 @@ public abstract class AnimationDescriptor
     {
         get => new AnimationDescriptor<float>()
         {
-            property = nameof(Layer.blurSize),
-            targetValue = Layer.DefaultBlurSize,
+            property = nameof(UILayer.blurSize),
+            targetValue = UILayer.DefaultBlurSize,
             time = 1f,
         };
     }

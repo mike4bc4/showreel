@@ -10,6 +10,7 @@ namespace Boards.States
     public class QuitDialogBoxState : BoardState
     {
         const int k_DisplaySortOrder = 2000;
+        const int k_DefaultInputSortOrder = 2000;
         DialogBox m_DialogBox;
 
         public QuitDialogBoxState(BoardStateContext context) : base(context) { }
@@ -18,6 +19,7 @@ namespace Boards.States
         {
             m_DialogBox = DialogBox.CreateQuitDialogBox();
             m_DialogBox.displaySortOrder = k_DisplaySortOrder;
+            m_DialogBox.inputSortOrder = k_DefaultInputSortOrder;
             m_DialogBox.onStatusChanged += OnStatusChanged;
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Right, Cancel);
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Background, Cancel);

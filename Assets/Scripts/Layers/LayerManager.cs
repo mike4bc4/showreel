@@ -13,6 +13,7 @@ namespace Layers
     public partial class LayerManager : MonoBehaviour
     {
         const string k_CommandBufferName = "UIDocumentCommandBuffer";
+        const string k_DestinationTexturePropertyName = "_DestTex";
         const CameraEvent k_CameraEvent = CameraEvent.AfterEverything;
         const int m_IntervalDelayMs = 500;
         static LayerManager s_Instance;
@@ -20,19 +21,31 @@ namespace Layers
         [SerializeField] Shader m_LayerShader;
         [SerializeField] PanelSettings m_PanelSettings;
         [SerializeField] Material m_BlitCopyMaterial;
+        [SerializeField] Material m_BlitOverMaterial;
 
-        List<BaseLayer> m_Layers;
         CommandBuffer m_CommandBuffer;
         bool m_CommandBufferDirty;
         Vector2Int m_PreviousScreenSize;
-
-        public static int layerCount => layers.Count;
+        GroupLayer m_RootGroupLayer;
+        int m_PropertyNameIndex;
 
         static PanelSettings panelSettings => s_Instance.m_PanelSettings;
         static Shader layerShader => s_Instance.m_LayerShader;
-        static List<BaseLayer> layers => s_Instance.m_Layers;
         static new Transform transform => ((Component)s_Instance).transform;
         static Material blitCopyMaterial => s_Instance.m_BlitCopyMaterial;
+        static GroupLayer rootGroupLayer => s_Instance.m_RootGroupLayer;
+        static Material blitOverMaterial => s_Instance.m_BlitOverMaterial;
+
+        public static LayerManager Instance
+        {
+            get => s_Instance;
+        }
+
+        static int propertyNameIndex
+        {
+            get => s_Instance.m_PropertyNameIndex;
+            set => s_Instance.m_PropertyNameIndex = value;
+        }
 
         static bool commandBufferDirty
         {
@@ -54,7 +67,7 @@ namespace Layers
             }
 
             s_Instance = this;
-            m_Layers = new List<BaseLayer>();
+            m_RootGroupLayer = CreateGroupLayerInternal("Root");
             m_PreviousScreenSize = new Vector2Int(Screen.width, Screen.height);
             Scheduler.SetInterval(TrackScreenSizeChanges, m_IntervalDelayMs);
         }
@@ -79,13 +92,13 @@ namespace Layers
 
         void OnScreenSizeChanged()
         {
-            foreach (var baseLayer in layers)
+            foreach (var layer in m_RootGroupLayer.descendants)
             {
-                if (baseLayer is Layer layer)
+                if (layer is UILayer uiLayer)
                 {
-                    RenderTexture.ReleaseTemporary(layer.uiDocument.panelSettings.targetTexture);
+                    RenderTexture.ReleaseTemporary(uiLayer.uiDocument.panelSettings.targetTexture);
                     var renderTexture = RenderTexture.GetTemporary(Screen.width, Screen.height);
-                    layer.uiDocument.panelSettings.targetTexture = renderTexture;
+                    uiLayer.uiDocument.panelSettings.targetTexture = renderTexture;
                     MarkCommandBufferDirty();
                 }
             }
@@ -96,6 +109,26 @@ namespace Layers
             commandBufferDirty = true;
         }
 
+        static GroupLayer CreateGroupLayerInternal(string name = "Unnamed")
+        {
+            var gameObject = new GameObject();
+            gameObject.transform.SetParent(transform);
+
+            var layer = gameObject.AddComponent<GroupLayer>();
+            layer.name = name;
+            layer.Init();
+
+            MarkCommandBufferDirty();
+            return layer;
+        }
+
+        public static GroupLayer CreateGroupLayer(string name = "Unnamed")
+        {
+            var layer = CreateGroupLayerInternal(name);
+            rootGroupLayer.Add(layer);
+            return layer;
+        }
+
         public static PostProcessingLayer CreatePostProcessingLayer(string name = "Unnamed")
         {
             var gameObject = new GameObject();
@@ -104,14 +137,13 @@ namespace Layers
             var layer = gameObject.AddComponent<PostProcessingLayer>();
             layer.name = name;
             layer.Init(new Material(layerShader));
-            layers.Add(layer);
+            rootGroupLayer.Add(layer);
 
             MarkCommandBufferDirty();
-
             return layer;
         }
 
-        public static Layer CreateLayer(string name = "Unnamed")
+        public static UILayer CreateUILayer(string name = "Unnamed")
         {
             var renderTexture = RenderTexture.GetTemporary(Screen.width, Screen.height);
 
@@ -124,13 +156,12 @@ namespace Layers
             var uiDocument = gameObject.AddComponent<UIDocument>();
             uiDocument.panelSettings = ps;
 
-            var layer = gameObject.AddComponent<Layer>();
+            var layer = gameObject.AddComponent<UILayer>();
             layer.name = name;
             layer.Init(new Material(layerShader), uiDocument);
-            layers.Add(layer);
+            rootGroupLayer.Add(layer);
 
             MarkCommandBufferDirty();
-
             return layer;
         }
 
@@ -142,7 +173,7 @@ namespace Layers
             }
 
             var baseLayer = (BaseLayer)layer;
-            layers.Remove(baseLayer);
+            rootGroupLayer.Remove(baseLayer);
             DestroyImmediate(baseLayer.gameObject);
 
             MarkCommandBufferDirty();
@@ -159,7 +190,7 @@ namespace Layers
 
         public static BaseLayer GetLayer(string name)
         {
-            foreach (var layer in layers)
+            foreach (var layer in rootGroupLayer.descendants)
             {
                 if (layer.name == name)
                 {
@@ -170,15 +201,21 @@ namespace Layers
             return null;
         }
 
+        static string CreateUniquePropertyName(string propertyName)
+        {
+            return propertyName + "_" + propertyNameIndex++;
+        }
+
         static void RebuildCommandBuffer()
         {
+            propertyNameIndex = 0;
             commandBufferDirty = false;
             if (commandBuffer != null)
             {
                 Camera.main.RemoveCommandBuffer(k_CameraEvent, commandBuffer);
             }
 
-            if (layers.Count == 0)
+            if (rootGroupLayer.descendants.Count == 0)
             {
                 return;
             }
@@ -186,7 +223,7 @@ namespace Layers
             commandBuffer = new CommandBuffer();
             commandBuffer.name = k_CommandBufferName;
 
-            var outputTexID = Shader.PropertyToID("_OutputRT");
+            var outputTexID = Shader.PropertyToID(CreateUniquePropertyName("Camera"));
             commandBuffer.GetTemporaryRT(outputTexID, -1, -1);  // -1, -1 For camera pixel width and height.
 
             // Here we are copying camera texture into output texture to preserve originally generated image.
@@ -195,28 +232,73 @@ namespace Layers
             // coords if UNITY_UV_STARTS_AT_TOP keyword is enabled.
             commandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, outputTexID, blitCopyMaterial);
 
-            layers.Sort(BaseLayer.Comparer);
-            for (int i = 0; i < layers.Count; i++)
+            void RenderGroupLayer(GroupLayer groupLayer, int parentTexID)
             {
-                layers[i].transform.SetSiblingIndex(i);
+                var groupOutputTexId = Shader.PropertyToID(CreateUniquePropertyName(groupLayer.name));
+                commandBuffer.GetTemporaryRT(groupOutputTexId, -1, -1);
+                commandBuffer.SetRenderTarget(groupOutputTexId);
+                commandBuffer.ClearRenderTarget(true, true, Color.clear);
 
-                if (!layers[i].visible)
+                if (groupLayer.dirty)
                 {
-                    continue;
+                    groupLayer.Sort();
                 }
 
-                if (layers[i] is Layer layer)
+                for (int i = 0; i < groupLayer.count; i++)
                 {
-                    commandBuffer.Blit(layer.uiDocument.panelSettings.targetTexture, outputTexID, layer.material);
+                    var layer = groupLayer[i];
+                    if (!layer.visible)
+                    {
+                        continue;
+                    }
+
+                    if (layer is UILayer uiLayer)
+                    {
+                        // First blit to fresh render texture.
+                        var tempRT1 = Shader.PropertyToID(CreateUniquePropertyName(layer.name));
+                        commandBuffer.GetTemporaryRT(tempRT1, -1, -1);
+                        commandBuffer.SetRenderTarget(tempRT1);
+                        commandBuffer.ClearRenderTarget(true, true, Color.clear);
+                        commandBuffer.Blit(uiLayer.uiDocument.panelSettings.targetTexture, tempRT1, uiLayer.material);
+
+                        // Because Blit basically redraws source into destination using given material,
+                        // entire group texture is being overwritten and lost. We want to preserve it, 
+                        // so let's copy said texture into another temporary RT. 
+                        var tempRT2 = Shader.PropertyToID(CreateUniquePropertyName("GroupCopy"));
+                        commandBuffer.GetTemporaryRT(tempRT2, -1, -1);
+                        commandBuffer.CopyTexture(groupOutputTexId, tempRT2);
+
+                        // We are setting our 'backup' group texture as global property, so blit over
+                        // material can make use of it.
+                        commandBuffer.SetGlobalTexture(k_DestinationTexturePropertyName, tempRT2);
+
+                        // Now 'blit over' new layer.
+                        commandBuffer.Blit(tempRT1, groupOutputTexId, blitOverMaterial);
+                    }
+                    else if (layer is PostProcessingLayer postProcessingLayer)
+                    {
+                        // Since blit source has to be different from destination, first let's make
+                        // a copy of group texture.
+                        var tempRT = Shader.PropertyToID(CreateUniquePropertyName(layer.name));
+                        commandBuffer.GetTemporaryRT(tempRT, -1, -1);
+                        commandBuffer.CopyTexture(groupOutputTexId, tempRT);
+                        commandBuffer.Blit(tempRT, groupOutputTexId, postProcessingLayer.material);
+                    }
+                    else if (layer is GroupLayer gLayer)
+                    {
+                        RenderGroupLayer(gLayer, groupOutputTexId);
+                    }
                 }
-                else if (layers[i] is PostProcessingLayer postProcessingLayer)
-                {
-                    var tmpTexID = Shader.PropertyToID("_Temp1" + i);
-                    commandBuffer.GetTemporaryRT(tmpTexID, -1, -1);
-                    commandBuffer.Blit(outputTexID, tmpTexID);
-                    commandBuffer.Blit(tmpTexID, outputTexID, postProcessingLayer.material);
-                }
+
+                // Finally 'blit over' entire group, this process is similar to UILayer blit.
+                var tempRT3 = Shader.PropertyToID(CreateUniquePropertyName("GroupParentCopy"));
+                commandBuffer.GetTemporaryRT(tempRT3, -1, -1);
+                commandBuffer.CopyTexture(parentTexID, tempRT3);
+                commandBuffer.SetGlobalTexture(k_DestinationTexturePropertyName, tempRT3);
+                commandBuffer.Blit(groupOutputTexId, parentTexID, blitOverMaterial);
             }
+
+            RenderGroupLayer(rootGroupLayer, outputTexID);
 
             commandBuffer.Blit(outputTexID, Camera.main.targetTexture);
             Camera.main.AddCommandBuffer(k_CameraEvent, commandBuffer);

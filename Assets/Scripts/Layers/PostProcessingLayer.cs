@@ -6,8 +6,11 @@ using UnityEngine.UIElements;
 
 namespace Layers
 {
-    public class PostProcessingLayer : BaseLayer
+    public class PostProcessingLayer : Layer
     {
-        public new void Init(Material material) => base.Init(material);
+        public new void Init(Material material)
+        {
+            base.Init(material);
+        }
     }
 }

@@ -246,6 +246,7 @@ MonoBehaviour:
   m_LayerShader: {fileID: 4800000, guid: 68553664106206540850324776dba1d6, type: 3}
   m_PanelSettings: {fileID: 11400000, guid: b1f21ef6f4a03c743b6cc1cf0d7ab1b1, type: 2}
   m_BlitCopyMaterial: {fileID: 2100000, guid: e9dacb50b4dd9074abc5be05401e67ac, type: 2}
+  m_BlitOverMaterial: {fileID: 2100000, guid: a76a23161749a884188c62b8b7f6c381, type: 2}
 --- !u!4 &550329976
 Transform:
   m_ObjectHideFlags: 0

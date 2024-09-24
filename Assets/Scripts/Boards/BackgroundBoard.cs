@@ -15,7 +15,7 @@ namespace Boards
 
         [SerializeField] VisualTreeAsset m_BackgroundBoardVisualTreeAsset;
 
-        Layer m_BackgroundBoardLayer;
+        UILayer m_BackgroundBoardLayer;
 
         public override bool interactable
         {
@@ -30,7 +30,7 @@ namespace Boards
 
         public override void ShowImmediate()
         {
-            m_BackgroundBoardLayer = LayerManager.CreateLayer("Background");
+            m_BackgroundBoardLayer = LayerManager.CreateUILayer("Background");
             m_BackgroundBoardLayer.displaySortOrder = DisplaySortOrder;
             m_BackgroundBoardLayer.AddTemplateFromVisualTreeAsset(m_BackgroundBoardVisualTreeAsset);
             interactable = false;

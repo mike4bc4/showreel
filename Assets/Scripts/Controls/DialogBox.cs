@@ -13,6 +13,7 @@ namespace Controls
     public class DialogBox : DisposableObject
     {
         const int k_DefaultDisplaySortOrder = 100;
+        const int k_DefaultInputSortOrder = 100;
         const string k_ShowHideAnimationName = "ShowHideAnimation";
         const string k_TitleAnimationName = "TitleAnimation";
         const float k_PopupScale = 0.95f;
@@ -39,7 +40,8 @@ namespace Controls
 
         public event Action<Status> onStatusChanged;
 
-        Layer m_Layer;
+        GroupLayer m_GroupLayer;
+        UILayer m_UILayer;
         PostProcessingLayer m_BackgroundPostProcessingLayer;
         PostProcessingLayer m_PostProcessingLayer;
         Controls.Raw.DialogBox m_DialogBox;
@@ -104,19 +106,18 @@ namespace Controls
 
         public int displaySortOrder
         {
-            get => m_Layer.displaySortOrder;
+            get => m_GroupLayer.displaySortOrder;
             set
             {
-                m_Layer.displaySortOrder = value;
+                m_GroupLayer.displaySortOrder = value;
                 m_BackgroundPostProcessingLayer.displaySortOrder = value - 1;
-                m_PostProcessingLayer.displaySortOrder = value + 1;
             }
         }
 
         public int inputSortOrder
         {
-            get => m_Layer.inputSortOrder;
-            set => m_Layer.inputSortOrder = value;
+            get => m_UILayer.inputSortOrder;
+            set => m_UILayer.inputSortOrder = value;
         }
 
         public DialogBox()
@@ -127,10 +128,18 @@ namespace Controls
                 m_ClickDelegates.Add(delegate { });
             }
 
-            m_Layer = LayerManager.CreateLayer("DialogBox");
+            m_GroupLayer = LayerManager.CreateGroupLayer("DialogBox");
             m_BackgroundPostProcessingLayer = LayerManager.CreatePostProcessingLayer("DialogBoxBackground");
-            m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer("DialogBox");
             displaySortOrder = k_DefaultDisplaySortOrder;
+
+            m_UILayer = LayerManager.CreateUILayer("DialogBox");
+            m_UILayer.displaySortOrder = k_DefaultDisplaySortOrder;
+            m_GroupLayer.Add(m_UILayer);
+            inputSortOrder = k_DefaultInputSortOrder;
+
+            m_PostProcessingLayer = LayerManager.CreatePostProcessingLayer("DialogBox");
+            m_PostProcessingLayer.displaySortOrder = k_DefaultDisplaySortOrder + 1;
+            m_GroupLayer.Add(m_PostProcessingLayer);
 
             m_DialogBox = new Controls.Raw.DialogBox();
             m_DialogBox.rightButton.clicked += () => PerformClick(ButtonIndex.Right);
@@ -143,7 +152,7 @@ namespace Controls
                 }
             });
 
-            m_Layer.rootVisualElement.Add(m_DialogBox);
+            m_UILayer.rootVisualElement.Add(m_DialogBox);
 
             m_ShowHideAnimationPlayer = new AnimationPlayer();
             m_ShowHideAnimationPlayer.AddAnimation(CreateShowHideAnimation(), k_ShowHideAnimationName);
@@ -159,9 +168,9 @@ namespace Controls
         void HideImmediateInternal()
         {
             m_BackgroundPostProcessingLayer.visible = false;
-            m_Layer.visible = false;
-            m_Layer.interactable = false;
-            m_Layer.blocksRaycasts = false;
+            m_UILayer.visible = false;
+            m_UILayer.interactable = false;
+            m_UILayer.blocksRaycasts = false;
             m_PostProcessingLayer.visible = false;
         }
 
@@ -225,9 +234,9 @@ namespace Controls
                 if (m_ShowHideAnimationPlayer.playbackSpeed >= 0)
                 {
                     m_BackgroundPostProcessingLayer.visible = true;
-                    m_Layer.visible = true;
-                    m_Layer.blocksRaycasts = true;
-                    m_Layer.interactable = false;
+                    m_UILayer.visible = true;
+                    m_UILayer.blocksRaycasts = true;
+                    m_UILayer.interactable = false;
 
                     m_DialogBox.title.animationProgress = 0f;
                     m_DialogBox.title.style.opacity = 0f;
@@ -235,9 +244,9 @@ namespace Controls
                 else
                 {
                     m_BackgroundPostProcessingLayer.visible = false;
-                    m_Layer.visible = false;
-                    m_Layer.blocksRaycasts = false;
-                    m_Layer.interactable = false;
+                    m_UILayer.visible = false;
+                    m_UILayer.blocksRaycasts = false;
+                    m_UILayer.interactable = false;
 
                     m_DialogBox.title.animationProgress = 1f;
                     m_DialogBox.title.style.opacity = 1f;
@@ -261,20 +270,20 @@ namespace Controls
             t3.AddKeyframe(20, k_PopupScale);
             t3.AddKeyframe(35, 1f);
 
-            var t4 = animation.AddTrack((float alpha) => m_Layer.alpha = alpha);
+            var t4 = animation.AddTrack((float alpha) => m_UILayer.alpha = alpha);
             t4.AddKeyframe(20, 0f);
             t4.AddKeyframe(35, 1f);
             animation.AddEvent(35, () =>
             {
                 if (m_ShowHideAnimationPlayer.playbackSpeed >= 0)
                 {
-                    m_Layer.interactable = true;
+                    m_UILayer.interactable = true;
                     m_TitleAnimationPlayer.Play();
                     status = Status.Shown;
                 }
                 else
                 {
-                    m_Layer.interactable = false;
+                    m_UILayer.interactable = false;
                     m_TitleAnimationPlayer.Pause();
                 }
             });
@@ -300,7 +309,7 @@ namespace Controls
             t1.AddKeyframe(20, 1f);
 
             var blurTrack = animation.AddTrack((float blurSize) => m_PostProcessingLayer.blurSize = blurSize);
-            blurTrack.AddKeyframe(10, BaseLayer.DefaultBlurSize);
+            blurTrack.AddKeyframe(10, Layer.DefaultBlurSize);
             blurTrack.AddKeyframe(30, 0f, Easing.StepOut);
 
             var t3 = animation.AddTrack((float animationProgress) => m_DialogBox.title.animationProgress = animationProgress);
@@ -319,7 +328,7 @@ namespace Controls
             t4.AddKeyframe(90, 0f);
             t4.AddKeyframe(110, 1f);
 
-            blurTrack.AddKeyframe(90, BaseLayer.DefaultBlurSize);
+            blurTrack.AddKeyframe(90, Layer.DefaultBlurSize);
             blurTrack.AddKeyframe(120, 0f);
             animation.AddEvent(120, () =>
             {
@@ -342,9 +351,10 @@ namespace Controls
             m_ShowHideAnimationPlayer.Stop();
             m_TitleAnimationPlayer.Stop();
 
-            LayerManager.RemoveLayer(m_Layer);
+            LayerManager.RemoveLayer(m_UILayer);
             LayerManager.RemoveLayer(m_BackgroundPostProcessingLayer);
             LayerManager.RemoveLayer(m_PostProcessingLayer);
+            LayerManager.RemoveLayer(m_GroupLayer);
 
             m_Disposed = true;
         }

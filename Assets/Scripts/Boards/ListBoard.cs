@@ -38,7 +38,7 @@ namespace Boards
         [SerializeField] VisualTreeAsset m_VisualTreeAsset;
         [SerializeField] VideoClip m_InitialVideoClip;
 
-        Layer m_Layer;
+        UILayer m_Layer;
         List<PostProcessingLayer> m_PostProcessingLayers;
 
         AnimationPlayer m_AnimationPlayer;
@@ -214,7 +214,7 @@ namespace Boards
 
         public override void Init()
         {
-            m_Layer = LayerManager.CreateLayer("ListBoard");
+            m_Layer = LayerManager.CreateUILayer("ListBoard");
             m_TemplateContainer = m_Layer.AddTemplateFromVisualTreeAsset(m_VisualTreeAsset);
             m_Layer.displaySortOrder = DisplaySortOrder;
 
@@ -648,7 +648,7 @@ namespace Boards
             var animation = new KeyframeAnimation();
             var t1 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
             t1.AddKeyframe(0, 0f);
-            t1.AddKeyframe(20, Layer.DefaultBlurSize);
+            t1.AddKeyframe(20, UILayer.DefaultBlurSize);
 
             var t2 = animation.AddTrack(alpha => m_Layer.alpha = alpha);
             t2.AddKeyframe(10, 1f);

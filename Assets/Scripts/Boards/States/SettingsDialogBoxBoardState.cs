@@ -12,6 +12,7 @@ namespace Boards.States
     public class SettingsDialogBoxState : BoardState
     {
         const int k_DefaultDisplaySortOrder = 2000;
+        const int k_DefaultInputSortOrder = 2000;
         DialogBox m_DialogBox;
         Select m_WindowModeSelect;
         Select m_ResolutionSelect;
@@ -51,6 +52,7 @@ namespace Boards.States
             UpdateWindowModeSelect();
 
             m_DialogBox.displaySortOrder = k_DefaultDisplaySortOrder;
+            m_DialogBox.inputSortOrder = k_DefaultInputSortOrder;
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Left, Confirm);
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Right, Cancel);
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Background, Cancel);

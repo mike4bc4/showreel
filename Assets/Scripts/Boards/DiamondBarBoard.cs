@@ -99,7 +99,7 @@ public class DiamondBarBoard : Board
 
     [SerializeField] VisualTreeAsset m_DiamondBarBoardVisualTreeAsset;
 
-    Layer m_Layer;
+    UILayer m_Layer;
     DiamondBar m_DiamondBar;
     List<BarElementHandler> m_BarElementHandlers;
 
@@ -182,7 +182,7 @@ public class DiamondBarBoard : Board
     {
         m_BarElementHandlers = new List<BarElementHandler>();
 
-        m_Layer = LayerManager.CreateLayer("DiamondBar");
+        m_Layer = LayerManager.CreateUILayer("DiamondBar");
         m_Layer.AddTemplateFromVisualTreeAsset(m_DiamondBarBoardVisualTreeAsset);
         m_Layer.displaySortOrder = k_DisplaySortOrder;
 

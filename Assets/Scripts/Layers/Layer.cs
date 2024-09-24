@@ -1,121 +1,159 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using Settings;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Extensions;
 
 namespace Layers
 {
-    public class Layer : BaseLayer
+    public abstract class Layer : BaseLayer
     {
-        const string k_LayerRootUssClassName = "layer-root";
+        public const float DefaultBlurSize = 8f;
 
-        UIDocument m_UIDocument;
-        VisualElement m_RootVisualElement;
-        int? m_InputSortOrder;
+        const string k_TintPropertyName = "_Tint";
+        const string k_CropRectPropertyName = "_CropRect";
+        const string k_BlurSizePropertyName = "_BlurSize";
+        const string k_BlurQualityPropertyName = "_BlurQuality";
+        const string k_OverscanPropertyName = "_Overscan";
 
-        public override bool visible
+        const string k_UseCropRectKeyword = "_USE_CROP_RECT";
+        const string k_BlurEnabledKeyword = "_BLUR_ENABLED";
+
+        Material m_Material;
+        Color m_Tint;
+        float m_Alpha;
+        VisualElement m_MaskElement;
+        float m_BlurSize;
+        float m_BlurQuality;
+        Overscan m_Overscan;
+
+        public Material material
         {
-            get => base.visible;
+            get => m_Material;
+        }
+
+        public Color tint
+        {
+            get => m_Tint;
             set
             {
-                // In addition to default behavior make sure that ui document root visual element is
-                // empty when layer is not visible. This effectively removes panel from ui renderer
-                // and no write to render texture occurs.
-                var previousVisible = visible;
-                base.visible = value;
-                if (visible != previousVisible)
+                m_Tint = value;
+                m_Tint.a = alpha;
+                material.SetColor(k_TintPropertyName, value);
+            }
+        }
+
+        public float alpha
+        {
+            get => m_Alpha;
+            set
+            {
+                m_Alpha = Mathf.Clamp01(value);
+                var color = m_Tint;
+                color.a = m_Alpha;
+                material.SetColor(k_TintPropertyName, color);
+            }
+        }
+
+        public VisualElement maskElement
+        {
+            get => m_MaskElement;
+            set
+            {
+                m_MaskElement = value;
+                if (m_MaskElement != null)
                 {
-                    if (!visible)
-                    {
-                        uiDocument.rootVisualElement.Remove(m_RootVisualElement);
-                    }
-                    else
-                    {
-                        uiDocument.rootVisualElement.Add(m_RootVisualElement);
-                    }
+                    material.EnableKeyword(k_UseCropRectKeyword);
+                    UpdateTrackedElement();
+                }
+                else
+                {
+                    material.DisableKeyword(k_UseCropRectKeyword);
                 }
             }
         }
 
-        public UIDocument uiDocument
+        public float blurSize
         {
-            get => m_UIDocument;
-        }
-
-        public override int displaySortOrder
-        {
-            get => base.displaySortOrder;
+            get => m_BlurSize;
             set
             {
-                base.displaySortOrder = value;
-                if (m_InputSortOrder == null)
+                m_BlurSize = value;
+                material.SetFloat(k_BlurSizePropertyName, value);
+                if (m_BlurSize > 0)
                 {
-                    uiDocument.panelSettings.sortingOrder = value;
+                    material.EnableKeyword(k_BlurEnabledKeyword);
+                }
+                else
+                {
+                    material.DisableKeyword(k_BlurEnabledKeyword);
                 }
             }
         }
 
-        public int inputSortOrder
+        public float blurQuality
         {
-            get => (int)uiDocument.panelSettings.sortingOrder;
+            get => m_BlurQuality;
             set
             {
-                m_InputSortOrder = value;
-                uiDocument.panelSettings.sortingOrder = value;
+                m_BlurQuality = value;
+                material.SetFloat(k_BlurQualityPropertyName, m_BlurQuality);
             }
         }
 
-        public VisualElement rootVisualElement
+        public Overscan overscan
         {
-            get => m_RootVisualElement;
+            get => m_Overscan;
+            set
+            {
+                m_Overscan = value;
+                material.SetVector(k_OverscanPropertyName, m_Overscan);
+            }
         }
 
-        public bool interactable
+        protected void Init(Material material)
         {
-            get => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelEventHandler>().isActiveAndEnabled;
-            set => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelEventHandler>().enabled = value;
+            base.Init();
+            SettingsManager.OnSettingsApplied += OnSettingsApplied;
+            m_Material = material;
+            blurSize = 0;
+            blurQuality = SettingsManager.BlurQuality.value;
+            tint = Color.white;
+            alpha = 1f;
         }
 
-        // This actually is kind of workaround, as normally we would have to change picking mode for
-        // every element in Visual Tree Asset hierarchy. It would introduce a serious flaw as
-        // not only previous picking mode setting would be lost but also each new object with 
-        // default picking mode would still block raycast. That's why it's way more reliable to
-        // enable or disable PanelRaycaster component  This comes at cost of using reflection,
-        // as RuntimePanel object which contains Visual Element hierarchy is inaccessible 
-        // and hidden behind IPanel interface.
-        public bool blocksRaycasts
+        void Update()
         {
-            get => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelRaycaster>().isActiveAndEnabled;
-            set => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelRaycaster>().enabled = value;
+            if (visible)
+            {
+                UpdateTrackedElement();
+            }
         }
 
-        public void Init(Material material, UIDocument uiDocument)
+        void UpdateTrackedElement()
         {
-            base.Init(material);
-            m_UIDocument = uiDocument;
+            if (m_MaskElement != null)
+            {
+                var scale = new Vector2(Screen.width, Screen.height) / m_MaskElement.panel.visualTree.worldBound.size;
+                var rect = m_MaskElement.worldBound;
+                var x = rect.x * scale.x;
+                var y = Screen.height - rect.yMax * scale.y;
+                var w = rect.width * scale.x;
+                var h = rect.height * scale.y;
 
-            m_RootVisualElement = new VisualElement();
-            m_RootVisualElement.name = "layer-root";
-            m_RootVisualElement.pickingMode = PickingMode.Ignore;
-            m_RootVisualElement.AddToClassList(k_LayerRootUssClassName);
-            uiDocument.rootVisualElement.Add(m_RootVisualElement);
-        }
-
-        public TemplateContainer AddTemplateFromVisualTreeAsset(VisualTreeAsset visualTreeAsset)
-        {
-            var templateContainer = visualTreeAsset.Instantiate();
-            templateContainer.pickingMode = PickingMode.Ignore;
-            templateContainer.style.flexGrow = 1f;
-            rootVisualElement.Add(templateContainer);
-            return templateContainer;
+                material.SetVector(k_CropRectPropertyName, new Vector4(x, y, w, h));
+            }
         }
 
         void OnDestroy()
         {
-            RenderTexture.ReleaseTemporary(uiDocument.panelSettings.targetTexture);
+            SettingsManager.OnSettingsApplied -= OnSettingsApplied;
+            Destroy(m_Material);
+        }
+
+        void OnSettingsApplied()
+        {
+            blurQuality = SettingsManager.BlurQuality.value;
         }
     }
 }

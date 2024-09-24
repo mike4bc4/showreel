@@ -26,7 +26,7 @@ namespace Boards
         AnimationPlayer m_AnimationPlayer;
         AnimationPlayer m_SubtitleAnimationPlayer;
 
-        Layer m_Layer;
+        UILayer m_Layer;
         PostProcessingLayer m_PostProcessingLayer;
         DiamondTitle m_Title;
         Subtitle m_Subtitle;
@@ -45,7 +45,7 @@ namespace Boards
 
         public override void Init()
         {
-            m_Layer = LayerManager.CreateLayer("Initial");
+            m_Layer = LayerManager.CreateUILayer("Initial");
             m_Layer.displaySortOrder = DisplaySortOrder;
             m_Layer.AddTemplateFromVisualTreeAsset(m_InitialBoardVisualTreeAsset);
 
@@ -140,7 +140,7 @@ namespace Boards
             t1.AddKeyframe(20, 1f);
 
             var blurTrack = animation.AddTrack(blurSize => m_PostProcessingLayer.blurSize = blurSize);
-            blurTrack.AddKeyframe(10, Layer.DefaultBlurSize);
+            blurTrack.AddKeyframe(10, UILayer.DefaultBlurSize);
             blurTrack.AddKeyframe(30, 0f, Easing.StepOut);
 
             animation.AddEvent(30, () =>
@@ -162,8 +162,8 @@ namespace Boards
             t3.AddKeyframe(90, 0f);
             t3.AddKeyframe(110, 1f);
 
-            blurTrack.AddKeyframe(90, Layer.DefaultBlurSize);
-            blurTrack.AddKeyframe(100, Layer.DefaultBlurSize);
+            blurTrack.AddKeyframe(90, UILayer.DefaultBlurSize);
+            blurTrack.AddKeyframe(100, UILayer.DefaultBlurSize);
             blurTrack.AddKeyframe(120, 0f, Easing.StepOut);
 
             animation.AddEvent(120, () =>
@@ -177,8 +177,8 @@ namespace Boards
             t4.AddKeyframe(120, 0f);
             t4.AddKeyframe(140, 1f);
 
-            blurTrack.AddKeyframe(121, Layer.DefaultBlurSize);
-            blurTrack.AddKeyframe(130, Layer.DefaultBlurSize);
+            blurTrack.AddKeyframe(121, UILayer.DefaultBlurSize);
+            blurTrack.AddKeyframe(130, UILayer.DefaultBlurSize);
             blurTrack.AddKeyframe(150, 0f, Easing.StepOut);
 
             animation.AddEvent(150, () =>
@@ -210,7 +210,7 @@ namespace Boards
 
             var t1 = animation.AddTrack(blurSize => m_Layer.blurSize = blurSize);
             t1.AddKeyframe(0, 0f);
-            t1.AddKeyframe(20, Layer.DefaultBlurSize);
+            t1.AddKeyframe(20, UILayer.DefaultBlurSize);
 
             var t2 = animation.AddTrack(alpha => m_Layer.alpha = alpha);
             t2.AddKeyframe(10, 1f);
