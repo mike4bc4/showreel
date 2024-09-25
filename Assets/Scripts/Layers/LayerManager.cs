@@ -148,6 +148,7 @@ namespace Layers
             var renderTexture = RenderTexture.GetTemporary(Screen.width, Screen.height);
 
             var ps = Instantiate(panelSettings);
+            ps.name = name;
             ps.targetTexture = renderTexture;
 
             var gameObject = new GameObject();
