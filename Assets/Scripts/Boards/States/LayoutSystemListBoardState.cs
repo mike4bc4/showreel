@@ -31,6 +31,7 @@ namespace Boards.States
                         listBoard.interactable = true;
                     });
                     break;
+                case SettingsDialogBoxState:
                 case QuitDialogBoxState:
                     listBoard.interactable = true;
                     break;
