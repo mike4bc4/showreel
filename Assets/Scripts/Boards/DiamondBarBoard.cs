@@ -14,97 +14,20 @@ public class DiamondBarBoard : Board
     const int k_DisplaySortOrder = 100;
     const string k_ShowHideAnimationName = "ShowHideAnimation";
     const string k_ActiveIndexAnimationName = "ActiveIndexAnimation";
-
-    class BarElementHandler
-    {
-        const string k_LoopingAnimationName = "LoopingAnimation";
-        const string k_TileScaleAnimationName = "TileScaleAnimation";
-
-        DiamondBarElement m_Element;
-        AnimationPlayer m_LoopingAnimationPlayer;
-        AnimationPlayer m_TileScaleAnimationPlayer;
-
-        public BarElementHandler(DiamondBarElement element)
-        {
-            m_Element = element;
-
-            m_LoopingAnimationPlayer = new AnimationPlayer();
-            m_LoopingAnimationPlayer.wrapMode = KeyframeSystem.WrapMode.Loop;
-            m_LoopingAnimationPlayer.AddAnimation(CreateLoopingAnimation(), k_LoopingAnimationName);
-            m_LoopingAnimationPlayer.animation = m_LoopingAnimationPlayer[k_LoopingAnimationName];
-
-            m_LoopingAnimationPlayer.Sample();  // Sample animation to apply initial animation progress.
-
-            m_TileScaleAnimationPlayer = new AnimationPlayer();
-            m_TileScaleAnimationPlayer.AddAnimation(CreateTileScaleAnimation(), k_TileScaleAnimationName);
-            m_TileScaleAnimationPlayer.animation = m_TileScaleAnimationPlayer[k_TileScaleAnimationName];
-
-            m_TileScaleAnimationPlayer.Sample();    // Sample animation to apply initial tile scale.
-        }
-
-        public void PlayLoopingAnimation()
-        {
-            m_LoopingAnimationPlayer.Play();
-        }
-
-        public void PauseLoopingAnimation()
-        {
-            m_LoopingAnimationPlayer.Pause();
-        }
-
-        public void TileScaleShrink()
-        {
-            m_TileScaleAnimationPlayer.playbackSpeed = 1f;
-            m_TileScaleAnimationPlayer.Play();
-        }
-
-        public void TileScaleGrow()
-        {
-            m_TileScaleAnimationPlayer.playbackSpeed = -1f;
-            m_TileScaleAnimationPlayer.Play();
-        }
-
-        KeyframeAnimation CreateLoopingAnimation()
-        {
-            var animation = new KeyframeAnimation();
-
-            var t1 = animation.AddTrack(animationProgress => m_Element.diamond.animationProgress = animationProgress);
-            t1.AddKeyframe(0, 0f, Easing.Linear);
-            t1.AddKeyframe(240, 1f);
-
-            return animation;
-        }
-
-        KeyframeAnimation CreateTileScaleAnimation()
-        {
-            var animation = new KeyframeAnimation();
-
-            animation.AddEvent(0, () =>
-            {
-                if (!animation.player.isPlayingForward)
-                {
-                    // Stop (reset) looping animation player when tile scale is one to avoid 'snappy'
-                    // animation rewind effect.
-                    m_LoopingAnimationPlayer.Stop();
-                }
-            });
-
-            var t1 = animation.AddTrack(t => m_Element.diamond.targetTileScale = Mathf.Lerp(1f, DiamondTiled.DefaultTargetTileScale, t));
-            t1.AddKeyframe(0, 0f);
-            t1.AddKeyframe(20, 1f);
-
-            return animation;
-        }
-    }
+    const string k_TileScaleAnimationName = "TileScaleAnimation";
+    const string k_LoopingAnimationName = "LoopingAnimation";
 
     [SerializeField] VisualTreeAsset m_DiamondBarBoardVisualTreeAsset;
 
     UILayer m_Layer;
     DiamondBar m_DiamondBar;
-    List<BarElementHandler> m_BarElementHandlers;
 
     AnimationPlayer m_ShowHideAnimationPlayer;
     AnimationPlayer m_ActiveIndexAnimationPlayer;
+    AnimationPlayer m_LoopingAnimationPlayer;
+
+    Action m_ActiveIndexGrowCompletedCallback;
+    Action m_ActiveIndexShrinkCompletedCallback;
 
     int m_TargetActiveIndex;
 
@@ -122,15 +45,7 @@ public class DiamondBarBoard : Board
     public int size
     {
         get => m_DiamondBar.size;
-        set
-        {
-            m_DiamondBar.size = value;
-            m_BarElementHandlers.Clear();
-            foreach (var element in m_DiamondBar.elements)
-            {
-                m_BarElementHandlers.Add(new BarElementHandler(element));
-            }
-        }
+        set => m_DiamondBar.size = value;
     }
 
     public int activeIndex
@@ -138,50 +53,39 @@ public class DiamondBarBoard : Board
         get => m_TargetActiveIndex;
         set
         {
-            if (value == m_TargetActiveIndex)
+            m_TargetActiveIndex = Mathf.Clamp(value, -1, m_DiamondBar.size - 1);
+            if (value == m_DiamondBar.activeIndex)
             {
                 return;
             }
 
-            m_TargetActiveIndex = value;
-
-            // Reset currently active bar element.
-            if (0 <= m_DiamondBar.activeIndex && m_DiamondBar.activeIndex < m_DiamondBar.size)
+            if (m_DiamondBar.activeDiamond != null)
             {
-                var elementHandler = m_BarElementHandlers[m_DiamondBar.activeIndex];
-                elementHandler.TileScaleGrow();
-                elementHandler.PauseLoopingAnimation();
-            }
+                ShrinkActiveIndex(() =>
+                {
+                    m_LoopingAnimationPlayer.Stop();
+                    m_DiamondBar.activeDiamond.animationProgress = 0;
 
-            // Delay active element switch with animation.
-            if (m_ActiveIndexAnimationPlayer.animationTime > 0f)
-            {
-                m_ActiveIndexAnimationPlayer.playbackSpeed = -1f;
-                m_ActiveIndexAnimationPlayer.Play();
+                    m_DiamondBar.activeIndex = value;
+                    if (m_DiamondBar.activeIndex >= 0)
+                    {
+                        GrowActiveIndex(() => m_LoopingAnimationPlayer.Play());
+                    }
+                });
             }
             else
             {
-                UpdateActiveIndexAndStartAnimation();
+                m_DiamondBar.activeIndex = value;
+                if (m_DiamondBar.activeIndex >= 0)
+                {
+                    GrowActiveIndex(() => m_LoopingAnimationPlayer.Play());
+                }
             }
-        }
-    }
-
-    void UpdateActiveIndexAndStartAnimation()
-    {
-        m_DiamondBar.activeIndex = m_TargetActiveIndex;
-
-        // Start switch animation only if there actually is an element to switch to.
-        if (m_TargetActiveIndex >= 0)
-        {
-            m_ActiveIndexAnimationPlayer.playbackSpeed = 1f;
-            m_ActiveIndexAnimationPlayer.Play();
         }
     }
 
     public override void Init()
     {
-        m_BarElementHandlers = new List<BarElementHandler>();
-
         m_Layer = LayerManager.CreateUILayer("DiamondBar");
         m_Layer.AddTemplateFromVisualTreeAsset(m_DiamondBarBoardVisualTreeAsset);
         m_Layer.displaySortOrder = k_DisplaySortOrder;
@@ -196,8 +100,19 @@ public class DiamondBarBoard : Board
         m_ActiveIndexAnimationPlayer.AddAnimation(CreateActiveIndexAnimation(), k_ActiveIndexAnimationName);
         m_ActiveIndexAnimationPlayer.animation = m_ActiveIndexAnimationPlayer[k_ActiveIndexAnimationName];
 
+        m_LoopingAnimationPlayer = new AnimationPlayer();
+        m_LoopingAnimationPlayer.wrapMode = KeyframeSystem.WrapMode.Loop;
+        m_LoopingAnimationPlayer.AddAnimation(CreateLoopingAnimation(), k_LoopingAnimationName);
+        m_LoopingAnimationPlayer.animation = m_LoopingAnimationPlayer[k_LoopingAnimationName];
+
         size = m_DiamondBar.size;
-        activeIndex = m_DiamondBar.activeIndex;
+        m_TargetActiveIndex = m_DiamondBar.activeIndex;
+        if (m_DiamondBar.activeDiamond != null)
+        {
+            m_ActiveIndexAnimationPlayer.animationTime = m_ActiveIndexAnimationPlayer.duration;
+            m_DiamondBar.animationProgress = 1f;
+            m_LoopingAnimationPlayer.Play();
+        }
 
         HideImmediate();
         interactable = false;
@@ -233,6 +148,20 @@ public class DiamondBarBoard : Board
         m_ShowHideAnimationPlayer.Stop();
         m_Layer.visible = false;
         m_IsVisible = false;
+    }
+
+    void GrowActiveIndex(Action onCompleted = null)
+    {
+        m_ActiveIndexGrowCompletedCallback = onCompleted;
+        m_ActiveIndexAnimationPlayer.playbackSpeed = 1f;
+        m_ActiveIndexAnimationPlayer.Play();
+    }
+
+    void ShrinkActiveIndex(Action onCompleted = null)
+    {
+        m_ActiveIndexShrinkCompletedCallback = onCompleted;
+        m_ActiveIndexAnimationPlayer.playbackSpeed = -1f;
+        m_ActiveIndexAnimationPlayer.Play();
     }
 
     KeyframeAnimation CreateShowHideAnimation()
@@ -273,20 +202,33 @@ public class DiamondBarBoard : Board
         return animation;
     }
 
+    KeyframeAnimation CreateLoopingAnimation()
+    {
+        var animation = new KeyframeAnimation();
+
+        var t1 = animation.AddTrack(animationProgress => m_DiamondBar.activeDiamond.animationProgress = animationProgress);
+        t1.AddKeyframe(0, 0f, Easing.Linear);
+        t1.AddKeyframe(240, 1f);
+
+        return animation;
+    }
+
     KeyframeAnimation CreateActiveIndexAnimation()
     {
         var animation = new KeyframeAnimation();
         animation.AddEvent(0, () =>
         {
-            if (!animation.player.isPlayingForward && m_DiamondBar.activeIndex != m_TargetActiveIndex)
+            if (!animation.player.isPlayingForward)
             {
-                // Was playing backwards and reached first frame, so switch active index and play
-                // bounce back animation.
-                UpdateActiveIndexAndStartAnimation();
+                m_ActiveIndexShrinkCompletedCallback?.Invoke();
             }
         });
 
-        var t1 = animation.AddTrack(animationProgress => m_DiamondBar.animationProgress = animationProgress);
+        var t1 = animation.AddTrack(t =>
+        {
+            m_DiamondBar.animationProgress = t;
+            m_DiamondBar.activeDiamond.targetTileScale = Mathf.Lerp(1, DiamondTiled.DefaultTargetTileScale, t);
+        });
         t1.AddKeyframe(0, 0f);
         t1.AddKeyframe(20, 1f);
 
@@ -294,14 +236,7 @@ public class DiamondBarBoard : Board
         {
             if (animation.player.isPlayingForward)
             {
-                // 'Enable' element by starting it's animation.
-                var elementHandler = m_BarElementHandlers.ElementAtOrDefault(m_DiamondBar.activeIndex);
-                if (elementHandler != null)
-                {
-                    // Change element's target tile scale over time for smooth transition.
-                    elementHandler.TileScaleShrink();
-                    elementHandler.PlayLoopingAnimation();
-                }
+                m_ActiveIndexGrowCompletedCallback?.Invoke();
             }
         });
 
