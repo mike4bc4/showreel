@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Extensions;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 
 namespace Controls.Raw
@@ -24,6 +26,7 @@ namespace Controls.Raw
         const float k_DefaultFill = 0.5f;
         const int k_DefaultCornerRadius = 10;
         const int k_DefaultBorderWidth = 2;
+        const long k_SizeUpdateIntervalMs = 16L;
 
         public new class UxmlFactory : UxmlFactory<RoundedFrame, UxmlTraits> { }
 
@@ -59,6 +62,8 @@ namespace Controls.Raw
         float m_Fill;
         int m_CornerRadius;
         int m_BorderWidth;
+        float m_Width;
+        float m_Height;
 
         public Color color
         {
@@ -81,12 +86,12 @@ namespace Controls.Raw
 
         float horizontalBorderLength
         {
-            get => resolvedStyle.width - m_CornerRadius;
+            get => m_Width - m_CornerRadius;
         }
 
         float verticalBorderLength
         {
-            get => resolvedStyle.height - (2f * m_CornerRadius);
+            get => m_Height - (2f * m_CornerRadius);
         }
 
         float frameLength
@@ -100,19 +105,8 @@ namespace Controls.Raw
             set
             {
                 m_Fill = Mathf.Clamp01(value);
-
-                // If frame length cannot be calculated right now, delay fill calculation
-                // until geometry is updated.
-                if (float.IsNaN(frameLength))
+                if (m_Width.IsNaN() || m_Height.IsNaN())
                 {
-                    void OnGeometryChanged(GeometryChangedEvent evt)
-                    {
-                        fill = value;
-                        UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-                    }
-
-                    UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-                    RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
                     return;
                 }
 
@@ -173,6 +167,9 @@ namespace Controls.Raw
 
         public RoundedFrame()
         {
+            m_Width = -1f;
+            m_Height = -1f;
+
             AddToClassList(k_UssClassName);
 
             m_TopBorderContainer = new VisualElement() { name = "top-border-container" };
@@ -215,10 +212,22 @@ namespace Controls.Raw
             m_BottomBorder.AddToClassList(k_BottomBorderUssClassName);
             m_BottomBorderContainer.Add(m_BottomBorder);
 
-            // color = s_DefaultColor;
-            // fill = k_DefaultFill;
-            // borderWidth = k_DefaultBorderWidth;
-            // cornerRadius = k_DefaultCornerRadius;
+            schedule.Execute(UpdateSize).Every(k_SizeUpdateIntervalMs);
+        }
+
+        void UpdateSize()
+        {
+            if (layout.width != m_Width)
+            {
+                m_Width = layout.width;
+                fill = m_Fill;
+            }
+
+            if (layout.height != m_Height)
+            {
+                m_Height = layout.height;
+                fill = m_Fill;
+            }
         }
     }
 }
