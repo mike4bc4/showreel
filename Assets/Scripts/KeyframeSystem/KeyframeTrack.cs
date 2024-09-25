@@ -9,7 +9,6 @@ namespace KeyframeSystem
     {
         List<Keyframe> m_Keyframes;
         Action<float> m_Setter;
-        // float m_PreviousValue;
 
         internal List<Keyframe> keyframes
         {
@@ -25,7 +24,6 @@ namespace KeyframeSystem
         public KeyframeTrack()
         {
             m_Keyframes = new List<Keyframe>();
-            // m_PreviousValue = float.NaN;
         }
 
         public Keyframe AddKeyframe(int frameIndex, float value, Easing easing = Easing.Ease)
@@ -104,13 +102,19 @@ namespace KeyframeSystem
                 val = Mathf.Lerp(previousKeyframe.value, nextKeyframe.value, t);
             }
 
-            setter?.Invoke(val);
 
-            // if (force || val != m_PreviousValue)
-            // {
-            //     setter?.Invoke(val);
-            //     m_PreviousValue = val;
-            // }
+#if UNITY_EDITOR
+            try
+            {
+                setter?.Invoke(val);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+#else
+            setter?.Invoke(val);
+#endif
         }
     }
 }
