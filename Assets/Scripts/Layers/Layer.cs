@@ -132,7 +132,12 @@ namespace Layers
 
         void UpdateTrackedElement()
         {
-            if (m_MaskElement != null)
+            // Added panel check as list boards are swapping visual tree assets, and may leave a layer
+            // with mask element from detached tree. Although we could make sure that every layer drops
+            // unused mask element to avoid exception, such solution feels like limiting layer's functionality
+            // as attaching and detaching visual elements from tree is quite a common practice and
+            // layer should respect that.
+            if (m_MaskElement != null && m_MaskElement.panel != null)
             {
                 var scale = new Vector2(Screen.width, Screen.height) / m_MaskElement.panel.visualTree.worldBound.size;
                 var rect = m_MaskElement.worldBound;
