@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using Extensions;
 using KeyframeSystem;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Utility;
 
 namespace Controls.Raw
 {
@@ -17,11 +19,13 @@ namespace Controls.Raw
         const string k_RoundedFrameRightUssClassName = k_UssClassName + "__rounded-frame-right";
         const string k_RoundedFrameLeftUssClassName = k_UssClassName + "__rounded-frame-left";
         const string k_ContentContainerUssClassName = k_UssClassName + "__content-container";
-        const string k_ResizingElementUssClassName = k_UssClassName + "__resizing-element";
+        const string k_ResizeElementUssClassName = k_UssClassName + "__resize-element";
 
+        const string k_UnfoldAnimationName = "UnfoldAnimation";
         static readonly Color s_DefaultColor = Color.black;
         const float k_DefaultFill = 1f;
         const int k_DefaultCornerRadius = 10;
+        const long k_ContentContainerSizeUpdateIntervalMs = 16L;
 
         public new class UxmlFactory : UxmlFactory<DiamondFrameVertical, UxmlTraits> { };
 
@@ -47,11 +51,12 @@ namespace Controls.Raw
         RoundedFrame m_RoundedFrameRight;
         RoundedFrame m_RoundedFrameLeft;
         VisualElement m_ContentContainer;
-        VisualElement m_ResizingElement;
+        VisualElement m_ResizeElement;
         Color m_Color;
         float m_Fill;
         int m_CornerRadius;
         AnimationPlayer m_Player;
+        Vector2 m_ContentContainerSize;
 
         public float animationProgress
         {
@@ -97,19 +102,14 @@ namespace Controls.Raw
         public DiamondFrameVertical()
         {
             m_Player = new AnimationPlayer();
-            var animation = new KeyframeSystem.KeyframeAnimation();
-            m_Player.AddAnimation(animation, "Animation");
-            m_Player.animation = animation;
+            m_Player.AddAnimation(CreateUnfoldAnimation(), k_UnfoldAnimationName);
+            m_Player.animation = m_Player[k_UnfoldAnimationName];
 
             AddToClassList(k_UssClassName);
 
             m_DiamondTop = new Diamond() { name = "diamond-top" };
             m_DiamondTop.AddToClassList(k_DiamondTopUssClassName);
             hierarchy.Add(m_DiamondTop);
-
-            m_ResizingElement = new VisualElement() { name = "resizing-element" };
-            m_ResizingElement.AddToClassList(k_ResizingElementUssClassName);
-            hierarchy.Add(m_ResizingElement);
 
             m_ContentContainer = new VisualElement() { name = "content-container" };
             m_ContentContainer.AddToClassList(k_ContentContainerUssClassName);
@@ -133,11 +133,26 @@ namespace Controls.Raw
             m_RoundedFrameLeft.fill = 0f;
             m_FrameContainer.Add(m_RoundedFrameLeft);
 
-            m_ContentContainer.RegisterCallback<GeometryChangedEvent>(evt =>
+            m_ResizeElement = new VisualElement() { name = "resize-element" };
+            m_ResizeElement.AddToClassList(k_ResizeElementUssClassName);
+            hierarchy.Add(m_ResizeElement);
+
+            schedule.Execute(UpdateContentContainerSize).Every(k_ContentContainerSizeUpdateIntervalMs);
+        }
+
+        void UpdateContentContainerSize()
+        {
+            if (m_ContentContainer.layout.size != m_ContentContainerSize)
             {
-                m_ResizingElement.style.width = m_ContentContainer.resolvedStyle.width;
+                m_ContentContainerSize = m_ContentContainer.layout.size;
+                m_ResizeElement.style.width = m_ContentContainer.layout.width;
                 m_Player.Sample();
-            });
+            }
+        }
+
+        KeyframeAnimation CreateUnfoldAnimation()
+        {
+            var animation = new KeyframeAnimation();
 
             var t1 = animation.AddTrack((float progress) => m_DiamondBottom.animationProgress = m_DiamondTop.animationProgress = progress);
             t1.AddKeyframe(0, 0f);
@@ -147,30 +162,11 @@ namespace Controls.Raw
             t2.AddKeyframe(60, 0f);
             t2.AddKeyframe(120, 1f);
 
-            var t3 = animation.AddTrack((float heightMultiplier) =>
-            {
-                if (!m_ContentContainer.resolvedStyle.height.IsNaN())
-                {
-                    m_ResizingElement.style.height = m_ContentContainer.resolvedStyle.height * heightMultiplier;
-                }
-                else
-                {
-                    void OnGeometryChanged(GeometryChangedEvent evt)
-                    {
-                        m_ResizingElement.style.height = m_ContentContainer.resolvedStyle.height * heightMultiplier;
-                        m_ContentContainer.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-                    }
-
-                    m_ContentContainer.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-                }
-            });
+            var t3 = animation.AddTrack((float heightMultiplier) => m_ResizeElement.style.height = heightMultiplier * m_ContentContainer.layout.height);
             t3.AddKeyframe(120, 0f);
             t3.AddKeyframe(180, 1f);
-        }
 
-        public void SetAnimationProgress(float animationProgress)
-        {
-            this.animationProgress = animationProgress;
+            return animation;
         }
     }
 }
