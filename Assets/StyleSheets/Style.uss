@@ -291,31 +291,42 @@
     transform-origin: top;
 }
 
-.diamond-tiled__tile--transition {
-    transition-property: scale;
-    transition-duration: 0.25s;
-}
-
 .diamond-tiled__tile--top {
-    margin-top: 1px;
 }
 
 .diamond-tiled__tile--right {
     rotate: 90deg;
     translate: 50% 50%;
-    margin-left: -1px;
 }
 
 .diamond-tiled__tile--bottom {
     rotate: 180deg;
     translate: 0 100%;
-    margin-top: -1px;
 }
 
 .diamond-tiled__tile--left {
     rotate: 270deg;
     translate: -50% 50%;
-    margin-left: 1px;
+}
+
+.diamond-tiled__quarter-inverted {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-image-tint-color: var(--color-primary);
+    background-image: url("project://database/Assets/Textures/DiamondQuarterInverted.png?fileID=2800000&guid=32dd29a4b36d6064395fbcb7880db7b9&type=3#DiamondQuarterInverted");
+}
+
+.diamond-tiled__full {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-image-tint-color: var(--color-primary);
+    background-image: url("project://database/Assets/Textures/DiamondFull.png?fileID=2800000&guid=fa55b1d3937089e45ba6a5365a95afff&type=3#DiamondFull");
 }
 
 .diamond-bar {

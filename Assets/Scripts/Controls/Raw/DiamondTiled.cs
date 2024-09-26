@@ -12,11 +12,12 @@ namespace Controls.Raw
 
         const string k_UssClassName = "diamond-tiled";
         const string k_TileUssClassName = k_UssClassName + "__tile";
-        const string k_TileTransitionUssClassName = k_TileUssClassName + "--transition";
         const string k_TileTopUssClassName = k_TileUssClassName + "--top";
         const string k_TileRightUssClassName = k_TileUssClassName + "--right";
         const string k_TileBottomUssClassName = k_TileUssClassName + "--bottom";
         const string k_TileLeftUssClassName = k_TileUssClassName + "--left";
+        const string k_QuarterInvertedUssClassName = k_UssClassName + "__quarter-inverted";
+        const string k_FullUssClassName = k_UssClassName + "__full";
         const string k_AnimationName = "Animation";
 
         public new class UxmlFactory : UxmlFactory<DiamondTiled, UxmlTraits> { }
@@ -39,6 +40,8 @@ namespace Controls.Raw
         VisualElement m_TileRight;
         VisualElement m_TileBottom;
         VisualElement m_TileLeft;
+        VisualElement m_DiamondQuarterInverted;
+        VisualElement m_DiamondFull;
         AnimationPlayer m_Player;
         float m_TargetTileScale;
 
@@ -82,26 +85,30 @@ namespace Controls.Raw
             m_TileTop = new VisualElement() { name = "tile-top" };
             m_TileTop.AddToClassList(k_TileUssClassName);
             m_TileTop.AddToClassList(k_TileTopUssClassName);
-            m_TileTop.AddToClassList(k_TileTransitionUssClassName);
             Add(m_TileTop);
 
             m_TileRight = new VisualElement() { name = "tile-right" };
             m_TileRight.AddToClassList(k_TileUssClassName);
             m_TileRight.AddToClassList(k_TileRightUssClassName);
-            m_TileRight.AddToClassList(k_TileTransitionUssClassName);
             Add(m_TileRight);
 
             m_TileBottom = new VisualElement() { name = "tile-bottom" };
             m_TileBottom.AddToClassList(k_TileUssClassName);
             m_TileBottom.AddToClassList(k_TileBottomUssClassName);
-            m_TileBottom.AddToClassList(k_TileTransitionUssClassName);
             Add(m_TileBottom);
 
             m_TileLeft = new VisualElement() { name = "tile-left" };
             m_TileLeft.AddToClassList(k_TileUssClassName);
             m_TileLeft.AddToClassList(k_TileLeftUssClassName);
-            m_TileLeft.AddToClassList(k_TileTransitionUssClassName);
             Add(m_TileLeft);
+
+            m_DiamondQuarterInverted = new VisualElement() { name = "diamond-quarter-inverted" };
+            m_DiamondQuarterInverted.AddToClassList(k_QuarterInvertedUssClassName);
+            Add(m_DiamondQuarterInverted);
+
+            m_DiamondFull = new VisualElement() { name = "diamond-full" };
+            m_DiamondFull.AddToClassList(k_FullUssClassName);
+            Add(m_DiamondFull);
 
             targetTileScale = DefaultTargetTileScale;
         }
@@ -121,6 +128,41 @@ namespace Controls.Raw
                 track.AddKeyframe(startFrame + (int)(interval * 0.8f), 0f);
                 track.AddKeyframe(startFrame + interval, 1f);
             }
+
+            var t1 = animation.AddTrack(t => m_DiamondQuarterInverted.transform.rotation = Quaternion.Euler(0f, 0f, t * 360f));
+            t1.AddKeyframe(0, 0f, Easing.StepOut);
+            t1.AddKeyframe(interval, 0.25f, Easing.StepOut);
+            t1.AddKeyframe(interval * 2, 0.5f, Easing.StepOut);
+            t1.AddKeyframe(interval * 3, 0.75f, Easing.StepOut);
+
+            var t2 = animation.AddTrack(opacity =>
+            {
+                m_DiamondFull.style.opacity = opacity;
+                m_DiamondQuarterInverted.style.opacity = 1 - opacity;
+            });
+            t2.AddKeyframe(0, 1f);
+            t2.AddKeyframe(1, 0f, Easing.StepOut);
+            t2.AddKeyframe(interval, 1f);
+            t2.AddKeyframe(interval + 1, 0f, Easing.StepOut);
+            t2.AddKeyframe(interval * 2, 1f);
+            t2.AddKeyframe(interval * 2 + 1, 0f, Easing.StepOut);
+            t2.AddKeyframe(interval * 3, 1f);
+            t2.AddKeyframe(interval * 3 + 1, 0f, Easing.StepOut);
+            t2.AddKeyframe(interval * 4, 1f);
+
+            var t3 = animation.AddTrack(index =>
+            {
+                foreach (var tile in tiles)
+                {
+                    tile.style.opacity = 0f;
+                }
+
+                tiles[(int)index].style.opacity = 1f;
+            });
+            t3.AddKeyframe(0, 0f, Easing.StepOut);
+            t3.AddKeyframe(interval, 1f, Easing.StepOut);
+            t3.AddKeyframe(interval * 2, 2f, Easing.StepOut);
+            t3.AddKeyframe(interval * 3, 3f, Easing.StepOut);
 
             return animation;
         }
