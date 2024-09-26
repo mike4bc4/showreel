@@ -26,7 +26,6 @@ namespace Controls.Raw
         const float k_DefaultFill = 0.5f;
         const int k_DefaultCornerRadius = 10;
         const int k_DefaultBorderWidth = 2;
-        const long k_SizeUpdateIntervalMs = 16L;
 
         public new class UxmlFactory : UxmlFactory<RoundedFrame, UxmlTraits> { }
 
@@ -62,8 +61,6 @@ namespace Controls.Raw
         float m_Fill;
         int m_CornerRadius;
         int m_BorderWidth;
-        float m_Width;
-        float m_Height;
 
         public Color color
         {
@@ -86,12 +83,12 @@ namespace Controls.Raw
 
         float horizontalBorderLength
         {
-            get => m_Width - m_CornerRadius;
+            get => layout.width - m_CornerRadius;
         }
 
         float verticalBorderLength
         {
-            get => m_Height - (2f * m_CornerRadius);
+            get => layout.height - (2f * m_CornerRadius);
         }
 
         float frameLength
@@ -105,7 +102,7 @@ namespace Controls.Raw
             set
             {
                 m_Fill = Mathf.Clamp01(value);
-                if (m_Width.IsNaN() || m_Height.IsNaN())
+                if (layout.size.IsNaN())
                 {
                     return;
                 }
@@ -167,9 +164,6 @@ namespace Controls.Raw
 
         public RoundedFrame()
         {
-            m_Width = -1f;
-            m_Height = -1f;
-
             AddToClassList(k_UssClassName);
 
             m_TopBorderContainer = new VisualElement() { name = "top-border-container" };
@@ -212,22 +206,10 @@ namespace Controls.Raw
             m_BottomBorder.AddToClassList(k_BottomBorderUssClassName);
             m_BottomBorderContainer.Add(m_BottomBorder);
 
-            schedule.Execute(UpdateSize).Every(k_SizeUpdateIntervalMs);
-        }
-
-        void UpdateSize()
-        {
-            if (layout.width != m_Width)
+            RegisterCallback<GeometryChangedEvent>(evt =>
             {
-                m_Width = layout.width;
                 fill = m_Fill;
-            }
-
-            if (layout.height != m_Height)
-            {
-                m_Height = layout.height;
-                fill = m_Fill;
-            }
+            });
         }
     }
 }

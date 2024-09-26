@@ -25,7 +25,6 @@ namespace Controls.Raw
         static readonly Color s_DefaultColor = Color.black;
         const float k_DefaultFill = 1f;
         const int k_DefaultCornerRadius = 10;
-        const long k_ContentContainerSizeUpdateIntervalMs = 16L;
 
         public new class UxmlFactory : UxmlFactory<DiamondFrameVertical, UxmlTraits> { };
 
@@ -67,7 +66,15 @@ namespace Controls.Raw
                 m_Player.animationTime = m_Player.duration * Mathf.Clamp01(value);
                 if (m_Player.frameIndex != previousFrameIndex)
                 {
-                    m_Player.Sample();
+                    if (m_ContentContainer.layout.size.IsNaN())
+                    {
+                        // We are safe here as Unity does not register the same callback twice.
+                        m_ContentContainer.RegisterCallback<GeometryChangedEvent>(SampleOnGeometryChanged);
+                    }
+                    else
+                    {
+                        m_Player.Sample();
+                    }
                 }
             }
         }
@@ -137,17 +144,16 @@ namespace Controls.Raw
             m_ResizeElement.AddToClassList(k_ResizeElementUssClassName);
             hierarchy.Add(m_ResizeElement);
 
-            schedule.Execute(UpdateContentContainerSize).Every(k_ContentContainerSizeUpdateIntervalMs);
+            m_ContentContainer.RegisterCallback<GeometryChangedEvent>(evt =>
+            {
+                m_ResizeElement.style.width = m_ContentContainer.layout.width;
+            });
         }
 
-        void UpdateContentContainerSize()
+        void SampleOnGeometryChanged(GeometryChangedEvent evt)
         {
-            if (m_ContentContainer.layout.size != m_ContentContainerSize)
-            {
-                m_ContentContainerSize = m_ContentContainer.layout.size;
-                m_ResizeElement.style.width = m_ContentContainer.layout.width;
-                m_Player.Sample();
-            }
+            m_Player.Sample();
+            m_ContentContainer.UnregisterCallback<GeometryChangedEvent>(SampleOnGeometryChanged);
         }
 
         KeyframeAnimation CreateUnfoldAnimation()
