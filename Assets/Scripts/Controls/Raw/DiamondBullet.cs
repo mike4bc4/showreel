@@ -15,15 +15,13 @@ namespace Controls.Raw
         const string k_DiamondUssClassName = k_UssClassName + "__diamond";
         const string k_SpacerUssClassName = k_UssClassName + "__spacer";
 
-        const float k_SpacerAnimationFlex = 1f;
-        const float k_LineAnimationFlex = 2f;
-        const float k_DiamondAnimationFlex = 3f;
+        const float k_DefaultAnimationProgress = 1f;
 
         public new class UxmlFactory : UxmlFactory<DiamondBullet, UxmlTraits> { }
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
+            UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = k_DefaultAnimationProgress };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
@@ -91,11 +89,8 @@ namespace Controls.Raw
             var t4 = animation.AddTrack((float progress) => m_Diamond.animationProgress = progress);
             t4.AddKeyframe(50, 0f);
             t4.AddKeyframe(95, 1f);
-        }
 
-        public void SetAnimationProgress(float animationProgress)
-        {
-            this.animationProgress = animationProgress;
+            animationProgress = k_DefaultAnimationProgress;
         }
     }
 }
