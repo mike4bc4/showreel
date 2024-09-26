@@ -12,13 +12,15 @@ namespace Controls.Raw
         const string k_UssClassName = "diamond";
         const string k_HalfUssClassName = k_UssClassName + "__half";
         const string k_FullUssClassName = k_UssClassName + "__full";
+        const string k_MiddleUssClassName = k_UssClassName + "__middle";
         const string k_UnfoldAnimationName = "UnfoldAnimation";
+        const float k_DefaultAnimationProgress = 1f;
 
         public new class UxmlFactory : UxmlFactory<Diamond, UxmlTraits> { }
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
+            UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = k_DefaultAnimationProgress };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
@@ -31,6 +33,7 @@ namespace Controls.Raw
         VisualElement m_HalfLeft;
         VisualElement m_HalfRight;
         VisualElement m_DiamondFull;
+        VisualElement m_DiamondMiddle;
         AnimationPlayer m_Player;
 
         public float animationProgress
@@ -66,10 +69,16 @@ namespace Controls.Raw
             Add(m_HalfRight);
 
             m_DiamondFull = new VisualElement();
-            m_DiamondFull.visible = false;
             m_DiamondFull.name = "diamond-full";
             m_DiamondFull.AddToClassList(k_FullUssClassName);
             Add(m_DiamondFull);
+
+            m_DiamondMiddle = new VisualElement();
+            m_DiamondMiddle.name = "diamond-middle";
+            m_DiamondMiddle.AddToClassList(k_MiddleUssClassName);
+            Add(m_DiamondMiddle);
+
+            animationProgress = k_DefaultAnimationProgress;
         }
 
         KeyframeAnimation CreateUnfoldAnimation()
@@ -80,11 +89,12 @@ namespace Controls.Raw
             t1.AddKeyframe(0, 1f, Easing.EaseInOutSine);
             t1.AddKeyframe(60, -1f);
 
-            var t2 = animation.AddTrack(visibility =>
+            var t2 = animation.AddTrack(opacity =>
             {
-                m_DiamondFull.style.opacity = visibility;
-                m_HalfLeft.style.opacity = 1f - visibility;
-                m_HalfRight.style.opacity = 1f - visibility;
+                m_DiamondFull.style.opacity = opacity;
+                m_DiamondMiddle.style.opacity = 1f - opacity;
+                m_HalfLeft.style.opacity = 1f - opacity;
+                m_HalfRight.style.opacity = 1f - opacity;
             });
             t2.AddKeyframe(0, 0f, Easing.StepOut);
             t2.AddKeyframe(60, 1f);

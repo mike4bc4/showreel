@@ -52,6 +52,16 @@
     background-image: url("project://database/Assets/Textures/DiamondFull.png?fileID=2800000&guid=fa55b1d3937089e45ba6a5365a95afff&type=3#DiamondFull");
 }
 
+.diamond__middle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-image-tint-color: var(--color-primary);
+    background-image: url("project://database/Assets/Textures/DiamondHalfMiddle.png?fileID=2800000&guid=dcedd307cf917cb42b190f3b9d57ae1b&type=3#DiamondHalfMiddle");
+}
+
 .diamond-title {
     flex-direction: row;
     align-items: flex-end;
