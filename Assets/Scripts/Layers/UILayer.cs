@@ -113,6 +113,14 @@ namespace Layers
             return templateContainer;
         }
 
+        public void Clear()
+        {
+            var activeRenderTexture = RenderTexture.active;
+            RenderTexture.active = m_UIDocument.panelSettings.targetTexture;
+            GL.Clear(true, true, Color.clear);
+            RenderTexture.active = activeRenderTexture;
+        }
+
         void OnDestroy()
         {
             RenderTexture.ReleaseTemporary(uiDocument.panelSettings.targetTexture);

@@ -86,11 +86,20 @@ namespace Boards
                     m_TemplateContainer.RemoveFromHierarchy();
                 }
 
-                m_TemplateContainer = m_Layer.AddTemplateFromVisualTreeAsset(m_VisualTreeAsset);
+                // Even though we have just switched visual tree, the result of this action will become
+                // visible next frame, thus any visual operations like show or hide will display old
+                // visual tree. To avoid this we are clearing layer render texture, so swapping visual
+                // tree feels more synchronous.
+                m_Layer.Clear();
 
-                // As list elements have been updated, it's necessary to recreate list elements show
-                // animation as it relies on its count and element references.
-                m_AnimationPlayer.AddAnimation(CreateListElementsShowAnimation(), k_ListElementsShowAnimationName);
+                if (value != null)
+                {
+                    m_TemplateContainer = m_Layer.AddTemplateFromVisualTreeAsset(m_VisualTreeAsset);
+
+                    // As list elements have been updated, it's necessary to recreate list elements show
+                    // animation as it relies on its count and element references.
+                    m_AnimationPlayer.AddAnimation(CreateListElementsShowAnimation(), k_ListElementsShowAnimationName);
+                }
             }
         }
 
