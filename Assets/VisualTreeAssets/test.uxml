@@ -3,4 +3,5 @@
     <ui:VisualElement style="flex-grow: 1;">
         <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
     </ui:VisualElement>
+    <Controls.Raw.DiamondBullet animation-progress="1.05" focusable="false" style="position: absolute; width: 103px; top: 99px; left: 26px; visibility: visible;" />
 </ui:UXML>

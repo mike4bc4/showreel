@@ -400,6 +400,16 @@
     transform-origin: left top;
 }
 
+.diamond-spreading__full {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-image-tint-color: var(--color-primary);
+    background-image: url("project://database/Assets/Textures/DiamondFullRot45.png?fileID=2800000&guid=daec3ef56b54ef64db245e8bc022a684&type=3#DiamondFullRot45");
+}
+
 .diamond-bullet {
     overflow: visible;
     flex-direction: row;

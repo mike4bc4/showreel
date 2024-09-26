@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Extensions;
 using KeyframeSystem;
+using StyleUtility;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -17,16 +19,19 @@ namespace Controls.Raw
         const string k_CornerEUssClassName = k_UssClassName + "__corner-e";
         const string k_CornerWUssClassName = k_UssClassName + "__corner-w";
         const string k_CornerBodyUssClassName = k_UssClassName + "__corner-body";
+        const string k_FullUssClassName = k_UssClassName + "__full";
+        const string k_SpreadAnimationName = "SpreadAnimation";
 
         // Defines amount of overlapping which allows to avoid gaps between elements.
         const float k_SpreadEpsilon = 0.02f;
         const float k_FillEpsilon = 0.05f;
+        const float k_DefaultAnimationProgress = 1f;
 
         public new class UxmlFactory : UxmlFactory<DiamondSpreading, UxmlTraits> { }
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
+            UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = k_DefaultAnimationProgress };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
@@ -41,6 +46,7 @@ namespace Controls.Raw
         VisualElement m_CornerN;
         VisualElement m_CornerE;
         VisualElement m_CornerS;
+        VisualElement m_DiamondFull;
         List<VisualElement> m_CornerBodies;
         float m_EdgeWidth;
         float m_Spread;
@@ -119,10 +125,8 @@ namespace Controls.Raw
         public DiamondSpreading()
         {
             m_Player = new AnimationPlayer();
-            m_Player.sampling = 60;
-            var animation = new KeyframeSystem.KeyframeAnimation();
-            m_Player.AddAnimation(animation, "Animation");
-            m_Player.animation = animation;
+            m_Player.AddAnimation(CreateSpreadAnimation(), k_SpreadAnimationName);
+            m_Player.animation = m_Player[k_SpreadAnimationName];
 
             m_CornerBodies = new List<VisualElement>();
 
@@ -172,23 +176,49 @@ namespace Controls.Raw
             cornerBody.AddToClassList(k_CornerBodyUssClassName);
             m_CornerE.Add(cornerBody);
 
-            targetEdgeWidth = 0.3f;
+            m_DiamondFull = new VisualElement();
+            m_DiamondFull.name = "diamond-full";
+            m_DiamondFull.AddToClassList(k_FullUssClassName);
+            m_CornerContainer.Add(m_DiamondFull);
+
+            targetEdgeWidth = 0.28f;
 
             fill = 0f;
             spread = 0f;
             edgeWidth = targetEdgeWidth * 0.5f;
+            animationProgress = k_DefaultAnimationProgress;
+        }
 
-            var t1 = animation.AddTrack((float spread) => this.spread = spread);
+        KeyframeAnimation CreateSpreadAnimation()
+        {
+            var animation = new KeyframeAnimation();
+
+            var t1 = animation.AddTrack(spread => this.spread = spread);
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(20, 1f);
 
-            var t2 = animation.AddTrack((float edgeWidth) => this.edgeWidth = edgeWidth);
-            t2.AddKeyframe(0, targetEdgeWidth * 0.5f);
-            t2.AddKeyframe(20, targetEdgeWidth);
+            var t2 = animation.AddTrack(t => this.edgeWidth = Mathf.Lerp(targetEdgeWidth * 0.5f, targetEdgeWidth, t));
+            t2.AddKeyframe(0, 0f);
+            t2.AddKeyframe(20, 1f);
 
-            var t3 = animation.AddTrack((float fill) => this.fill = fill);
+            var t3 = animation.AddTrack(fill => this.fill = fill);
             t3.AddKeyframe(20, 0f);
             t3.AddKeyframe(40, 1f);
+
+            var t4 = animation.AddTrack(visibility =>
+            {
+                // Using opacity as visibility is inherited from hierarchy and changes here would
+                // override it.
+                m_DiamondFull.style.opacity = visibility;
+                foreach (var corner in corners)
+                {
+                    corner.style.opacity = 1f - visibility;
+                }
+            });
+            t4.AddKeyframe(0, 0f, Easing.StepOut);
+            t4.AddKeyframe(40, 1f);
+
+            return animation;
         }
     }
 }
