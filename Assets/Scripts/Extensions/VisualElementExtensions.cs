@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using StyleUtility;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -14,6 +16,33 @@ namespace Extensions
         static readonly Assembly s_Assembly = Assembly.Load("UnityEngine");
         static readonly Type s_RuntimePanelType = s_Assembly.GetType("UnityEngine.UIElements.RuntimePanel");
         static readonly PropertyInfo s_SelectableGameObjectProperty = s_RuntimePanelType.GetProperty("selectableGameObject");
+
+        public static bool IsVisibleInHierarchy(this VisualElement ve)
+        {
+            var inheritedVisibility = ve.GetInheritedVisibility();
+            return inheritedVisibility == StyleKeyword.Null || inheritedVisibility == Visibility.Visible;
+        }
+
+        public static StyleEnum<Visibility> GetInheritedVisibility(this VisualElement ve)
+        {
+            var parent = ve.hierarchy.parent;
+            while (parent != null)
+            {
+                var inlineStyleAccess = new InlineStyleAccess(parent.style);
+                if (inlineStyleAccess.TryReadEnumProperty<Visibility>("visibility", out var visibility))
+                {
+                    return visibility;
+                }
+                else if (parent.style.visibility != StyleKeyword.Null)
+                {
+                    return parent.style.visibility;
+                }
+
+                parent = parent.hierarchy.parent;
+            }
+
+            return StyleKeyword.Null;
+        }
 
         public static bool IsMyDescendant(this VisualElement ve, VisualElement descendant)
         {

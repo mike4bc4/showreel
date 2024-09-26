@@ -1,7 +1,9 @@
 {
     "name": "Extensions",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:907cd6c17a085014e87ab7c8b1522c1e"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
