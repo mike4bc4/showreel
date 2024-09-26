@@ -11,6 +11,8 @@ namespace Controls.Raw
     {
         const string k_UssClassName = "diamond";
         const string k_HalfUssClassName = k_UssClassName + "__half";
+        const string k_FullUssClassName = k_UssClassName + "__full";
+        const string k_UnfoldAnimationName = "UnfoldAnimation";
 
         public new class UxmlFactory : UxmlFactory<Diamond, UxmlTraits> { }
 
@@ -28,6 +30,7 @@ namespace Controls.Raw
 
         VisualElement m_HalfLeft;
         VisualElement m_HalfRight;
+        VisualElement m_DiamondFull;
         AnimationPlayer m_Player;
 
         public float animationProgress
@@ -47,11 +50,8 @@ namespace Controls.Raw
         public Diamond()
         {
             m_Player = new AnimationPlayer();
-            m_Player.sampling = 60;
-
-            var animation = new KeyframeSystem.KeyframeAnimation();
-            m_Player.AddAnimation(animation, "Animation");
-            m_Player.animation = animation;
+            m_Player.AddAnimation(CreateUnfoldAnimation(), k_UnfoldAnimationName);
+            m_Player.animation = m_Player[k_UnfoldAnimationName];
 
             AddToClassList(k_UssClassName);
 
@@ -65,9 +65,31 @@ namespace Controls.Raw
             m_HalfRight.AddToClassList(k_HalfUssClassName);
             Add(m_HalfRight);
 
-            var t1 = animation.AddTrack((float scaleX) => m_HalfLeft.style.scale = new Vector2(scaleX, 1f));
+            m_DiamondFull = new VisualElement();
+            m_DiamondFull.visible = false;
+            m_DiamondFull.name = "diamond-full";
+            m_DiamondFull.AddToClassList(k_FullUssClassName);
+            Add(m_DiamondFull);
+        }
+
+        KeyframeAnimation CreateUnfoldAnimation()
+        {
+            var animation = new KeyframeAnimation();
+
+            var t1 = animation.AddTrack(scaleX => m_HalfLeft.style.scale = new Vector2(scaleX, 1f));
             t1.AddKeyframe(0, 1f, Easing.EaseInOutSine);
             t1.AddKeyframe(60, -1f);
+
+            var t2 = animation.AddTrack(visibility =>
+            {
+                m_DiamondFull.visible = visibility != 0f ? true : false;
+                m_HalfLeft.visible = !m_DiamondFull.visible;
+                m_HalfRight.visible = !m_DiamondFull.visible;
+            });
+            t2.AddKeyframe(0, 0f, Easing.StepOut);
+            t2.AddKeyframe(60, 1f);
+
+            return animation;
         }
     }
 }

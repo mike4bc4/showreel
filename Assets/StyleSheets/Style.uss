@@ -42,6 +42,16 @@
     -unity-background-image-tint-color: var(--color-primary);
 }
 
+.diamond__full {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-image-tint-color: var(--color-primary);
+    background-image: url("project://database/Assets/Textures/DiamondFull.png?fileID=2800000&guid=fa55b1d3937089e45ba6a5365a95afff&type=3#DiamondFull");
+}
+
 .diamond-title {
     flex-direction: row;
     align-items: flex-end;
