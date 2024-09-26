@@ -82,9 +82,9 @@ namespace Controls.Raw
 
             var t2 = animation.AddTrack(visibility =>
             {
-                m_DiamondFull.visible = visibility != 0f ? true : false;
-                m_HalfLeft.visible = !m_DiamondFull.visible;
-                m_HalfRight.visible = !m_DiamondFull.visible;
+                m_DiamondFull.style.opacity = visibility;
+                m_HalfLeft.style.opacity = 1f - visibility;
+                m_HalfRight.style.opacity = 1f - visibility;
             });
             t2.AddKeyframe(0, 0f, Easing.StepOut);
             t2.AddKeyframe(60, 1f);
