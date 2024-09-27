@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Utility;
 
 namespace Settings
@@ -15,11 +16,13 @@ namespace Settings
         [SerializeField] OptionSet<bool> m_VerticalSyncOptions;
         [SerializeField] OptionSet<float> m_BlurQualityOptions;
         [SerializeField] OptionSet<bool> m_ShowWelcomeWindowOptions;
+        [SerializeField] OptionSet<Theme> m_ThemeOptions;
 
         public OptionSet<WindowMode> windowModeOptions => m_WindowModeOptions;
         public OptionSet<bool> verticalSyncOptions => m_VerticalSyncOptions;
         public OptionSet<float> blurQualityOptions => m_BlurQualityOptions;
         public OptionSet<bool> showWelcomeWindowOptions => m_ShowWelcomeWindowOptions;
+        public OptionSet<Theme> themeOptions => m_ThemeOptions;
 
         public OptionSet<Vector2Int> resolutionOptions
         {

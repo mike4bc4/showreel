@@ -14,6 +14,12 @@ namespace Settings
         Windowed = 1,
     }
 
+    public enum Theme
+    {
+        Light = 0,
+        Dark = 1,
+    }
+
     public sealed class SettingsManager
     {
         public static event Action OnSettingsApplied;
@@ -24,6 +30,7 @@ namespace Settings
         const string k_VerticalSyncKey = "VerticalSync";
         const string k_BlurQualityKey = "BlurQuality";
         const string k_ShowWelcomeWindowKey = "ShowWelcomeWindow";
+        const string k_ThemeKey = "Theme";
         const string k_SavePath = "Settings";
         static SettingsManager s_Instance;
 
@@ -33,6 +40,7 @@ namespace Settings
         Setting<bool> m_VerticalSync;
         Setting<float> m_BlurQuality;
         Setting<bool> m_ShowWelcomeWindow;
+        Setting<Theme> m_Theme;
         SaveObject m_SaveObject;
 
         public static SettingsManager Instance
@@ -54,6 +62,7 @@ namespace Settings
         public static Setting<bool> VerticalSync => Instance.m_VerticalSync;
         public static Setting<float> BlurQuality => Instance.m_BlurQuality;
         public static Setting<bool> ShowWelcomeWindow => Instance.m_ShowWelcomeWindow;
+        public static Setting<Theme> Theme => Instance.m_Theme;
 
         static SaveObject saveObject
         {
@@ -74,6 +83,7 @@ namespace Settings
             m_VerticalSync = new Setting<bool>(SettingsManagerResources.Instance.verticalSyncOptions);
             m_BlurQuality = new Setting<float>(SettingsManagerResources.Instance.blurQualityOptions);
             m_ShowWelcomeWindow = new Setting<bool>(SettingsManagerResources.Instance.showWelcomeWindowOptions);
+            m_Theme = new Setting<Theme>(SettingsManagerResources.Instance.themeOptions);
 
             Read();
             Apply();
@@ -120,6 +130,7 @@ namespace Settings
             VerticalSync.SetValue(saveObject.TryGetValue(k_VerticalSyncKey, out bool verticalSync) ? verticalSync : VerticalSync.defaultOption.value);
             BlurQuality.SetValue(saveObject.TryGetValue(k_BlurQualityKey, out float blurQuality) ? blurQuality : BlurQuality.defaultOption.value);
             ShowWelcomeWindow.SetValue(saveObject.TryGetValue(k_ShowWelcomeWindowKey, out bool showWelcomeWindow) ? showWelcomeWindow : ShowWelcomeWindow.defaultOption.value);
+            Theme.SetValue(saveObject.TryGetValue(k_ThemeKey, out Theme theme) ? theme : Theme.defaultOption.value);
         }
 
         public static void Write()
@@ -131,6 +142,7 @@ namespace Settings
             saveObject.SetValue(k_VerticalSyncKey, VerticalSync.value);
             saveObject.SetValue(k_BlurQualityKey, BlurQuality.value);
             saveObject.SetValue(k_ShowWelcomeWindowKey, ShowWelcomeWindow.value);
+            saveObject.SetValue(k_ThemeKey, Theme.value);
             saveObject.Write(k_SavePath);
         }
 

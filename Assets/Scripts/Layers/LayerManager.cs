@@ -10,7 +10,7 @@ using Utility;
 
 namespace Layers
 {
-    public partial class LayerManager : MonoBehaviour
+    public class LayerManager : MonoBehaviour
     {
         const string k_CommandBufferName = "UIDocumentCommandBuffer";
         const CameraEvent k_CameraEvent = CameraEvent.AfterEverything;
@@ -28,6 +28,7 @@ namespace Layers
         Vector2Int m_PreviousScreenSize;
         GroupLayer m_RootGroupLayer;
         int m_PropertyNameIndex;
+        ThemeStyleSheet m_ThemeStyleSheet;
 
         static PanelSettings panelSettings => s_Instance.m_PanelSettings;
         static Shader uiLayerShader => s_Instance.m_UILayerShader;
@@ -36,6 +37,7 @@ namespace Layers
         static Material blitCopyMaterial => s_Instance.m_BlitCopyMaterial;
         static GroupLayer rootGroupLayer => s_Instance.m_RootGroupLayer;
         static Material blitOverMaterial => s_Instance.m_BlitOverMaterial;
+        static ThemeStyleSheet themeStyleSheet => s_Instance.m_ThemeStyleSheet;
 
         public static LayerManager Instance
         {
@@ -71,6 +73,9 @@ namespace Layers
             m_RootGroupLayer = CreateGroupLayerInternal("Root");
             m_PreviousScreenSize = new Vector2Int(Screen.width, Screen.height);
             Scheduler.SetInterval(TrackScreenSizeChanges, m_IntervalDelayMs);
+
+            m_ThemeStyleSheet = LayerManagerResources.GetThemeStyleSheet(SettingsManager.Theme.value) ?? panelSettings.themeStyleSheet;
+            SettingsManager.OnSettingsApplied += OnSettingsApplied;
         }
 
         void LateUpdate()
@@ -78,6 +83,24 @@ namespace Layers
             if (m_CommandBufferDirty)
             {
                 RebuildCommandBuffer();
+            }
+        }
+
+        void OnSettingsApplied()
+        {
+            var tss = LayerManagerResources.GetThemeStyleSheet(SettingsManager.Theme.value);
+            if (tss == m_ThemeStyleSheet)
+            {
+                return;
+            }
+
+            m_ThemeStyleSheet = tss;
+            foreach (var layer in rootGroupLayer.descendants)
+            {
+                if (layer is UILayer uiLayer)
+                {
+                    uiLayer.uiDocument.panelSettings.themeStyleSheet = m_ThemeStyleSheet;
+                }
             }
         }
 
@@ -151,6 +174,7 @@ namespace Layers
             var ps = Instantiate(panelSettings);
             ps.name = name;
             ps.targetTexture = renderTexture;
+            ps.themeStyleSheet = themeStyleSheet;
 
             var gameObject = new GameObject();
             gameObject.transform.SetParent(transform);

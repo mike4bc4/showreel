@@ -20,6 +20,7 @@ namespace Boards.States
         Select m_VerticalSyncSelect;
         Select m_BlurQualitySelect;
         Select m_ShowWelcomeWindowSelect;
+        Select m_ThemeSelect;
 
         public SettingsDialogBoxState(BoardStateContext context) : base(context) { }
 
@@ -33,6 +34,7 @@ namespace Boards.States
             m_VerticalSyncSelect = m_DialogBox.rootVisualElement.Q<Select>("vertical-sync-select");
             m_BlurQualitySelect = m_DialogBox.rootVisualElement.Q<Select>("blur-quality-select");
             m_ShowWelcomeWindowSelect = m_DialogBox.rootVisualElement.Q<Select>("show-welcome-window-select");
+            m_ThemeSelect = m_DialogBox.rootVisualElement.Q<Select>("theme-select");
 
             m_ResolutionSelect.onChoiceChanged += OnResolutionChanged;
 
@@ -41,12 +43,14 @@ namespace Boards.States
             m_VerticalSyncSelect.SetChoices(SettingsManager.VerticalSync.choices);
             m_BlurQualitySelect.SetChoices(SettingsManager.BlurQuality.choices);
             m_ShowWelcomeWindowSelect.SetChoices(SettingsManager.ShowWelcomeWindow.choices);
+            m_ThemeSelect.SetChoices(SettingsManager.Theme.choices);
 
             m_ResolutionSelect.choice = SettingsManager.Resolution.name;
             m_RefreshRateSelect.choice = SettingsManager.RefreshRate.name;
             m_VerticalSyncSelect.choice = SettingsManager.VerticalSync.name;
             m_BlurQualitySelect.choice = SettingsManager.BlurQuality.name;
             m_ShowWelcomeWindowSelect.choice = SettingsManager.ShowWelcomeWindow.name;
+            m_ThemeSelect.choice = SettingsManager.Theme.name;
 
             SettingsManager.WindowMode.onChanged += UpdateWindowModeSelect;
             UpdateWindowModeSelect();
@@ -108,6 +112,7 @@ namespace Boards.States
             SettingsManager.VerticalSync.SetValue(m_VerticalSyncSelect.choice);
             SettingsManager.BlurQuality.SetValue(m_BlurQualitySelect.choice);
             SettingsManager.ShowWelcomeWindow.SetValue(m_ShowWelcomeWindowSelect.choice);
+            SettingsManager.Theme.SetValue(m_ThemeSelect.choice);
             SettingsManager.Apply();
             SettingsManager.Write();
             Close();

@@ -42,3 +42,10 @@ MonoBehaviour:
       m_Value: 1
     - m_Name: No
       m_Value: 0
+  m_ThemeOptions:
+    m_DefaultOptionIndex: 0
+    m_Options:
+    - m_Name: Light
+      m_Value: 0
+    - m_Name: Dark
+      m_Value: 1

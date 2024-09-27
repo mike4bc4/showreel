@@ -39,6 +39,10 @@
                 <ui:VisualElement name="icon" />
                 <Controls.Raw.Select choices="Yes,No" index="0" label="Show Welcome Window" name="show-welcome-window-select" />
             </ui:VisualElement>
+            <ui:VisualElement name="container" style="flex-grow: 1;">
+                <ui:VisualElement name="icon" />
+                <Controls.Raw.Select choices="Light, Dark" index="0" label="Theme" name="theme-select" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
