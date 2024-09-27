@@ -1,4 +1,4 @@
-Shader "Custom/Layer"
+Shader "Custom/PostProcessingLayer"
 {
     Properties
     {
@@ -22,7 +22,8 @@ Shader "Custom/Layer"
         Cull Off 
         ZWrite Off 
         ZTest Always
-        Blend SrcAlpha OneMinusSrcAlpha
+        // We are not using any blending mode as this blit shader is supposed to replace affected
+        // part of active render target.
 
         Pass
         {
@@ -48,6 +49,8 @@ Shader "Custom/Layer"
             };
 
             sampler2D _MainTex;
+            uniform float4 _MainTex_ST;
+
             float4 _CropRect;
             float _BlurSize;
             float _BlurQuality;
@@ -70,6 +73,8 @@ Shader "Custom/Layer"
                 float yMax = _CropRect.y + _CropRect.w + _Overscan.x;
                 return x < position.x && position.x < xMax  && y < position.y && position.y < yMax;
             }
+
+            fixed4 _TextureSampleAdd;
 
             fixed4 frag (v2f i) : SV_Target
             {

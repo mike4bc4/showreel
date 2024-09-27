@@ -1,0 +1,21 @@
+:root {
+    --font-size-default: 24px;
+    --font-size-large: 32px;
+    --font-size-button: 36px;
+    --font-size-header: 42px;
+    
+    --color-primary: rgb(204, 204, 204);
+    --color-primary-semi-transparent: rgba(204, 204, 204, 0.2);
+
+    --color-secondary: rgb(128, 128, 128);
+    --color-secondary-semi-transparent: rgba(128, 128, 128, 0.2);
+
+    --color-background: rgb(32, 32, 32);
+    
+    --color-shadow: rgba(0, 0, 0, 0.2);
+    --color-shadow-light: rgba(0, 0, 0, 0.1);
+
+    font-size: var(--font-size-default);
+    color: var(--color-primary);
+    -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&guid=e902f648eb4a5e341813fb76a8cf3ba5&type=2#ModernSans-Light SDF");
+}

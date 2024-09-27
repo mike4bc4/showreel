@@ -13,12 +13,12 @@ namespace Layers
     public partial class LayerManager : MonoBehaviour
     {
         const string k_CommandBufferName = "UIDocumentCommandBuffer";
-        const string k_DestinationTexturePropertyName = "_DestTex";
         const CameraEvent k_CameraEvent = CameraEvent.AfterEverything;
         const int m_IntervalDelayMs = 500;
         static LayerManager s_Instance;
 
-        [SerializeField] Shader m_LayerShader;
+        [SerializeField] Shader m_UILayerShader;
+        [SerializeField] Shader m_PostProcessingLayerShader;
         [SerializeField] PanelSettings m_PanelSettings;
         [SerializeField] Material m_BlitCopyMaterial;
         [SerializeField] Material m_BlitOverMaterial;
@@ -30,7 +30,8 @@ namespace Layers
         int m_PropertyNameIndex;
 
         static PanelSettings panelSettings => s_Instance.m_PanelSettings;
-        static Shader layerShader => s_Instance.m_LayerShader;
+        static Shader uiLayerShader => s_Instance.m_UILayerShader;
+        static Shader postProcessingShader => s_Instance.m_PostProcessingLayerShader;
         static new Transform transform => ((Component)s_Instance).transform;
         static Material blitCopyMaterial => s_Instance.m_BlitCopyMaterial;
         static GroupLayer rootGroupLayer => s_Instance.m_RootGroupLayer;
@@ -136,7 +137,7 @@ namespace Layers
 
             var layer = gameObject.AddComponent<PostProcessingLayer>();
             layer.name = name;
-            layer.Init(new Material(layerShader));
+            layer.Init(new Material(postProcessingShader));
             rootGroupLayer.Add(layer);
 
             MarkCommandBufferDirty();
@@ -159,7 +160,7 @@ namespace Layers
 
             var layer = gameObject.AddComponent<UILayer>();
             layer.name = name;
-            layer.Init(new Material(layerShader), uiDocument);
+            layer.Init(new Material(uiLayerShader), uiDocument);
             rootGroupLayer.Add(layer);
 
             MarkCommandBufferDirty();
@@ -255,26 +256,7 @@ namespace Layers
 
                     if (layer is UILayer uiLayer)
                     {
-                        // First blit to fresh render texture.
-                        var tempRT1 = Shader.PropertyToID(CreateUniquePropertyName(layer.name));
-                        commandBuffer.GetTemporaryRT(tempRT1, -1, -1);
-                        commandBuffer.SetRenderTarget(tempRT1);
-                        commandBuffer.ClearRenderTarget(true, true, Color.clear);
-                        commandBuffer.Blit(uiLayer.uiDocument.panelSettings.targetTexture, tempRT1, uiLayer.material);
-
-                        // Because Blit basically redraws source into destination using given material,
-                        // entire group texture is being overwritten and lost. We want to preserve it, 
-                        // so let's copy said texture into another temporary RT. 
-                        var tempRT2 = Shader.PropertyToID(CreateUniquePropertyName("GroupCopy"));
-                        commandBuffer.GetTemporaryRT(tempRT2, -1, -1);
-                        commandBuffer.CopyTexture(groupOutputTexId, tempRT2);
-
-                        // We are setting our 'backup' group texture as global property, so blit over
-                        // material can make use of it.
-                        commandBuffer.SetGlobalTexture(k_DestinationTexturePropertyName, tempRT2);
-
-                        // Now 'blit over' new layer.
-                        commandBuffer.Blit(tempRT1, groupOutputTexId, blitOverMaterial);
+                        commandBuffer.Blit(uiLayer.uiDocument.panelSettings.targetTexture, groupOutputTexId, uiLayer.material);
                     }
                     else if (layer is PostProcessingLayer postProcessingLayer)
                     {
@@ -291,11 +273,6 @@ namespace Layers
                     }
                 }
 
-                // Finally 'blit over' entire group, this process is similar to UILayer blit.
-                var tempRT3 = Shader.PropertyToID(CreateUniquePropertyName("GroupParentCopy"));
-                commandBuffer.GetTemporaryRT(tempRT3, -1, -1);
-                commandBuffer.CopyTexture(parentTexID, tempRT3);
-                commandBuffer.SetGlobalTexture(k_DestinationTexturePropertyName, tempRT3);
                 commandBuffer.Blit(groupOutputTexId, parentTexID, blitOverMaterial);
             }
 

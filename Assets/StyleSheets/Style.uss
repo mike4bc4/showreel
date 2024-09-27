@@ -1,28 +1,3 @@
-:root {
-    --font-size-default: 24px;
-    --font-size-header: 42px;
-    --font-size-button: 36px;
-    --font-size-h3: 32px;
-    font-size: 24px;
-    --color-primary: rgb(51, 51, 51);
-    --color-secondary: rgb(128, 128, 128);
-    --color-background: rgb(229, 229, 229);
-    color: var(--color-primary);
-    -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&guid=e902f648eb4a5e341813fb76a8cf3ba5&type=2#ModernSans-Light SDF");
-}
-
-.h1 {
-    font-size: var(--font-size-header);
-}
-
-.h2 {
-    font-size: var(--font-size-button);
-}
-
-.h3 {
-    font-size: 32px;
-}
-
 .unity-ui-document__root {
     flex-grow: 1;
 }
@@ -346,7 +321,7 @@
 .diamond-bar__bar {
     flex-grow: 1;
     height: 2px;
-    background-color: rgb(0, 0, 0);
+    background-color: var(--color-primary);
 }
 
 .diamond-bar__element {
@@ -495,7 +470,7 @@
 }
 
 .interface__button:hover {
-    background-color: rgba(51, 51, 51, 0.2);
+    background-color: var(--color-secondary-semi-transparent);
     -unity-background-image-tint-color: var(--color-primary);
 }
 
@@ -562,7 +537,7 @@
     -unity-slice-top: 10;
     -unity-slice-right: 10;
     -unity-slice-bottom: 10;
-    -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
+    -unity-background-image-tint-color: var(--color-shadow);
     align-self: center;
 }
 
@@ -707,7 +682,7 @@
 
 .list-element__border {
     height: 2px;
-    background-color: rgb(51, 51, 51);
+    background-color: var(--color-primary);
     margin-top: 4px;
     scale: 0 1;
     transition-property: scale;
@@ -716,7 +691,7 @@
 }
 
 .list-element__button {
-    background-color: rgba(128, 128, 128, 0);
+    background-color: transparent;
     scale: 1 1;
     transition-property: background-color, scale;
     transition-duration: 0.2s, 0.1s;
@@ -724,7 +699,7 @@
 }
 
 .list-element__button:hover {
-    background-color: rgba(128, 128, 128, 0.2);
+    background-color: var(--color-secondary-semi-transparent);
 }
 
 .list-element__button:active {
@@ -799,7 +774,7 @@
 
 .dialog-box__shadow {
     background-image: url("project://database/Assets/Textures/Shadow.png?fileID=2800000&guid=e531b988d4f50f64faddbe8662b6731f&type=3#Shadow");
-    -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
+    -unity-background-image-tint-color: var(--color-shadow);
     -unity-slice-left: 10;
     -unity-slice-top: 10;
     -unity-slice-right: 10;
@@ -866,7 +841,7 @@
     -unity-slice-top: 10;
     -unity-slice-right: 10;
     -unity-slice-bottom: 10;
-    -unity-background-image-tint-color: rgba(0, 0, 0, 0.1);
+    -unity-background-image-tint-color: var(--color-shadow-light);
     align-self: flex-start;
     -unity-slice-scale: 1px;
     transform-origin: left top;
@@ -882,7 +857,6 @@
 }
 
 .select__scroll-box-content-wrapper {
-    margin-right: 4px;
 }
 
 .select__button {
@@ -892,7 +866,7 @@
 }
 
 .select__button:hover {
-    background-color: rgba(128, 128, 128, 0.2);
+    background-color: var(--color-secondary-semi-transparent);
 }
 
 .select__button:active {
@@ -938,7 +912,7 @@
 }
 
 .select__option-button:hover {
-    background-color: rgba(128, 128, 128, 0.2);
+    background-color: var(--color-secondary-semi-transparent);
 }
 
 .select__option-button:active {
@@ -994,13 +968,12 @@
 
 .settings__header {
     flex-direction: row;
-    flex-grow: 1;
     margin-bottom: 8px;
     margin-top: 8px;
 }
 
 .settings__header #label {
-    font-size: var(--font-size-h3);
+    font-size: var(--font-size-large);
 }
 
 .settings__column {
@@ -1023,4 +996,13 @@
 .settings__column > #container > Select {
     justify-content: space-between;
     flex-grow: 1;
+}
+
+.background {
+    background-color: var(--color-background);
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }

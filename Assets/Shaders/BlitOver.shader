@@ -9,6 +9,9 @@ Shader "Hidden/BlitOver"
         Pass 
         {
             ZTest Always Cull Off ZWrite Off
+            
+            // Simple blit that respect source alpha.
+            Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
 
             CGPROGRAM
 
@@ -46,18 +49,7 @@ Shader "Hidden/BlitOver"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 c1 = tex2D(_DestTex, i.texcoord);
-                fixed4 c2 = tex2D(_MainTex, i.texcoord);
-                
-                float g = 2.2;
-                c1.a = pow(c1.a, 1 / g);
-                c2.a = pow(c2.a, 1 / g);
-
-                float a0 = c2.a + c1.a * (1 - c2.a);
-                fixed3 c0 = c2.rgb + c1.rgb * (1 - c2.a);
-                
-                a0 = pow(a0, g);
-                return fixed4(c0, a0);
+                return tex2D(_MainTex, i.texcoord);
             }
     
             ENDCG

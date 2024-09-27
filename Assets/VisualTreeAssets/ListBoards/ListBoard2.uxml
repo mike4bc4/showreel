@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="InterfaceBoard" src="project://database/Assets/VisualTreeAssets/InterfaceBoard.uxml?fileID=9197481963319205126&amp;guid=06ddbf63852d0a2498a1507c4af4e559&amp;type=3#InterfaceBoard" />
     <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
-    <ui:VisualElement name="background" style="flex-grow: 1; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(229, 229, 229); display: none;" />
+    <ui:VisualElement name="background" class="background" />
     <ui:VisualElement name="frame-viewport" style="align-items: center; justify-content: center; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
         <ui:VisualElement name="frame-container" style="flex-direction: row; width: 1280px;">
             <ui:VisualElement name="spacer-left" style="flex-grow: 1;" />
@@ -32,4 +33,5 @@
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="test" style="flex-grow: 1; position: absolute; left: 100px; bottom: 100px; width: 100px; height: 100px;" />
+    <ui:Instance template="InterfaceBoard" name="InterfaceBoard" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
 </ui:UXML>

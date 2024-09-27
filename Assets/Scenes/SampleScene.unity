@@ -243,7 +243,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71d8891340f38f440ba51b3b8bf22b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LayerShader: {fileID: 4800000, guid: 68553664106206540850324776dba1d6, type: 3}
+  m_UILayerShader: {fileID: 4800000, guid: 68553664106206540850324776dba1d6, type: 3}
+  m_PostProcessingLayerShader: {fileID: 4800000, guid: d9bbdc99ca7afeb40ae728b6d5631020, type: 3}
   m_PanelSettings: {fileID: 11400000, guid: b1f21ef6f4a03c743b6cc1cf0d7ab1b1, type: 2}
   m_BlitCopyMaterial: {fileID: 2100000, guid: e9dacb50b4dd9074abc5be05401e67ac, type: 2}
   m_BlitOverMaterial: {fileID: 2100000, guid: a76a23161749a884188c62b8b7f6c381, type: 2}
@@ -865,14 +866,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1477281013}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
   m_EditorClassIdentifier: 
   m_PanelSettings: {fileID: 11400000, guid: f4286639c8cf49942a73a7965bbd8c66, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 10fd8ecd21465ba41b4256116e87551f, type: 3}
   m_SortingOrder: 0
 --- !u!4 &1477281016
 Transform:
