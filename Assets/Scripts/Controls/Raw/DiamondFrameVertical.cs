@@ -22,7 +22,6 @@ namespace Controls.Raw
         const string k_ResizeElementUssClassName = k_UssClassName + "__resize-element";
 
         const string k_UnfoldAnimationName = "UnfoldAnimation";
-        static readonly Color s_DefaultColor = Color.black;
         const float k_DefaultFill = 1f;
         const int k_DefaultCornerRadius = 10;
 
@@ -31,7 +30,6 @@ namespace Controls.Raw
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
             UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
-            UxmlColorAttributeDescription m_Color = new UxmlColorAttributeDescription() { name = "color", defaultValue = s_DefaultColor };
             UxmlIntAttributeDescription m_CornerRadius = new UxmlIntAttributeDescription() { name = "corner-radius", defaultValue = k_DefaultCornerRadius };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
@@ -39,7 +37,6 @@ namespace Controls.Raw
                 base.Init(ve, bag, cc);
                 DiamondFrameVertical diamondFrameVertical = (DiamondFrameVertical)ve;
                 diamondFrameVertical.animationProgress = m_AnimationProgress.GetValueFromBag(bag, cc);
-                diamondFrameVertical.color = m_Color.GetValueFromBag(bag, cc);
                 diamondFrameVertical.cornerRadius = m_CornerRadius.GetValueFromBag(bag, cc);
             }
         }
@@ -51,7 +48,7 @@ namespace Controls.Raw
         RoundedFrame m_RoundedFrameLeft;
         VisualElement m_ContentContainer;
         VisualElement m_ResizeElement;
-        Color m_Color;
+        // Color m_Color;
         float m_Fill;
         int m_CornerRadius;
         AnimationPlayer m_Player;
@@ -82,17 +79,6 @@ namespace Controls.Raw
         public override VisualElement contentContainer
         {
             get => m_ContentContainer;
-        }
-
-        public Color color
-        {
-            get => m_Color;
-            set
-            {
-                m_Color = value;
-                m_RoundedFrameLeft.color = m_Color;
-                m_RoundedFrameRight.color = m_Color;
-            }
         }
 
         public int cornerRadius

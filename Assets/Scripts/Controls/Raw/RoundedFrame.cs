@@ -22,7 +22,6 @@ namespace Controls.Raw
         const string k_BottomBorderContainerUssClassName = k_UssClassName + "__bottom-border-container";
         const string k_BottomBorderUssClassName = k_UssClassName + "__bottom-border";
 
-        static readonly Color s_DefaultColor = Color.black;
         const float k_DefaultFill = 0.5f;
         const int k_DefaultCornerRadius = 10;
         const int k_DefaultBorderWidth = 2;
@@ -31,7 +30,6 @@ namespace Controls.Raw
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            UxmlColorAttributeDescription m_Color = new UxmlColorAttributeDescription() { name = "color", defaultValue = s_DefaultColor };
             UxmlFloatAttributeDescription m_Fill = new UxmlFloatAttributeDescription() { name = "fill", defaultValue = k_DefaultFill };
             UxmlIntAttributeDescription m_CornerRadius = new UxmlIntAttributeDescription() { name = "corner-radius", defaultValue = k_DefaultCornerRadius };
             UxmlIntAttributeDescription m_BorderWidth = new UxmlIntAttributeDescription() { name = "border-width", defaultValue = k_DefaultBorderWidth };
@@ -40,7 +38,6 @@ namespace Controls.Raw
             {
                 base.Init(ve, bag, cc);
                 RoundedFrame roundedFrame = (RoundedFrame)ve;
-                roundedFrame.color = m_Color.GetValueFromBag(bag, cc);
                 roundedFrame.fill = m_Fill.GetValueFromBag(bag, cc);
                 roundedFrame.cornerRadius = m_CornerRadius.GetValueFromBag(bag, cc);
                 roundedFrame.borderWidth = m_BorderWidth.GetValueFromBag(bag, cc);
@@ -57,24 +54,9 @@ namespace Controls.Raw
         VisualElement m_BottomRightCorner;
         VisualElement m_BottomBorderContainer;
         VisualElement m_BottomBorder;
-        Color m_Color;
         float m_Fill;
         int m_CornerRadius;
         int m_BorderWidth;
-
-        public Color color
-        {
-            get => m_Color;
-            set
-            {
-                m_Color = value;
-                m_TopBorder.style.backgroundColor = m_Color;
-                m_TopRightCorner.style.borderTopColor = m_Color;
-                m_RightBorder.style.backgroundColor = m_Color;
-                m_BottomRightCorner.style.borderRightColor = m_Color;
-                m_BottomBorder.style.backgroundColor = m_Color;
-            }
-        }
 
         float cornerLength
         {
