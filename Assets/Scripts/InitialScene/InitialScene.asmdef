@@ -1,0 +1,18 @@
+{
+    "name": "InitialScene",
+    "rootNamespace": "",
+    "references": [
+        "GUID:bc24da3223fb43a478fa11b6329afd6c",
+        "GUID:047a95ed6a032f740aa9e990856565d1",
+        "GUID:1097d5926291be74783ea6ef2fe72974"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

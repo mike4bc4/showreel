@@ -9,6 +9,7 @@ using InputHelper;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using Utility;
 
 namespace Boards
 {
@@ -84,6 +85,7 @@ namespace Boards
             m_InputManager = new InputManager(m_InputActionAsset);
             m_StateContext = new BoardStateContext();
 
+            m_InputManager.actionMap.Disable();
             m_InputManager.anyAction.GetHelper().performed += (ctx) => m_StateContext.Any();
             m_InputManager.cancelAction.GetHelper().performed += (ctx) => m_StateContext.Cancel();
             m_InputManager.confirmAction.GetHelper().performed += (ctx) => m_StateContext.Confirm();
@@ -91,6 +93,11 @@ namespace Boards
             m_InputManager.rightAction.GetHelper().performed += (ctx) => m_StateContext.Right();
             m_InputManager.infoAction.GetHelper().performed += (ctx) => m_StateContext.Info();
             m_InputManager.settingsAction.GetHelper().performed += (ctx) => m_StateContext.Settings();
+
+            // We don't want to set board context state (and start initial board animations) right
+            // after scene is loaded. Instead wait until InitialSceneManager clears loading screen
+            // and requests InitialScene unload.
+            SceneLoader.onSceneUnloaded += OnSceneUnloaded;
         }
 
         void Start()
@@ -106,7 +113,7 @@ namespace Boards
             }
 
             GetBoard<BackgroundBoard>().ShowImmediate();
-            m_StateContext.state = new InitialBoardState(m_StateContext);
+
         }
 
         public static T GetBoard<T>()
@@ -120,6 +127,18 @@ namespace Boards
             }
 
             return default(T);
+        }
+
+        void OnSceneUnloaded(string sceneName)
+        {
+            if (sceneName != SceneLoader.InitialSceneName)
+            {
+                return;
+            }
+
+            m_InputManager.actionMap.Enable();
+            m_StateContext.state = new InitialBoardState(m_StateContext);
+            SceneLoader.onSceneUnloaded -= OnSceneUnloaded;
         }
     }
 }
