@@ -11,9 +11,10 @@ namespace Controls.Raw
 {
     public class Subtitle : VisualElement
     {
-        public static readonly string ussClassName = "subtitle";
-        public static readonly string labelUssClassName = ussClassName + "__label";
-        public static readonly string borderUssClassName = ussClassName + "__border";
+        const string k_UssClassName = "subtitle";
+        const string k_LabelUssClassName = k_UssClassName + "__label";
+        const string k_BorderUssClassName = k_UssClassName + "__border";
+        const string k_AnimationName = "Animation";
 
         public new class UxmlFactory : UxmlFactory<Subtitle, UxmlTraits> { }
 
@@ -71,33 +72,34 @@ namespace Controls.Raw
         public Subtitle()
         {
             m_Player = new AnimationPlayer();
-            m_Player.sampling = 60;
-            var animation = new KeyframeAnimation();
-            m_Player.AddAnimation(animation, "Animation");
-            m_Player.animation = animation;
+            m_Player.sampling = 120;
+            m_Player.AddAnimation(CreateAnimation(), k_AnimationName);
+            m_Player.animation = m_Player[k_AnimationName];
 
-            AddToClassList(ussClassName);
+            AddToClassList(k_UssClassName);
 
             m_Label = new Label() { name = "label" };
-            m_Label.AddToClassList(labelUssClassName);
+            m_Label.AddToClassList(k_LabelUssClassName);
             Add(m_Label);
 
             m_Border = new VisualElement() { name = "border" };
-            m_Border.AddToClassList(borderUssClassName);
+            m_Border.AddToClassList(k_BorderUssClassName);
             Add(m_Border);
+        }
+
+        KeyframeAnimation CreateAnimation()
+        {
+            var animation = new KeyframeAnimation();
 
             var t1 = animation.AddTrack((float translation) => m_Border.style.translate = new Translate(Length.Percent(translation), 0f));
             t1.AddKeyframe(0, -100f, Easing.EaseOutSine);
-            t1.AddKeyframe(60, 100f);
+            t1.AddKeyframe(120, 100f);
 
             var t2 = animation.AddTrack((float origin) => m_Border.style.transformOrigin = new TransformOrigin(Length.Percent(origin), 0f));
             t2.AddKeyframe(0, 100f, Easing.EaseOutSine);
-            t2.AddKeyframe(60, 0);
-        }
+            t2.AddKeyframe(120, 0);
 
-        public void SetAnimationProgress(float animationProgress)
-        {
-            this.animationProgress = animationProgress;
+            return animation;
         }
     }
 }
