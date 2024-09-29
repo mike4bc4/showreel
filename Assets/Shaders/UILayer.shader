@@ -99,16 +99,15 @@ Shader "Custom/UILayer"
                             pixelOffset *= _BlurSize / inputQuality;
 
                             float2 uvOffset = pixelOffset / _ScreenParams.xy;
-                            color += tex2D(_MainTex, i.uv + uvOffset);
 
-                            // We could use counter for edge cases and then divide color by amount of
-                            // samples, yet such solution causes artifacts when processed texture is non-uniform.
-                            // That's why it's simply better to reject pixel if blur kernel 'hangs' of the edge of image.
                             #ifdef _USE_CROP_RECT
-                                if(!contains(pixelPosition + pixelOffset))
-                                {
-                                    discard;
-                                }
+                                // If pixel contributing to blur effect is outside crop rect + overscan,
+                                // we are using base pixel color, this works more or less like blurring
+                                // texture that has been extended outside it's boundaries.
+                                float2 uv = contains(pixelPosition + pixelOffset) ? i.uv + uvOffset : i.uv;
+                                color += tex2D(_MainTex, uv);
+                            #else
+                                color += tex2D(_MainTex, i.uv + uvOffset);
                             #endif
                         }
                     }
