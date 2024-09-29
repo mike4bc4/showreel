@@ -157,12 +157,20 @@ namespace Controls.Raw
                     tile.style.opacity = 0f;
                 }
 
-                tiles[(int)index].style.opacity = 1f;
+                if (index >= 0f)
+                {
+                    tiles[(int)index].style.opacity = 1f;
+                }
             });
-            t3.AddKeyframe(0, 0f, Easing.StepOut);
-            t3.AddKeyframe(interval, 1f, Easing.StepOut);
-            t3.AddKeyframe(interval * 2, 2f, Easing.StepOut);
-            t3.AddKeyframe(interval * 3, 3f, Easing.StepOut);
+            t3.AddKeyframe(0, -1f, Easing.StepOut);
+            t3.AddKeyframe(1, 0f, Easing.StepOut);
+            t3.AddKeyframe(interval, -1f, Easing.StepOut);
+            t3.AddKeyframe(interval + 1, 1f, Easing.StepOut);
+            t3.AddKeyframe(interval * 2, -1f, Easing.StepOut);
+            t3.AddKeyframe(interval * 2 + 1, 2f, Easing.StepOut);
+            t3.AddKeyframe(interval * 3, -1f, Easing.StepOut);
+            t3.AddKeyframe(interval * 3 + 1, 3f, Easing.StepOut);
+            t3.AddKeyframe(interval * 4, -1f, Easing.StepOut);
 
             return animation;
         }
