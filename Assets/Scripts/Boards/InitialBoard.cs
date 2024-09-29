@@ -132,7 +132,7 @@ namespace Boards
 
                 m_PostProcessingLayer.visible = true;
                 m_PostProcessingLayer.maskElement = m_Title;
-                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.overscan = Overscan.FromReferenceResolution(8f);
             });
 
             var t1 = animation.AddTrack(opacity => m_Title.style.opacity = opacity);
@@ -154,7 +154,7 @@ namespace Boards
 
             animation.AddEvent(90, () =>
             {
-                m_PostProcessingLayer.overscan = new Overscan(8f, 8f, 0f, 8f);
+                m_PostProcessingLayer.overscan = Overscan.FromReferenceResolution(8f, 8f, 0f, 8f);
                 m_PostProcessingLayer.maskElement = m_Title.label;
             });
 
@@ -169,7 +169,7 @@ namespace Boards
             animation.AddEvent(120, () =>
             {
                 m_Subtitle.animationProgress = 0f;
-                m_PostProcessingLayer.overscan = 8f;
+                m_PostProcessingLayer.overscan = Overscan.FromReferenceResolution(8f);
                 m_PostProcessingLayer.maskElement = m_Subtitle;
             });
 

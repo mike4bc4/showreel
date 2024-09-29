@@ -44,6 +44,8 @@ namespace Layers
             get => s_Instance;
         }
 
+        public static Vector2Int ReferenceResolution => panelSettings.referenceResolution;
+
         static int propertyNameIndex
         {
             get => s_Instance.m_PropertyNameIndex;

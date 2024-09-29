@@ -301,7 +301,7 @@ namespace Controls
                 {
                     m_PostProcessingLayer.visible = true;
                     m_PostProcessingLayer.maskElement = m_DialogBox.title;
-                    m_PostProcessingLayer.overscan = 8f;
+                    m_PostProcessingLayer.overscan = Overscan.FromReferenceResolution(8f);
                 }
             });
             var t1 = animation.AddTrack((float opacity) => m_DialogBox.title.style.opacity = opacity);
@@ -321,7 +321,7 @@ namespace Controls
                 if (m_TitleAnimationPlayer.playbackSpeed >= 0)
                 {
                     m_PostProcessingLayer.maskElement = m_DialogBox.title.label;
-                    m_PostProcessingLayer.overscan = new Overscan(8, 8, 0, 8);
+                    m_PostProcessingLayer.overscan = Overscan.FromReferenceResolution(8, 8, 0, 8);
                 }
             });
             var t4 = animation.AddTrack((float opacity) => m_DialogBox.title.label.style.opacity = opacity);

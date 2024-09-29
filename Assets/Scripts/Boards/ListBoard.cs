@@ -384,7 +384,7 @@ namespace Boards
                 if (animation.player.isPlayingForward)
                 {
                     m_PostProcessingLayers[0].visible = true;
-                    m_PostProcessingLayers[0].overscan = 8f;
+                    m_PostProcessingLayers[0].overscan = Overscan.FromReferenceResolution(8f);
                     m_PostProcessingLayers[0].maskElement = videoContainer;
                 }
             });
@@ -449,7 +449,7 @@ namespace Boards
                     title.label.style.opacity = 0f;
 
                     m_PostProcessingLayers[0].visible = true;
-                    m_PostProcessingLayers[0].overscan = 8f;
+                    m_PostProcessingLayers[0].overscan = Overscan.FromReferenceResolution(8f);
                     m_PostProcessingLayers[0].maskElement = frame;
                 }
             });
@@ -520,7 +520,7 @@ namespace Boards
                 if (animation.player.isPlayingForward)
                 {
                     m_PostProcessingLayers[0].visible = true;
-                    m_PostProcessingLayers[0].overscan = 8f;
+                    m_PostProcessingLayers[0].overscan = Overscan.FromReferenceResolution(8f);
                     m_PostProcessingLayers[0].maskElement = scrollBox;
                 }
             });
@@ -557,7 +557,7 @@ namespace Boards
                 {
                     scrollBox.style.opacity = 1f;
                     SetPostProcessingLayersVisible(true);
-                    SetPostProcessingLayersOverscan(8f);
+                    SetPostProcessingLayersOverscan(Overscan.FromReferenceResolution(8f));
                 }
             });
 
@@ -688,7 +688,7 @@ namespace Boards
                 if (animation.player.isPlayingForward)
                 {
                     m_PostProcessingLayers[0].visible = true;
-                    m_PostProcessingLayers[0].overscan = 8f;
+                    m_PostProcessingLayers[0].overscan = Overscan.FromReferenceResolution(8f);
                     m_PostProcessingLayers[0].maskElement = title;
                 }
             });
@@ -710,7 +710,7 @@ namespace Boards
                 if (animation.player.isPlayingForward)
                 {
                     m_PostProcessingLayers[0].maskElement = title.label;
-                    m_PostProcessingLayers[0].overscan = new Overscan(8f, 8f, 0f, 8f);
+                    m_PostProcessingLayers[0].overscan = Overscan.FromReferenceResolution(8f, 8f, 0f, 8f);
                 }
             });
 

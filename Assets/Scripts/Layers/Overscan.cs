@@ -32,6 +32,21 @@ namespace Layers
             this.north = this.east = this.south = this.west = pixels;
         }
 
+        public static Overscan FromReferenceResolution(float north, float east, float south, float west)
+        {
+            var overscan = new Overscan();
+            overscan.north = north / LayerManager.ReferenceResolution.y;
+            overscan.east = east / LayerManager.ReferenceResolution.x;
+            overscan.south = south / LayerManager.ReferenceResolution.y;
+            overscan.west = west / LayerManager.ReferenceResolution.x;
+            return overscan;
+        }
+
+        public static Overscan FromReferenceResolution(float pixels)
+        {
+            return FromReferenceResolution(pixels, pixels, pixels, pixels);
+        }
+
         public static implicit operator Vector4(Overscan os) => new Vector4(os.north, os.east, os.south, os.west);
         public static implicit operator Overscan(float value) => new Overscan(value);
     }

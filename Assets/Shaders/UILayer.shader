@@ -49,6 +49,8 @@ Shader "Custom/UILayer"
                 fixed4 color : COLOR;
             };
 
+            static const float OffsetSize = 0.001;
+
             sampler2D _MainTex;
             uniform float4 _MainTex_ST;
             
@@ -77,10 +79,9 @@ Shader "Custom/UILayer"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float2 pixelPosition = i.uv * _ScreenParams.xy;
-
                 #ifdef _USE_CROP_RECT
-                    if(!contains(pixelPosition)){
+                    if(!contains(i.uv))
+                    {
                         discard;
                     }
                 #endif
@@ -91,23 +92,22 @@ Shader "Custom/UILayer"
                     int inputQuality = max(1, ceil(_BlurQuality));
                     int quality = inputQuality * 2 + 1;
 
+                    float screenRatio = _ScreenParams.x / _ScreenParams.y;
+
+                    _BlurSize = max(0, _BlurSize) / (float)inputQuality;
+
                     for(int x = 0; x < quality; x++)
                     {
                         for(int y = 0; y < quality; y++)
                         {
-                            float2 pixelOffset = float2(x, y) - float2(inputQuality, inputQuality);
-                            pixelOffset *= _BlurSize / inputQuality;
-
-                            float2 uvOffset = pixelOffset / _ScreenParams.xy;
+                            float2 offset = float2(x - inputQuality, y - inputQuality) * OffsetSize;
+                            offset *= float2(_BlurSize, _BlurSize * screenRatio);
 
                             #ifdef _USE_CROP_RECT
-                                // If pixel contributing to blur effect is outside crop rect + overscan,
-                                // we are using base pixel color, this works more or less like blurring
-                                // texture that has been extended outside it's boundaries.
-                                float2 uv = contains(pixelPosition + pixelOffset) ? i.uv + uvOffset : i.uv;
+                                float2 uv = contains(i.uv + offset) ? i.uv + offset : i.uv;
                                 color += tex2D(_MainTex, uv);
                             #else
-                                color += tex2D(_MainTex, i.uv + uvOffset);
+                                color += tex2D(_MainTex, i.uv + offset);
                             #endif
                         }
                     }

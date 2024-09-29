@@ -8,7 +8,7 @@ namespace Layers
 {
     public abstract class Layer : BaseLayer
     {
-        public const float DefaultBlurSize = 8f;
+        public const float DefaultBlurSize = 6f;
 
         const string k_TintPropertyName = "_Tint";
         const string k_CropRectPropertyName = "_CropRect";
@@ -139,12 +139,12 @@ namespace Layers
             // layer should respect that.
             if (m_MaskElement != null && m_MaskElement.panel != null)
             {
-                var scale = new Vector2(Screen.width, Screen.height) / m_MaskElement.panel.visualTree.worldBound.size;
+                var rootSize = m_MaskElement.panel.visualTree.worldBound.size;
                 var rect = m_MaskElement.worldBound;
-                var x = rect.x * scale.x;
-                var y = Screen.height - rect.yMax * scale.y;
-                var w = rect.width * scale.x;
-                var h = rect.height * scale.y;
+                var x = rect.x / rootSize.x;
+                var y = 1f - rect.yMax / rootSize.y;
+                var w = rect.width / rootSize.x;
+                var h = rect.height / rootSize.y;
 
                 material.SetVector(k_CropRectPropertyName, new Vector4(x, y, w, h));
             }
