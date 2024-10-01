@@ -31,6 +31,7 @@ namespace Settings
         const string k_BlurQualityKey = "BlurQuality";
         const string k_ShowWelcomeWindowKey = "ShowWelcomeWindow";
         const string k_ThemeKey = "Theme";
+        const string k_LocaleKey = "Locale";
         const string k_SavePath = "Settings";
         static SettingsManager s_Instance;
 
@@ -41,6 +42,7 @@ namespace Settings
         Setting<float> m_BlurQuality;
         Setting<bool> m_ShowWelcomeWindow;
         Setting<Theme> m_Theme;
+        Setting<string> m_Locale;
         SaveObject m_SaveObject;
 
         public static SettingsManager Instance
@@ -63,6 +65,7 @@ namespace Settings
         public static Setting<float> BlurQuality => Instance.m_BlurQuality;
         public static Setting<bool> ShowWelcomeWindow => Instance.m_ShowWelcomeWindow;
         public static Setting<Theme> Theme => Instance.m_Theme;
+        public static Setting<string> Locale => Instance.m_Locale;
 
         static SaveObject saveObject
         {
@@ -84,6 +87,7 @@ namespace Settings
             m_BlurQuality = new Setting<float>(SettingsManagerResources.Instance.blurQualityOptions);
             m_ShowWelcomeWindow = new Setting<bool>(SettingsManagerResources.Instance.showWelcomeWindowOptions);
             m_Theme = new Setting<Theme>(SettingsManagerResources.Instance.themeOptions);
+            m_Locale = new Setting<string>(SettingsManagerResources.Instance.localeOptions);
 
             Read();
             Apply();
@@ -131,6 +135,7 @@ namespace Settings
             BlurQuality.SetValue(saveObject.TryGetValue(k_BlurQualityKey, out float blurQuality) ? blurQuality : BlurQuality.defaultOption.value);
             ShowWelcomeWindow.SetValue(saveObject.TryGetValue(k_ShowWelcomeWindowKey, out bool showWelcomeWindow) ? showWelcomeWindow : ShowWelcomeWindow.defaultOption.value);
             Theme.SetValue(saveObject.TryGetValue(k_ThemeKey, out Theme theme) ? theme : Theme.defaultOption.value);
+            Locale.SetValue(saveObject.TryGetValue(k_LocaleKey, out string locale) ? locale : Locale.defaultOption.value);
         }
 
         public static void Write()
@@ -143,6 +148,7 @@ namespace Settings
             saveObject.SetValue(k_BlurQualityKey, BlurQuality.value);
             saveObject.SetValue(k_ShowWelcomeWindowKey, ShowWelcomeWindow.value);
             saveObject.SetValue(k_ThemeKey, Theme.value);
+            saveObject.SetValue(k_LocaleKey, Locale.value);
             saveObject.Write(k_SavePath);
         }
 

@@ -141,8 +141,7 @@ namespace Boards
             m_StateContext.state = new InitialBoardState(m_StateContext);
             SceneLoader.onSceneUnloaded -= OnSceneUnloaded;
 
-            LocalizationManager.SelectedLocale = "pl";
-            LocalizationManager.Localize();
+            // LocalizationManager.Localize();
         }
     }
 }

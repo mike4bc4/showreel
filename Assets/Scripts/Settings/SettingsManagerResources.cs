@@ -11,18 +11,19 @@ namespace Settings
     [CreateAssetMenu(fileName = "SettingsManagerResources ", menuName = "Scriptable Objects/Settings Manager Resources")]
     public class SettingsManagerResources : ScriptableSingleton<SettingsManagerResources>
     {
-
         [SerializeField] OptionSet<WindowMode> m_WindowModeOptions;
         [SerializeField] OptionSet<bool> m_VerticalSyncOptions;
         [SerializeField] OptionSet<float> m_BlurQualityOptions;
         [SerializeField] OptionSet<bool> m_ShowWelcomeWindowOptions;
         [SerializeField] OptionSet<Theme> m_ThemeOptions;
+        [SerializeField] OptionSet<string> m_LocaleOptions;
 
         public OptionSet<WindowMode> windowModeOptions => m_WindowModeOptions;
         public OptionSet<bool> verticalSyncOptions => m_VerticalSyncOptions;
         public OptionSet<float> blurQualityOptions => m_BlurQualityOptions;
         public OptionSet<bool> showWelcomeWindowOptions => m_ShowWelcomeWindowOptions;
         public OptionSet<Theme> themeOptions => m_ThemeOptions;
+        public OptionSet<string> localeOptions => m_LocaleOptions;
 
         public OptionSet<Vector2Int> resolutionOptions
         {

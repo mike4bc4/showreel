@@ -43,6 +43,10 @@
                 <ui:VisualElement name="icon" />
                 <Controls.Raw.Select choices="Light, Dark" index="0" label="Theme" name="theme-select" />
             </ui:VisualElement>
+            <ui:VisualElement name="container" style="flex-grow: 1;">
+                <ui:VisualElement name="icon" />
+                <Controls.Raw.Select choices="English,Polish" index="0" label="Language" name="locale-select" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

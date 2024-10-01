@@ -5,10 +5,10 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Extensions;
+using Settings;
 
 namespace Localization
 {
-    [InitializeOnLoad]
     public class LocalizationManager
     {
         static LocalizationManager s_Instance;
@@ -40,6 +40,21 @@ namespace Localization
         LocalizationManager()
         {
             m_LocalizedElements = new List<ILocalizedElement>();
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        static void Init()
+        {
+            SettingsManager.OnSettingsApplied += OnSettingsApplied;
+        }
+
+        static void OnSettingsApplied()
+        {
+            if (SelectedLocale != SettingsManager.Locale.value)
+            {
+                SelectedLocale = SettingsManager.Locale.value;
+                Localize();
+            }
         }
 
         internal static void RegisterElement(ILocalizedElement textElement)

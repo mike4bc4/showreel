@@ -21,6 +21,7 @@ namespace Boards.States
         Select m_BlurQualitySelect;
         Select m_ShowWelcomeWindowSelect;
         Select m_ThemeSelect;
+        Select m_LocaleSelect;
 
         public SettingsDialogBoxState(BoardStateContext context) : base(context) { }
 
@@ -35,6 +36,7 @@ namespace Boards.States
             m_BlurQualitySelect = m_DialogBox.rootVisualElement.Q<Select>("blur-quality-select");
             m_ShowWelcomeWindowSelect = m_DialogBox.rootVisualElement.Q<Select>("show-welcome-window-select");
             m_ThemeSelect = m_DialogBox.rootVisualElement.Q<Select>("theme-select");
+            m_LocaleSelect = m_DialogBox.rootVisualElement.Q<Select>("locale-select");
 
             m_ResolutionSelect.onChoiceChanged += OnResolutionChanged;
 
@@ -44,6 +46,7 @@ namespace Boards.States
             m_BlurQualitySelect.SetChoices(SettingsManager.BlurQuality.choices);
             m_ShowWelcomeWindowSelect.SetChoices(SettingsManager.ShowWelcomeWindow.choices);
             m_ThemeSelect.SetChoices(SettingsManager.Theme.choices);
+            m_LocaleSelect.SetChoices(SettingsManager.Locale.choices);
 
             m_ResolutionSelect.choice = SettingsManager.Resolution.name;
             m_RefreshRateSelect.choice = SettingsManager.RefreshRate.name;
@@ -51,6 +54,7 @@ namespace Boards.States
             m_BlurQualitySelect.choice = SettingsManager.BlurQuality.name;
             m_ShowWelcomeWindowSelect.choice = SettingsManager.ShowWelcomeWindow.name;
             m_ThemeSelect.choice = SettingsManager.Theme.name;
+            m_LocaleSelect.choice = SettingsManager.Locale.name;
 
             SettingsManager.WindowMode.onChanged += UpdateWindowModeSelect;
             UpdateWindowModeSelect();
@@ -113,6 +117,7 @@ namespace Boards.States
             SettingsManager.BlurQuality.SetValue(m_BlurQualitySelect.choice);
             SettingsManager.ShowWelcomeWindow.SetValue(m_ShowWelcomeWindowSelect.choice);
             SettingsManager.Theme.SetValue(m_ThemeSelect.choice);
+            SettingsManager.Locale.SetValue(m_LocaleSelect.choice);
             SettingsManager.Apply();
             SettingsManager.Write();
             Close();
