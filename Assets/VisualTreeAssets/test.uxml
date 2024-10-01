@@ -6,4 +6,6 @@
     <Controls.Raw.DiamondBullet animation-progress="1.05" focusable="false" style="position: absolute; width: 103px; top: 99px; left: 26px; visibility: visible;" />
     <Controls.Raw.DiamondTiled target-tile-scale="0,66" name="DiamondTiled" animation-progress="-0.45" style="position: absolute; top: 179px; left: 100px; opacity: 0.55;" />
     <Controls.Raw.Diamond animation-progress="1.37" style="position: absolute; top: 242px; left: 97px;" />
+    <Controls.Raw.DialogBox style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
+    <Controls.Raw.DiamondTitle style="position: absolute; top: 105px; left: 328px;" />
 </ui:UXML>

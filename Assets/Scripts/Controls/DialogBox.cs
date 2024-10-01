@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Layers;
 using Templates;
+using Localization;
 
 namespace Controls
 {
@@ -118,6 +119,24 @@ namespace Controls
         {
             get => m_UILayer.inputSortOrder;
             set => m_UILayer.inputSortOrder = value;
+        }
+
+        public LocalizationAddress titleLocalizationAddress
+        {
+            get => m_DialogBox.titleLocalizationAddress;
+            set => m_DialogBox.titleLocalizationAddress = value;
+        }
+
+        public LocalizationAddress leftButtonLocalizationAddress
+        {
+            get => m_DialogBox.leftButtonLocalizationAddress;
+            set => m_DialogBox.leftButtonLocalizationAddress = value;
+        }
+
+        public LocalizationAddress rightButtonLocalizationAddress
+        {
+            get => m_DialogBox.rightButtonLocalizationAddress;
+            set => m_DialogBox.rightButtonLocalizationAddress = value;
         }
 
         public DialogBox()
@@ -363,15 +382,15 @@ namespace Controls
         {
             var dialogBox = new DialogBox();
 
-            dialogBox.titleLabel = "Quit?";
-            dialogBox.rightButtonLabel = "Cancel";
-            dialogBox.leftButtonLabel = "Yes";
+            dialogBox.titleLocalizationAddress = "Table:QuitQuestion";
+            dialogBox.rightButtonLocalizationAddress = "Table:Cancel";
+            dialogBox.leftButtonLocalizationAddress = "Table:Yes";
 
-            var label = new Label();
-            label.text = "Do you want to close application?";
+            var label = new LocalizedLabel();
+            label.localizationAddress = "Table:DoYouWantToCloseQuestion";
             label.AddToClassList(k_DialogBoxLabelQuitVariantUssClassName);
             dialogBox.contentContainer.Add(label);
-
+            LocalizationManager.LocalizeVisualTree(dialogBox.rootVisualElement);
             return dialogBox;
         }
 
@@ -379,10 +398,11 @@ namespace Controls
         {
             var dialogBox = new DialogBox();
 
-            dialogBox.titleLabel = "Info";
+            dialogBox.titleLocalizationAddress = new LocalizationAddress("Table", "Info");
             dialogBox.buttonDisplay = ButtonDisplay.LeftCenter;
             dialogBox.leftButtonLabel = "OK";
             dialogBox.contentContainer.Add(DialogBoxResources.GetContentVisualTreeAsset("InfoDialogBoxContent").Instantiate());
+            LocalizationManager.LocalizeVisualTree(dialogBox.rootVisualElement);
             return dialogBox;
         }
 
@@ -390,20 +410,22 @@ namespace Controls
         {
             var dialogBox = new DialogBox();
 
-            dialogBox.titleLabel = "Welcome!";
+            dialogBox.titleLocalizationAddress = new LocalizationAddress("Table", "Welcome");
             dialogBox.buttonDisplay = ButtonDisplay.LeftCenter;
-            dialogBox.leftButtonLabel = "Continue";
+            dialogBox.leftButtonLocalizationAddress = new LocalizationAddress("Table", "Continue");
             dialogBox.contentContainer.Add(DialogBoxResources.GetContentVisualTreeAsset("WelcomeDialogBoxContent").Instantiate());
+            LocalizationManager.LocalizeVisualTree(dialogBox.rootVisualElement);
             return dialogBox;
         }
 
         public static DialogBox CreateSettingsDialogBox()
         {
             var dialogBox = new DialogBox();
-            dialogBox.titleLabel = "Settings";
-            dialogBox.leftButtonLabel = "Save";
-            dialogBox.rightButtonLabel = "Cancel";
+            dialogBox.titleLocalizationAddress = "Table:Settings";
+            dialogBox.leftButtonLocalizationAddress = "Table:Save";
+            dialogBox.rightButtonLocalizationAddress = "Table:Cancel";
             dialogBox.contentContainer.Add(DialogBoxResources.GetContentVisualTreeAsset("SettingsDialogBoxContent").Instantiate());
+            LocalizationManager.LocalizeVisualTree(dialogBox.rootVisualElement);
             return dialogBox;
         }
     }

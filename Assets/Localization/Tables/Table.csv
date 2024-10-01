@@ -1,5 +1,13 @@
 key,Press any key to continue,Naciśnij dowolny klawisz aby kontynuować
 PressAnyKey,Press any key to continue,Naciśnij dowolny klawisz aby kontynuować
-ProjectPolitco,Project Politco,Projekt Politco
+ProjectPolitico,Project Politico,Projekt Politico
 Showreel,Showreel,Showreel[pl]
-Welcome,Welcome,Witaj
+Welcome,Welcome!,Witaj!
+Continue,Continue,Kontynuuj
+Info,Info,Info
+Settings,Settings,Ustawienia
+Save,Save,Zapisz,
+Cancel,Cancel,Anuluj
+QuitQuestion,Quit?,Wyjść?
+Yes,Yes,Tak
+DoYouWantToCloseQuestion,Do you want to close application?,Czy chcesz zamknąć aplikację?

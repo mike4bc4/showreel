@@ -15,7 +15,7 @@
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="title-viewport" style="flex-grow: 1; align-items: center; justify-content: flex-start; background-color: rgba(230, 230, 230, 0); position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
-        <Controls.Raw.DiamondTitle name="title" text="Project Politico" style="margin-top: 48px;" />
+        <Controls.Raw.DiamondTitle name="title" text="Project Politico" localization-address="Table:ProjectPolitico" style="margin-top: 48px;" />
     </ui:VisualElement>
     <ui:VisualElement name="list-viewport" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; display: flex;">
         <ui:VisualElement name="list-container" style="width: 1280px; height: 670px; padding-right: 400px;">

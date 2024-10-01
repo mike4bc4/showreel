@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Controls.Raw;
+using Localization;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -53,9 +54,9 @@ namespace Controls.Raw
         ScrollBox m_ScrollBox;
         VisualElement m_ButtonContainer;
         Button m_LeftButton;
-        Label m_LeftButtonLabel;
+        LocalizedLabel m_LeftButtonLabel;
         Button m_RightButton;
-        Label m_RightButtonLabel;
+        LocalizedLabel m_RightButtonLabel;
         ButtonDisplay m_ButtonDisplay;
 
         public DiamondTitle title => m_Title;
@@ -131,6 +132,24 @@ namespace Controls.Raw
             set => m_Title.text = value;
         }
 
+        public LocalizationAddress titleLocalizationAddress
+        {
+            get => m_Title.localizationAddress;
+            set => m_Title.localizationAddress = value;
+        }
+
+        public LocalizationAddress leftButtonLocalizationAddress
+        {
+            get => m_LeftButtonLabel.localizationAddress;
+            set => m_LeftButtonLabel.localizationAddress = value;
+        }
+
+        public LocalizationAddress rightButtonLocalizationAddress
+        {
+            get => m_RightButtonLabel.localizationAddress;
+            set => m_RightButtonLabel.localizationAddress = value;
+        }
+
         public DialogBox()
         {
             AddToClassList(k_UssClassName);
@@ -166,7 +185,7 @@ namespace Controls.Raw
             m_LeftButton.AddToClassList(k_InterfaceButtonUssClassName);
             m_ButtonContainer.Add(m_LeftButton);
 
-            m_LeftButtonLabel = new Label();
+            m_LeftButtonLabel = new LocalizedLabel();
             m_LeftButtonLabel.name = "text";
             m_LeftButtonLabel.text = "Left Button";
             m_LeftButton.Add(m_LeftButtonLabel);
@@ -180,7 +199,7 @@ namespace Controls.Raw
             m_RightButton.AddToClassList(k_InterfaceButtonUssClassName);
             m_ButtonContainer.Add(m_RightButton);
 
-            m_RightButtonLabel = new Label();
+            m_RightButtonLabel = new LocalizedLabel();
             m_RightButtonLabel.name = "text";
             m_RightButtonLabel.text = "Right Button";
             m_RightButton.Add(m_RightButtonLabel);
