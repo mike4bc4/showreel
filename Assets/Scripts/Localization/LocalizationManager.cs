@@ -42,6 +42,8 @@ namespace Localization
             m_LocalizedElements = new List<ILocalizedElement>();
         }
 
+        // We are registering callback even before SettingsManager awake is called, this way we can
+        // be sure that OnSettingsApplied will be called when settings are loaded.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void Init()
         {

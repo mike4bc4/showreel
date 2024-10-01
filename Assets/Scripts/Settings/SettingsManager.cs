@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 using Utility;
 
 namespace Settings
@@ -20,7 +21,7 @@ namespace Settings
         Dark = 1,
     }
 
-    public sealed class SettingsManager
+    public sealed class SettingsManager : MonoBehaviour
     {
         public static event Action OnSettingsApplied;
 
@@ -47,36 +48,35 @@ namespace Settings
 
         public static SettingsManager Instance
         {
-            get
-            {
-                if (s_Instance == null)
-                {
-                    s_Instance = new SettingsManager();
-                }
-
-                return s_Instance;
-            }
+            get => s_Instance;
         }
 
-        public static Setting<WindowMode> WindowMode => Instance.m_WindowMode;
-        public static Setting<Vector2Int> Resolution => Instance.m_Resolution;
-        public static Setting<float> RefreshRate => Instance.m_RefreshRate;
-        public static Setting<bool> VerticalSync => Instance.m_VerticalSync;
-        public static Setting<float> BlurQuality => Instance.m_BlurQuality;
-        public static Setting<bool> ShowWelcomeWindow => Instance.m_ShowWelcomeWindow;
-        public static Setting<Theme> Theme => Instance.m_Theme;
-        public static Setting<string> Locale => Instance.m_Locale;
+        public static Setting<WindowMode> WindowMode => s_Instance.m_WindowMode;
+        public static Setting<Vector2Int> Resolution => s_Instance.m_Resolution;
+        public static Setting<float> RefreshRate => s_Instance.m_RefreshRate;
+        public static Setting<bool> VerticalSync => s_Instance.m_VerticalSync;
+        public static Setting<float> BlurQuality => s_Instance.m_BlurQuality;
+        public static Setting<bool> ShowWelcomeWindow => s_Instance.m_ShowWelcomeWindow;
+        public static Setting<Theme> Theme => s_Instance.m_Theme;
+        public static Setting<string> Locale => s_Instance.m_Locale;
 
         static SaveObject saveObject
         {
-            get => Instance.m_SaveObject;
-            set => Instance.m_SaveObject = value;
+            get => s_Instance.m_SaveObject;
+            set => s_Instance.m_SaveObject = value;
         }
 
-        SettingsManager()
+
+        void Awake()
         {
-            // Set instance to avoid problems with reference being null during constructor's execution.
+            if (s_Instance != null && s_Instance != this)
+            {
+                Destroy(this);
+                return;
+            }
+
             s_Instance = this;
+            DontDestroyOnLoad(gameObject);
 
             m_WindowMode = new Setting<WindowMode>(SettingsManagerResources.Instance.windowModeOptions);
             m_Resolution = new Setting<Vector2Int>(() => SettingsManagerResources.Instance.resolutionOptions);

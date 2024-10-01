@@ -78,7 +78,7 @@ namespace Boards.States
             // Setting resolution causes refresh rate setting to update, as list of refresh rate 
             // setting options changes. This means that we only have to update 'view' part here
             // that is; it's necessary to pass new set of refresh rate options and new choice.
-            SettingsManager.Resolution.SetValue(m_ResolutionSelect.choice);
+            SettingsManager.Resolution.SetValueByName(m_ResolutionSelect.choice);
 
             m_RefreshRateSelect.SetChoices(SettingsManager.RefreshRate.choices);
             m_RefreshRateSelect.choice = SettingsManager.RefreshRate.name;
@@ -110,14 +110,14 @@ namespace Boards.States
 
         public override void Confirm()
         {
-            SettingsManager.WindowMode.SetValue(m_WindowModeSelect.choice);
-            SettingsManager.Resolution.SetValue(m_ResolutionSelect.choice);
-            SettingsManager.RefreshRate.SetValue(m_RefreshRateSelect.choice);
-            SettingsManager.VerticalSync.SetValue(m_VerticalSyncSelect.choice);
-            SettingsManager.BlurQuality.SetValue(m_BlurQualitySelect.choice);
-            SettingsManager.ShowWelcomeWindow.SetValue(m_ShowWelcomeWindowSelect.choice);
-            SettingsManager.Theme.SetValue(m_ThemeSelect.choice);
-            SettingsManager.Locale.SetValue(m_LocaleSelect.choice);
+            SettingsManager.WindowMode.SetValueByName(m_WindowModeSelect.choice);
+            SettingsManager.Resolution.SetValueByName(m_ResolutionSelect.choice);
+            SettingsManager.RefreshRate.SetValueByName(m_RefreshRateSelect.choice);
+            SettingsManager.VerticalSync.SetValueByName(m_VerticalSyncSelect.choice);
+            SettingsManager.BlurQuality.SetValueByName(m_BlurQualitySelect.choice);
+            SettingsManager.ShowWelcomeWindow.SetValueByName(m_ShowWelcomeWindowSelect.choice);
+            SettingsManager.Theme.SetValueByName(m_ThemeSelect.choice);
+            SettingsManager.Locale.SetValueByName(m_LocaleSelect.choice);
             SettingsManager.Apply();
             SettingsManager.Write();
             Close();

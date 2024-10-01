@@ -83,7 +83,7 @@ namespace Settings
             m_SelectedOption = m_DefaultOption;
         }
 
-        public void SetValue(string name)
+        public void SetValueByName(string name)
         {
             foreach (var option in options)
             {

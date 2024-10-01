@@ -11,6 +11,7 @@ using Controls.Raw;
 using Controls;
 using FSM;
 using InputHelper;
+using Localization;
 
 namespace Boards
 {
@@ -68,6 +69,8 @@ namespace Boards
             HideImmediate();
             interactable = false;
             blocksRaycasts = false;
+
+            LocalizationManager.LocalizeVisualTree(m_Layer.rootVisualElement);
         }
 
         public override void Show(Action onCompleted = null)
