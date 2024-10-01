@@ -6,8 +6,10 @@ Welcome,Welcome!,Witaj!
 Continue,Continue,Kontynuuj
 Info,Info,Info
 Settings,Settings,Ustawienia
-Save,Save,Zapisz,
+Save,Save,Zapisz
 Cancel,Cancel,Anuluj
 QuitQuestion,Quit?,Wyjść?
 Yes,Yes,Tak
 DoYouWantToCloseQuestion,Do you want to close application?,Czy chcesz zamknąć aplikację?
+PlacingRooms,Placing Rooms,Umieszczanie Pokojów
+PlacingRoomsText,"The fundamental mechanism of this project involves constructing rooms that deliver particular products and meet the requirements of the party leader. The addition of a new room replaces the existing interior and triggers a series of animations, such as repainting the walls and floors, which are managed by a custom shader. Additionally, the overlay system that offers a semi-transparent preview of the new room's interior is noteworthy.","Główny mechanizm niniejszego projektu polega na konstruowaniu pokojów, które dostarczają odpowiednich produktów i zaspokajaja potrzeby lidera partii. Dodanie nowego pokoju skutkuje zastąpieniem poprzedniego wnętrza i uruchamia sekwencję animacji, takich jak przemalowywanie ścian i podłóg, które są obsługiwane przez niestandardowy shader. Dodatkowo, na uwagę zasługuje system przysłaniania, który wyświetla półprzezroczysty podgląd wnętrza nowego pokoju."

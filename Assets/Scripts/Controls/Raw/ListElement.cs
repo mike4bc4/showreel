@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Localization;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Controls.Raw
 {
-    public class ListElement : VisualElement
+    public class ListElement : MultiLocalizedElement
     {
         public static readonly string ussClassName = "list-element";
         public static readonly string bulletUssClassName = ussClassName + "__bullet";
@@ -17,7 +18,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<ListElement, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : MultiLocalizedElement.UxmlTraits
         {
             UxmlStringAttributeDescription m_Header = new UxmlStringAttributeDescription() { name = "header", defaultValue = "Header" };
             UxmlStringAttributeDescription m_Text = new UxmlStringAttributeDescription() { name = "text", defaultValue = "Text" };
@@ -35,8 +36,8 @@ namespace Controls.Raw
         Button m_Button;
         VisualElement m_TextContainer;
         VisualElement m_Border;
-        Label m_Header;
-        Label m_Text;
+        LocalizedLabel m_Header;
+        LocalizedLabel m_Text;
 
         public DiamondBullet bullet
         {
@@ -60,13 +61,14 @@ namespace Controls.Raw
             set => m_Text.text = value;
         }
 
+        protected override List<ILocalizedElement> localizedElements => new List<ILocalizedElement>() { m_Header, m_Text };
+
         public ListElement()
         {
             AddToClassList(ussClassName);
 
             m_DiamondBullet = new DiamondBullet() { name = "bullet" };
             m_DiamondBullet.AddToClassList(bulletUssClassName);
-            // m_DiamondBullet.UnfoldImmediate();
             Add(m_DiamondBullet);
 
             m_Button = new Button() { name = "button" };
@@ -81,11 +83,11 @@ namespace Controls.Raw
             m_Border.AddToClassList(borderUssClassName);
             m_Button.Add(m_Border);
 
-            m_Header = new Label() { name = "header" };
+            m_Header = new LocalizedLabel() { name = "header" };
             m_Header.AddToClassList(headerUssClassName);
             m_TextContainer.Add(m_Header);
 
-            m_Text = new Label() { name = "text" };
+            m_Text = new LocalizedLabel() { name = "text" };
             m_Text.AddToClassList(textUssClassName);
             m_TextContainer.Add(m_Text);
         }

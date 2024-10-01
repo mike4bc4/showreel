@@ -39,7 +39,7 @@ namespace Localization
     {
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            UxmlStringAttributeDescription m_LocalizationAddresses = new UxmlStringAttributeDescription() { name = "localization-addresses", defaultValue = "Table:Key,Table:Key" };
+            UxmlStringAttributeDescription m_LocalizationAddresses = new UxmlStringAttributeDescription() { name = "localization-addresses", defaultValue = null };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
@@ -61,7 +61,7 @@ namespace Localization
                 m_LocalizationAddresses = value;
                 for (int i = 0; i < value.addresses.Count; i++)
                 {
-                    if (localizedElements.Count <= i)
+                    if (i <= localizedElements.Count)
                     {
                         localizedElements[i].localizationAddress = value.addresses.ElementAt(i);
                     }

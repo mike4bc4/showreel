@@ -71,8 +71,13 @@ namespace Localization
             }
         }
 
-        public LocalizationAddressCollection(string addresses)
+        public LocalizationAddressCollection(string addresses) : this()
         {
+            if (addresses == null)
+            {
+                return;
+            }
+
             var ads = addresses.Split(",", System.StringSplitOptions.RemoveEmptyEntries);
             m_Addresses = new List<LocalizationAddress>();
             foreach (var address in ads)

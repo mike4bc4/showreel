@@ -13,6 +13,7 @@ using UnityEngine.Video;
 using Layers;
 using Controls.Raw;
 using Utility;
+using Localization;
 
 namespace Boards
 {
@@ -95,6 +96,7 @@ namespace Boards
                 if (value != null)
                 {
                     m_TemplateContainer = m_Layer.AddTemplateFromVisualTreeAsset(m_VisualTreeAsset);
+                    LocalizationManager.LocalizeVisualTree(m_TemplateContainer);
 
                     // As list elements have been updated, it's necessary to recreate list elements show
                     // animation as it relies on its count and element references.
