@@ -89,7 +89,7 @@ namespace Localization
                 var translations = new List<string>();
                 for (int i = 1; i < matches.Count; i++)
                 {
-                    translations.Add(matches[i].Groups[1].Value);
+                    translations.Add(matches[i].Groups[1].Value.Trim('"'));
                 }
 
                 var entry = GetEntry(key);

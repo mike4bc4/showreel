@@ -27,10 +27,17 @@ namespace Localization.Editor
 
             var entriesPropertyField = container.Q<PropertyField>("PropertyField:m_Entries");
             entriesPropertyField.SetEnabled(false);
+            entriesPropertyField.RegisterCallback<GeometryChangedEvent>(OnEntriesPropertyFieldGeometryChanged);
+
+            var scrollView = new ScrollView();
+            scrollView.style.maxHeight = 520;
+            container.Insert(container.IndexOf(entriesPropertyField), scrollView);
+
+            scrollView.Add(entriesPropertyField);
 
             var buttonContainer = new VisualElement() { name = "button-container" };
             buttonContainer.style.alignItems = Align.FlexEnd;
-            container.Add(buttonContainer);
+            container.Insert(container.IndexOf(csvFilePropertyField) + 1, buttonContainer);
 
             var readFileButton = new Button() { name = "read-file-button" };
             readFileButton.text = "Read File";
@@ -38,6 +45,13 @@ namespace Localization.Editor
             buttonContainer.Add(readFileButton);
 
             return container;
+        }
+
+        void OnEntriesPropertyFieldGeometryChanged(GeometryChangedEvent evt)
+        {
+            var propertyField = evt.target as PropertyField;
+            propertyField[0].style.maxHeight = StyleKeyword.None;
+            propertyField.UnregisterCallback<GeometryChangedEvent>(OnEntriesPropertyFieldGeometryChanged);
         }
 
         void OnCsvFilePropertyChanged(SerializedPropertyChangeEvent evt)
