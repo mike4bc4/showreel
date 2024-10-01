@@ -17,6 +17,43 @@ namespace Extensions
         static readonly Type s_RuntimePanelType = s_Assembly.GetType("UnityEngine.UIElements.RuntimePanel");
         static readonly PropertyInfo s_SelectableGameObjectProperty = s_RuntimePanelType.GetProperty("selectableGameObject");
 
+        public static List<T> GetDescendants<T>(this VisualElement ve, bool includeHierarchy = true)
+        {
+            List<T> elements = new List<T>();
+            GetDescendantsRecursiveFunction(ve, elements, includeHierarchy);
+            return elements;
+        }
+
+        static void GetDescendantsRecursiveFunction<T>(VisualElement visualElement, List<T> elements, bool includeHierarchy)
+        {
+            var children = includeHierarchy ? visualElement.hierarchy.Children() : visualElement.Children();
+            foreach (var child in children)
+            {
+                if (child is T tChild)
+                {
+                    elements.Add(tChild);
+                }
+            }
+
+            foreach (var child in children)
+            {
+                GetDescendantsRecursiveFunction(child, elements, includeHierarchy);
+            }
+        }
+
+        public static string GetPath(this VisualElement ve)
+        {
+            var path = string.IsNullOrEmpty(ve.name) ? ve.GetType().Name : ve.name;
+            var parent = ve.hierarchy.parent;
+            while (parent != null)
+            {
+                path = (string.IsNullOrEmpty(parent.name) ? parent.GetType().Name : parent.name) + "/" + path;
+                parent = parent.hierarchy.parent;
+            }
+
+            return path;
+        }
+
         public static bool IsVisibleInHierarchy(this VisualElement ve)
         {
             var inheritedVisibility = ve.GetInheritedVisibility();
