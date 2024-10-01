@@ -8,4 +8,5 @@
     <Controls.Raw.Diamond animation-progress="1.37" style="position: absolute; top: 242px; left: 97px;" />
     <Controls.Raw.DialogBox style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
     <Controls.Raw.DiamondTitle style="position: absolute; top: 105px; left: 328px;" />
+    <ui:Label tabindex="-1" text="zażółć gęślą jaźń ZAŻÓŁĆ GĘŚLĄ JAŹŃ" parse-escape-sequences="true" display-tooltip-when-elided="true" style="position: absolute; top: 63px; left: 44px;" />
 </ui:UXML>

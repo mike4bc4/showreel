@@ -46,7 +46,6 @@
 
 .diamond-title__label {
     color: var(--color-primary);
-    -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&guid=e902f648eb4a5e341813fb76a8cf3ba5&type=2#ModernSans-Light SDF");
     font-size: var(--font-size-header);
     white-space: nowrap;
     position: absolute;
@@ -496,7 +495,6 @@
 }
 
 .interface__button > #text {
-    -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&guid=e902f648eb4a5e341813fb76a8cf3ba5&type=2#ModernSans-Light SDF");
     color: var(--color-secondary);
     font-size: var(--font-size-button);
     transition-property: color;
@@ -712,7 +710,6 @@
     margin-right: 4px;
     margin-bottom: 4px;
     margin-left: 4px;
-    -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&guid=e902f648eb4a5e341813fb76a8cf3ba5&type=2#ModernSans-Light SDF");
 }
 
 .subtitle {
