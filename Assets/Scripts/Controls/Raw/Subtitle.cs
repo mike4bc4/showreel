@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using KeyframeSystem;
+using Localization;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Controls.Raw
 {
-    public class Subtitle : VisualElement
+    public class Subtitle : LocalizedElementContainer
     {
         const string k_UssClassName = "subtitle";
         const string k_LabelUssClassName = k_UssClassName + "__label";
@@ -18,7 +19,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<Subtitle, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : LocalizedElementContainer.UxmlTraits
         {
             UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
             UxmlStringAttributeDescription m_Text = new UxmlStringAttributeDescription() { name = "text", defaultValue = "Subtitle" };
@@ -34,7 +35,7 @@ namespace Controls.Raw
             }
         }
 
-        Label m_Label;
+        LocalizedLabel m_Label;
         VisualElement m_Border;
         float m_BorderScale;
         AnimationPlayer m_Player;
@@ -69,6 +70,8 @@ namespace Controls.Raw
             }
         }
 
+        protected override ILocalizedElement localizedElement => m_Label;
+
         public Subtitle()
         {
             m_Player = new AnimationPlayer();
@@ -78,7 +81,7 @@ namespace Controls.Raw
 
             AddToClassList(k_UssClassName);
 
-            m_Label = new Label() { name = "label" };
+            m_Label = new LocalizedLabel() { name = "label" };
             m_Label.AddToClassList(k_LabelUssClassName);
             Add(m_Label);
 

@@ -22,7 +22,7 @@ namespace UI
                 return;
             }
 
-            m_DiamondLineHorizontal = m_UIDocument.rootVisualElement.Q<DiamondTitle>();
+            // m_DiamondLineHorizontal = m_UIDocument.rootVisualElement.Q<DiamondTitle>();
 
         }
 

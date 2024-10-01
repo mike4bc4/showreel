@@ -4,26 +4,26 @@ using System.Collections.Generic;
 using System.Linq;
 using Extensions;
 using KeyframeSystem;
+using Localization;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Controls.Raw
 {
-    public class DiamondTitle : VisualElement
+    public class DiamondTitle : LocalizedElementContainer
     {
         const string k_UssClassName = "diamond-title";
         const string k_DiamondUssClassName = k_UssClassName + "__diamond";
         const string k_DiamondRightUssClassName = k_UssClassName + "__diamond-right";
         const string k_SeparatorUssClassName = k_UssClassName + "__separator";
         const string k_LabelUssClassName = k_UssClassName + "__label";
-        const string k_MeasurementVariantLabelUssClassName = k_LabelUssClassName + "--measurement";
         const string k_LabelContainerUssClassName = k_UssClassName + "__label-container";
         const string k_UnfoldAnimationName = "UnfoldAnimation";
         const string k_DefaultText = "Label";
 
         public new class UxmlFactory : UxmlFactory<DiamondTitle, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : LocalizedElementContainer.UxmlTraits
         {
             UxmlStringAttributeDescription m_Text = new UxmlStringAttributeDescription() { name = "text", defaultValue = k_DefaultText };
             UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
@@ -39,8 +39,7 @@ namespace Controls.Raw
 
         Diamond m_DiamondLeft;
         Diamond m_DiamondRight;
-        Label m_Label;
-        Label m_MeasurementLabel;
+        LocalizedLabel m_Label;
         VisualElement m_Separator;
         VisualElement m_LabelContainer;
         bool m_Unfolded;
@@ -68,17 +67,15 @@ namespace Controls.Raw
         public string text
         {
             get => m_Label.text;
-            set
-            {
-                m_Label.text = value;
-                m_MeasurementLabel.text = value;
-            }
+            set => m_Label.text = value;
         }
 
         float unfoldedWidth
         {
-            get => m_MeasurementLabel.resolvedStyle.marginLeft + m_MeasurementLabel.resolvedStyle.marginRight + m_MeasurementLabel.resolvedStyle.width;
+            get => m_Label.layout.width + m_Label.resolvedStyle.marginRight + m_Label.resolvedStyle.marginLeft;
         }
+
+        protected override ILocalizedElement localizedElement => m_Label;
 
         public DiamondTitle()
         {
@@ -98,17 +95,10 @@ namespace Controls.Raw
             m_LabelContainer.AddToClassList(k_LabelContainerUssClassName);
             Add(m_LabelContainer);
 
-            m_Label = new Label();
+            m_Label = new LocalizedLabel();
             m_Label.name = "label";
             m_Label.AddToClassList(k_LabelUssClassName);
             m_LabelContainer.Add(m_Label);
-
-            m_MeasurementLabel = new Label();
-            m_MeasurementLabel.name = "measurement-label";
-            m_MeasurementLabel.pickingMode = PickingMode.Ignore;
-            m_MeasurementLabel.AddToClassList(k_LabelUssClassName);
-            m_MeasurementLabel.AddToClassList(k_MeasurementVariantLabelUssClassName);
-            m_LabelContainer.Add(m_MeasurementLabel);
 
             m_Separator = new VisualElement();
             m_Separator.name = "separator";
@@ -121,25 +111,24 @@ namespace Controls.Raw
             m_DiamondRight.AddToClassList(k_DiamondRightUssClassName);
             Add(m_DiamondRight);
 
-            m_MeasurementLabel.RegisterCallback<GeometryChangedEvent>(OnMeasurementLabelGeometryChanged);
-
             text = k_DefaultText;
-        }
 
-        void OnMeasurementLabelGeometryChanged(GeometryChangedEvent evt)
-        {
-            m_Player.Sample();
+            m_Label.RegisterCallback<GeometryChangedEvent>(evt =>
+            {
+                m_LabelContainer.style.height = m_Label.layout.height + m_Label.resolvedStyle.marginBottom;
+                m_Player.Sample();
+            });
         }
 
         KeyframeAnimation CreateUnfoldAnimation()
         {
             var animation = new KeyframeAnimation();
 
-            var t1 = animation.AddTrack((float animationProgress) => m_DiamondRight.animationProgress = m_DiamondLeft.animationProgress = animationProgress);
+            var t1 = animation.AddTrack(animationProgress => m_DiamondRight.animationProgress = m_DiamondLeft.animationProgress = animationProgress);
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(60, 1f);
 
-            var t2 = animation.AddTrack((float widthScale) => m_LabelContainer.style.width = unfoldedWidth * widthScale);
+            var t2 = animation.AddTrack(widthScale => m_LabelContainer.style.width = unfoldedWidth * widthScale);
             t2.AddKeyframe(60, 0f);
             t2.AddKeyframe(120, 1f);
 

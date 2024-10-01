@@ -6,6 +6,7 @@ using Boards.States;
 using Controls;
 using FSM;
 using InputHelper;
+using Localization;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -139,6 +140,8 @@ namespace Boards
             m_InputManager.actionMap.Enable();
             m_StateContext.state = new InitialBoardState(m_StateContext);
             SceneLoader.onSceneUnloaded -= OnSceneUnloaded;
+
+            LocalizationManager.Localize("pl");
         }
     }
 }

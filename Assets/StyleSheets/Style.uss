@@ -48,14 +48,11 @@
     color: var(--color-primary);
     -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light%20SDF.asset?fileID=11400000&guid=e902f648eb4a5e341813fb76a8cf3ba5&type=2#ModernSans-Light SDF");
     font-size: var(--font-size-header);
-    margin-right: 32px;
-    margin-left: 32px;
     white-space: nowrap;
-}
-
-.diamond-title__label--measurement {
     position: absolute;
-    visibility: hidden;
+    margin-left: 32px;
+    margin-right: 32px;
+    margin-bottom: 16px;
 }
 
 .diamond-title__diamond {
@@ -74,10 +71,10 @@
 .diamond-title__separator {
     height: 2px;
     background-color: var(--color-primary);
-    position: relative;
-    margin-bottom: 15px;
-    margin-left: -2px;
-    margin-right: -2px;
+    position: absolute;
+    bottom: 15px;
+    left: -2px;
+    right: -2px;
 }
 
 .full-screen {

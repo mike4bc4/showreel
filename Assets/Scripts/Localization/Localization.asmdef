@@ -1,12 +1,8 @@
 {
-    "name": "Controls.Raw",
+    "name": "Localization",
     "rootNamespace": "",
     "references": [
-        "GUID:047a95ed6a032f740aa9e990856565d1",
-        "GUID:0a149036d35609a48ac4602ee2a15a23",
-        "GUID:1097d5926291be74783ea6ef2fe72974",
-        "GUID:907cd6c17a085014e87ab7c8b1522c1e",
-        "GUID:e32a9d7f8005c224da470fbda27958ad"
+        "GUID:78677e4ff3d805b488dcd0dfbb64ee89"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
