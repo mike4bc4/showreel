@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 
 namespace Controls.Raw
 {
-    public class DiamondTitle : LocalizedElementContainer
+    public class DiamondTitle : LocalizedElement
     {
         const string k_UssClassName = "diamond-title";
         const string k_DiamondUssClassName = k_UssClassName + "__diamond";
@@ -23,7 +23,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<DiamondTitle, UxmlTraits> { }
 
-        public new class UxmlTraits : LocalizedElementContainer.UxmlTraits
+        public new class UxmlTraits : LocalizedElement.UxmlTraits
         {
             UxmlStringAttributeDescription m_Text = new UxmlStringAttributeDescription() { name = "text", defaultValue = k_DefaultText };
             UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };

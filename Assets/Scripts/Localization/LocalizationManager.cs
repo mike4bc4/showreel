@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Extensions;
 
 namespace Localization
 {
@@ -26,6 +27,13 @@ namespace Localization
         }
 
         List<ILocalizedElement> m_LocalizedElements;
+        string m_SelectedLocale;
+
+        public static string SelectedLocale
+        {
+            get => Instance.m_SelectedLocale;
+            set => Instance.m_SelectedLocale = value;
+        }
 
         static List<ILocalizedElement> localizedElements => Instance.m_LocalizedElements;
 
@@ -42,24 +50,30 @@ namespace Localization
             }
         }
 
-        public static void Localize(ILocalizedElement localizedElement, string locale)
+        public static void Localize(ILocalizedElement localizedElement, string locale = null)
         {
             LocalizeInternal(new List<ILocalizedElement>() { localizedElement }, locale);
         }
 
-        public static void LocalizeVisualTree(VisualElement root, string locale)
+        public static void LocalizeVisualTree(VisualElement root, string locale = null)
         {
-            var labels = root.Query<LocalizedLabel>().ToList().Cast<ILocalizedElement>();
+            LocalizeInternal(root.GetDescendants<ILocalizedElement>(), locale);
+        }
+
+        public static void Localize(string locale = null)
+        {
             LocalizeInternal(localizedElements, locale);
         }
 
-        public static void Localize(string locale)
+        static void LocalizeInternal(List<ILocalizedElement> localizedElements, string locale = null)
         {
-            LocalizeInternal(localizedElements, locale);
-        }
+            locale ??= SelectedLocale;
+            if (locale == null)
+            {
+                Debug.LogWarning($"Default locale not specified.");
+                return;
+            }
 
-        static void LocalizeInternal(List<ILocalizedElement> localizedElements, string locale)
-        {
             var localeIndex = LocalizationManagerResources.GetLocaleIndex(locale);
             if (localeIndex < 0)
             {
@@ -69,22 +83,27 @@ namespace Localization
 
             foreach (var element in localizedElements)
             {
-                var table = LocalizationManagerResources.GetTable(element.table);
+                if (element.localizationAddress.isEmpty)
+                {
+                    continue;
+                }
+
+                var table = LocalizationManagerResources.GetTable(element.localizationAddress.table);
                 if (table != null)
                 {
-                    var translation = table.GetTranslation(element.key, localeIndex);
+                    var translation = table.GetTranslation(element.localizationAddress.key, localeIndex);
                     if (translation != null)
                     {
                         element.text = translation;
                     }
                     else
                     {
-                        element.text = $"Cannot find translation for '{element.key}' in '{element.table}' for '{locale}' locale.";
+                        element.text = $"Cannot find translation for '{element.localizationAddress.key}' in '{element.localizationAddress.table}' for '{locale}' locale.";
                     }
                 }
                 else
                 {
-                    element.text = $"Cannot find '{element.table}' table.";
+                    element.text = $"Cannot find '{element.localizationAddress.table}' table.";
                 }
             }
         }

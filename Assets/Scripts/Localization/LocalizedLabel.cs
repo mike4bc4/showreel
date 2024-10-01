@@ -5,15 +5,10 @@ using UnityEngine.UIElements;
 
 namespace Localization
 {
-    public interface ILocalizable
-    {
-        public string key { get; set; }
-        public string table { get; set; }
-    }
-
-    public interface ILocalizedElement : ILocalizable
+    public interface ILocalizedElement
     {
         public string text { get; set; }
+        public LocalizationAddress localizationAddress { get; set; }
     }
 
     public class LocalizedLabel : Label, ILocalizedElement
@@ -22,28 +17,21 @@ namespace Localization
 
         public new class UxmlTraits : Label.UxmlTraits
         {
-            UxmlStringAttributeDescription m_Table = new UxmlStringAttributeDescription() { name = "table" };
-            UxmlStringAttributeDescription m_Key = new UxmlStringAttributeDescription() { name = "key" };
+            UxmlStringAttributeDescription m_LocalizationAddress = new UxmlStringAttributeDescription() { name = "localization-address", defaultValue = null };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
                 base.Init(ve, bag, cc);
+                var localizedLabel = ve as LocalizedLabel;
+                localizedLabel.localizationAddress = m_LocalizationAddress.GetValueFromBag(bag, cc);
             }
         }
 
-        string m_Table;
-        string m_Key;
-
-        public string table
+        LocalizationAddress m_LocalizationAddress;
+        public LocalizationAddress localizationAddress
         {
-            get => m_Table;
-            set => m_Table = value;
-        }
-
-        public string key
-        {
-            get => m_Key;
-            set => m_Key = value;
+            get => m_LocalizationAddress;
+            set => m_LocalizationAddress = value;
         }
 
         public LocalizedLabel() : base()
@@ -56,7 +44,7 @@ namespace Localization
             RegisterElement();
         }
 
-        public void Localize(string locale)
+        public void Localize(string locale = null)
         {
             LocalizationManager.Localize(this, locale);
         }

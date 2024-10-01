@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 
 namespace Controls.Raw
 {
-    public class Subtitle : LocalizedElementContainer
+    public class Subtitle : LocalizedElement
     {
         const string k_UssClassName = "subtitle";
         const string k_LabelUssClassName = k_UssClassName + "__label";
@@ -19,7 +19,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<Subtitle, UxmlTraits> { }
 
-        public new class UxmlTraits : LocalizedElementContainer.UxmlTraits
+        public new class UxmlTraits : LocalizedElement.UxmlTraits
         {
             UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
             UxmlStringAttributeDescription m_Text = new UxmlStringAttributeDescription() { name = "text", defaultValue = "Subtitle" };

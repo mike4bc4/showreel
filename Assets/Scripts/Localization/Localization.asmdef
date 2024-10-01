@@ -2,7 +2,8 @@
     "name": "Localization",
     "rootNamespace": "",
     "references": [
-        "GUID:78677e4ff3d805b488dcd0dfbb64ee89"
+        "GUID:78677e4ff3d805b488dcd0dfbb64ee89",
+        "GUID:0a149036d35609a48ac4602ee2a15a23"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
