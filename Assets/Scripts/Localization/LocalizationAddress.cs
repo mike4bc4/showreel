@@ -35,9 +35,43 @@ namespace Localization
             var words = address.Split(":", System.StringSplitOptions.RemoveEmptyEntries);
             if (words.Length == 2)
             {
+                for (int i = 0; i < words.Length; i++)
+                {
+                    words[i] = words[i].Trim();
+                }
+
                 m_Table = words[0];
                 m_Key = words[1];
             }
+        }
+
+        public static LocalizationAddress FromString(string address)
+        {
+            var localizationAddress = new LocalizationAddress();
+            if (address == null)
+            {
+                return localizationAddress;
+            }
+
+            var words = address.Split(":", System.StringSplitOptions.RemoveEmptyEntries);
+            if (words.Length == 2)
+            {
+                for (int i = 0; i < words.Length; i++)
+                {
+                    words[i] = words[i].Trim();
+                }
+
+                localizationAddress.m_Table = words[1];
+                localizationAddress.m_Key = words[1];
+            }
+
+            return localizationAddress;
+        }
+
+        public static bool IsAddress(string address)
+        {
+            var localizationAddress = FromString(address);
+            return !localizationAddress.isEmpty;
         }
 
         public LocalizationAddress(string table, string key)

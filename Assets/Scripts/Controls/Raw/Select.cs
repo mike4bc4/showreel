@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Extensions;
+using Localization;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Utility;
 
 namespace Controls.Raw
 {
-    public class Select : VisualElement
+    public class Select : LocalizedElement
     {
         const string k_UssClassName = "select";
         const string k_LabelUssClassName = k_UssClassName + "__label";
@@ -24,7 +25,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<Select, UxmlTraits> { };
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : LocalizedElement.UxmlTraits
         {
             UxmlStringAttributeDescription m_Label = new UxmlStringAttributeDescription() { name = "label", defaultValue = "Select" };
             UxmlStringAttributeDescription m_Choices = new UxmlStringAttributeDescription() { name = "choices" };
@@ -46,10 +47,10 @@ namespace Controls.Raw
 
         public event Action onChoiceChanged;
 
-        Label m_Label;
+        LocalizedLabel m_Label;
         VisualElement m_OptionContainer;
         Button m_OptionButton;
-        Label m_OptionButtonLabel;
+        LocalizedLabel m_OptionButtonLabel;
         VisualElement m_ScrollBoxOverlay;
         VisualElement m_ScrollBoxContainer;
         ScrollBox m_ScrollBox;
@@ -85,13 +86,15 @@ namespace Controls.Raw
             set => m_Label.text = value;
         }
 
+        protected override ILocalizedElement localizedElement => m_Label;
+
         public Select()
         {
             m_Choices = new List<string>();
 
             AddToClassList(k_UssClassName);
 
-            m_Label = new Label();
+            m_Label = new LocalizedLabel();
             m_Label.name = "label";
             m_Label.AddToClassList(k_LabelUssClassName);
             Add(m_Label);
@@ -106,7 +109,7 @@ namespace Controls.Raw
             m_OptionButton.AddToClassList(k_OptionButtonUssClassName);
             m_OptionContainer.Add(m_OptionButton);
 
-            m_OptionButtonLabel = new Label();
+            m_OptionButtonLabel = new LocalizedLabel();
             m_OptionButtonLabel.name = "label";
             m_OptionButton.Add(m_OptionButtonLabel);
 
@@ -151,7 +154,16 @@ namespace Controls.Raw
         {
             var previousIndex = m_Index;
             m_Index = Mathf.Clamp(index, -1, m_Choices.Count - 1);
-            m_OptionButtonLabel.text = m_Index >= 0 ? m_Choices[m_Index] : null;
+
+            string choice = 0 <= m_Index ? m_Choices[m_Index] : null;
+            m_OptionButtonLabel.text = choice;
+            if (LocalizationAddress.IsAddress(choice))
+            {
+                m_OptionButtonLabel.localizationAddress = choice;
+                m_OptionButtonLabel.text = m_OptionButtonLabel.localizationAddress.key;
+                m_OptionButtonLabel.Localize();
+            }
+
             if (m_Index != previousIndex)
             {
                 onChoiceChanged?.Invoke();
@@ -273,12 +285,19 @@ namespace Controls.Raw
             var button = new Button() { name = "button-" + index };
             button.AddToClassList(k_ButtonUssClassName);
 
-            var label = new Label()
+            var label = new LocalizedLabel()
             {
                 name = "label",
                 text = choice
             };
-            
+
+            if (LocalizationAddress.IsAddress(choice))
+            {
+                label.localizationAddress = choice;
+                label.text = label.localizationAddress.key;
+                label.Localize();
+            }
+
             button.Add(label);
 
             var border = new VisualElement() { name = "border" };

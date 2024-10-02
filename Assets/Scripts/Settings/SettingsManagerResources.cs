@@ -62,7 +62,7 @@ namespace Settings
                 }
             }
 
-            options.Add(new Option<float>("Unlimited", -1f));
+            options.Add(new Option<float>("Table:Unlimited", -1f));
             options = options.Distinct().ToList();
             var defaultRefreshRate = 60f;
             var defaultOptionIndex = 0;
