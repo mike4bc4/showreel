@@ -29,6 +29,7 @@ namespace Layers
         GroupLayer m_RootGroupLayer;
         int m_PropertyNameIndex;
         ThemeStyleSheet m_ThemeStyleSheet;
+        float m_BlurQuality;
 
         static PanelSettings panelSettings => s_Instance.m_PanelSettings;
         static Shader uiLayerShader => s_Instance.m_UILayerShader;
@@ -38,6 +39,7 @@ namespace Layers
         static GroupLayer rootGroupLayer => s_Instance.m_RootGroupLayer;
         static Material blitOverMaterial => s_Instance.m_BlitOverMaterial;
         static ThemeStyleSheet themeStyleSheet => s_Instance.m_ThemeStyleSheet;
+        static float blurQuality => s_Instance.m_BlurQuality;
 
         public static LayerManager Instance
         {
@@ -77,6 +79,7 @@ namespace Layers
             Scheduler.SetInterval(TrackScreenSizeChanges, m_IntervalDelayMs);
 
             m_ThemeStyleSheet = LayerManagerResources.GetThemeStyleSheet(SettingsManager.Theme.value) ?? panelSettings.themeStyleSheet;
+            m_BlurQuality = -1f;
             SettingsManager.OnSettingsApplied += OnSettingsApplied;
         }
 
@@ -90,6 +93,12 @@ namespace Layers
 
         void OnSettingsApplied()
         {
+            UpdateTheme();
+            UpdateBlurQuality();
+        }
+
+        void UpdateTheme()
+        {
             var tss = LayerManagerResources.GetThemeStyleSheet(SettingsManager.Theme.value);
             if (tss == m_ThemeStyleSheet)
             {
@@ -102,6 +111,23 @@ namespace Layers
                 if (layer is UILayer uiLayer)
                 {
                     uiLayer.uiDocument.panelSettings.themeStyleSheet = m_ThemeStyleSheet;
+                }
+            }
+        }
+
+        void UpdateBlurQuality()
+        {
+            if (SettingsManager.BlurQuality.value == m_BlurQuality)
+            {
+                return;
+            }
+
+            m_BlurQuality = SettingsManager.BlurQuality.value;
+            foreach (var baseLayer in rootGroupLayer.descendants)
+            {
+                if (baseLayer is Layer layer)
+                {
+                    layer.blurQuality = m_BlurQuality;
                 }
             }
         }

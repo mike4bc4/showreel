@@ -114,9 +114,8 @@ namespace Layers
         protected void Init(Material material)
         {
             base.Init();
-            SettingsManager.OnSettingsApplied += OnSettingsApplied;
             m_Material = material;
-            blurSize = 0;
+            blurSize = 0f;
             blurQuality = SettingsManager.BlurQuality.value;
             tint = Color.white;
             alpha = 1f;
@@ -152,13 +151,7 @@ namespace Layers
 
         void OnDestroy()
         {
-            SettingsManager.OnSettingsApplied -= OnSettingsApplied;
             Destroy(m_Material);
-        }
-
-        void OnSettingsApplied()
-        {
-            blurQuality = SettingsManager.BlurQuality.value;
         }
     }
 }
