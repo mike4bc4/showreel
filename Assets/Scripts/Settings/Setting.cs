@@ -115,5 +115,7 @@ namespace Settings
         {
             selectedOption = m_DefaultOption;
         }
+
+        public static implicit operator T(Setting<T> settings) => settings.value;
     }
 }

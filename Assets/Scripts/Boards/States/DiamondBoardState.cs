@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Boards;
 using Boards.States;
+using Settings;
 using UnityEngine;
 
 namespace Boards.States
@@ -21,7 +22,7 @@ namespace Boards.States
             switch (context.previousState)
             {
                 case InterfaceBoardState:
-                    m_DiamondBarBoard.Show(() => context.state = new WelcomeDialogBoxState(context));
+                    m_DiamondBarBoard.Show(() => context.state = SettingsManager.ShowWelcomeWindow ? new WelcomeDialogBoxState(context) : new PoliticoListBoardState(context));
                     break;
                 case PoliticoListBoardState:
                     m_DiamondBarBoard.Hide(() => context.state = new InterfaceBoardState(context));
@@ -35,7 +36,7 @@ namespace Boards.States
             {
                 case InterfaceBoardState:
                     m_DiamondBarBoard.ShowImmediate();
-                    context.state = new WelcomeDialogBoxState(context);
+                    context.state = SettingsManager.ShowWelcomeWindow ? new WelcomeDialogBoxState(context) : new PoliticoListBoardState(context);
                     break;
                 case PoliticoListBoardState:
                     m_DiamondBarBoard.HideImmediate();

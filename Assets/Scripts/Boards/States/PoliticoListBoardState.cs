@@ -20,6 +20,7 @@ namespace Boards.States
             listBoard.blocksRaycasts = true;
             switch (context.previousState)
             {
+                case DiamondBarBoardState:
                 case WelcomeDialogBoxState:
                 case LayoutSystemListBoardState:
                     allowShowSkip = true;
