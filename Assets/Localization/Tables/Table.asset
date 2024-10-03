@@ -16,7 +16,7 @@ MonoBehaviour:
   - key: key
     translations:
     - Press any key to continue
-    - "Naci\u015Bnij dowolny klawisz aby kontynuowa\u0107ac\r"
+    - "Naci\u015Bnij dowolny klawisz aby kontynuowa\u0107\r"
   - key: ProjectPolitco
     translations:
     - Project Politco
@@ -264,7 +264,7 @@ MonoBehaviour:
   - key: StandaloneComponentText
     translations:
     - The layout system provides the Layout Frame component, which can be added to
-      a game object using the standard ""Add Component"" button or through the Transform
+      a game object using the standard "Add Component" button or through the Transform
       context menu. When the Layout Frame component is added in editor mode, the
       interface layout will be automatically adjusted without the need for any further
       actions.
@@ -474,7 +474,7 @@ MonoBehaviour:
       i platformy Electron."
   - key: TheOldOnes
     translations:
-    - The ""Old Ones
+    - The "Old Ones"
     - "Projekty \u201EPradawne\u201D\r"
   - key: TheOldOnesText
     translations:
@@ -489,4 +489,10 @@ MonoBehaviour:
       si\u0119 ponad dekad\u0119 temu. Projekt \u201ERiver Boat\u201D i testy zawieszenia
       pojazd\xF3w zosta\u0142y stworzone jeszcze z wykorzystaniem j\u0119zyka UnityScript
       w Unity 3.0."
+  - key: Test1
+    translations:
+    - Lorem ipsum <link href="http://unity3d.com/">Link.com</link> dolor <link href="http://unity3d.com/">Link.com</link>
+      sit.
+    - Lorem ipsum <link href="http://unity3d.com/">Link.com</link> dolor <link href="http://unity3d.com/">Link.com</link>
+      sit.
   m_CsvFile: {fileID: 4900000, guid: bebe169563b0c1d4dbdcf11c1e4ab6c0, type: 3}
