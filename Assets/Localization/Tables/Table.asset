@@ -491,8 +491,112 @@ MonoBehaviour:
       w Unity 3.0."
   - key: Test1
     translations:
-    - Lorem ipsum <link href="http://unity3d.com/">Link.com</link> dolor <link href="http://unity3d.com/">Link.com</link>
-      sit.
-    - Lorem ipsum <link href="http://unity3d.com/">Link.com</link> dolor <link href="http://unity3d.com/">Link.com</link>
-      sit.
+    - Lorem <link href="https://unity.com/">Link.com</link> ipsum dolor <link href="https://unity.com/">Link.com</link>
+      sit amet.
+    - Lorem <link href="https://unity.com/">Link.com</link> ipsum dolor <link href="https://unity.com/">Link.com</link>
+      sit amet.
+  - key: WelcomeDialogBoxText
+    translations:
+    - "Hello and welcome to my little showreel application! I'm really happy you
+      made it this far, as downloading and installing an app takes a bit of effort,
+      so thank you once again!\\nNow, before you dive in, there are a few things
+      to keep in mind. First, here's a handy tip: check the corners of the window
+      for navigation buttons. You can also control the entire application using your
+      keyboard. If you're curious about what each button does, just click the info
+      button in the top right corner.\\nSecondly, I assume you downloaded this app
+      from the source, so you might have already visited my repository. If you haven't,
+      no worries \u2013 here's a <link href=\"https://unity.com/\">link</link> for
+      you.\\nLastly, while this app showcases some of my projects, it's also quite
+      enjoyable to explore on its own. Here are a few links to some interesting parts
+      of the code:"
+    - "Cze\u015B\u0107 i czo\u0142em! Witam w mojej ma\u0142ej aplikacji pokazowej.
+      Szczerze powiedziawszy to ciesz\u0119 si\u0119, \u017Ce dotar\u0142e\u015B/\u0142a\u015B
+      a\u017C tutaj, szczeg\xF3lnie \u017Ce apka nie pobiera i nie instaluje si\u0119
+      sama,  zatem jeszcze raz dzi\u0119ki!\\nTeraz, zanim przejdziesz dalej, jest
+      kilka spraw do om\xF3wienia. Po pierwsze, ma\u0142a wskaz\xF3wka: rzu\u0107
+      okiem na rogi ekranu, to tam znajduj\u0105 si\u0119 przyciski. Pami\u0119taj
+      te\u017C, \u017Ce ca\u0142\u0105 aplikacj\u0119 mo\u017Cna kontrolowa\u0107
+      za pomoc\u0105 klawiatury, je\u015Bli chcesz si\u0119 dowiedzie\u0107 co jaki
+      klawisz robi, poszukaj przycisku info w prawym g\xF3rnym rogu.\\nDruga rzecz,
+      zak\u0142adam, \u017Ce pobra\u0142e\u015B/\u0142a\u015B aplikacj\u0119 ze \u017Ar\xF3d\u0142a,
+      wi\u0119c pewnie moje repozytorium jest Ci ju\u017C znane. Ale je\u015Bli tak
+      nie jest, to tu masz <link href=\"https://unity.com/\">link</link>.\\nNa koniec,
+      o ile zadaniem tej aplikacji jest zaprezentowa\u0107 kilka moich projekt\xF3w,
+      to apka sama w sobie jest warta przejrzenia. Poni\u017Cej znajdziesz kilka
+      link\xF3w do interesuj\u0105cych cz\u0119\u015Bci programu:"
+  - key: BoardsSystemLink
+    translations:
+    - <link href="https://unity.com/">Boards System</link> - Boards are made up of
+      layers that work together like a composite, using a state pattern to ensure
+      smooth navigation.
+    - "<link href=\"https://unity.com/\">System Plansz</link> - Plansze sk\u0142adaj\u0105
+      si\u0119 z warstw, kt\xF3re razem stanowi\u0105 kompozyt, a dzi\u0119ki wzorcowi
+      \"state\" mamy p\u0142ynn\u0105 nawigacj\u0119."
+  - key: ControlsLink
+    translations:
+    - <link href="https://unity.com/">Controls</link> - If you know your way around
+      Unity Toolkit, you should definitely take a look at those custom controls.
+    - "<link href=\"https://unity.com/\">Kontrolki</link> - Je\u015Bli znasz si\u0119
+      na UI Toolkicie, to by\u0107 mo\u017Ce zainteresuj\u0105 ci\u0119 niestandardowe
+      kontrolki."
+  - key: KeyframeSystemLink
+    translations:
+    - <link href="https://unity.com/">Keyframe System</link> - This is a better animation
+      component that lets you animate more than just serialized properties.
+    - "<link href=\"https://unity.com/\">System Klatek</link> - To jest w zasadzie
+      ulepszony komponent Animation, w przeciwie\u0144stwie do niego, pozwala na
+      animacj\u0119 czego\u015B wi\u0119cej ni\u017C tylko w\u0142a\u015Bciwo\u015Bci
+      serializowane."
+  - key: LayerManagementLink
+    translations:
+    - <link href="https://unity.com/">Layer Management</link> - This app has multiple
+      UI layers that are displayed through a custom rendering pipeline!
+    - "<link href=\"https://unity.com/\">Zarz\u0105dzanie Warstwami</link> - Aplikacja
+      wy\u015Bwietla interfejs sk\u0142adaj\u0105cy si\u0119 z wielu warstw sk\u0142adanych
+      przez niestandardowy system renderowania."
+  - key: LocalizationLink
+    translations:
+    - <link href="https://unity.com/">Localization</link> - Even though the localization
+      system is included in this presentation (spoiler alert), I'm just using a simplified
+      version here.
+    - "<link href=\"https://unity.com/\">Lokalizacja</link> - Niniejsza prezentacja
+      co prawda zawiera system lokalizacji (spoiler alert), ale tutaj r\xF3wnie\u017C
+      takow\u0105 wykorzystuj\u0119 \u2013 w uproszczonej formie."
+  - key: WelcomeDialogBoxText1
+    translations:
+    - Hello and welcome to my little showreel application! I'm really happy you made
+      it this far, as downloading and installing an app takes a bit of effort, so
+      thank you once again!
+    - "Cze\u015B\u0107 i czo\u0142em! Witam w mojej ma\u0142ej aplikacji pokazowej.
+      Szczerze powiedziawszy to ciesz\u0119 si\u0119, \u017Ce dotar\u0142e\u015B/\u0142a\u015B
+      a\u017C tutaj, szczeg\xF3lnie \u017Ce apka nie pobiera i nie instaluje si\u0119
+      sama,  zatem jeszcze raz dzi\u0119ki!"
+  - key: WelcomeDialogBoxText2
+    translations:
+    - 'Now, before you dive in, there are a few things to keep in mind. First, here''s
+      a handy tip: check the corners of the window for navigation buttons. You can
+      also control the entire application using your keyboard. If you''re curious
+      about what each button does, just click the info button in the top right corner.'
+    - "Teraz, zanim przejdziesz dalej, jest kilka spraw do om\xF3wienia. Po pierwsze,
+      ma\u0142a wskaz\xF3wka: rzu\u0107 okiem na rogi ekranu, to tam znajduj\u0105
+      si\u0119 przyciski. Pami\u0119taj te\u017C, \u017Ce ca\u0142\u0105 aplikacj\u0119
+      mo\u017Cna kontrolowa\u0107 za pomoc\u0105 klawiatury, je\u015Bli chcesz si\u0119
+      dowiedzie\u0107 co jaki klawisz robi, poszukaj przycisku info w prawym g\xF3rnym
+      rogu."
+  - key: WelcomeDialogBoxText3
+    translations:
+    - "Secondly, I assume you downloaded this app from the source, so you might have
+      already visited my repository. If you haven't, no worries \u2013 here's a <link
+      href=\"https://unity.com/\">link</link> for you."
+    - "Druga rzecz, zak\u0142adam, \u017Ce pobra\u0142e\u015B/\u0142a\u015B aplikacj\u0119
+      ze \u017Ar\xF3d\u0142a, wi\u0119c pewnie moje repozytorium jest Ci ju\u017C
+      znane. Ale je\u015Bli tak nie jest, to tu masz <link href=\"https://unity.com/\">link</link>."
+  - key: WelcomeDialogBoxText4
+    translations:
+    - 'Lastly, while this app showcases some of my projects, it''s also quite enjoyable
+      to explore on its own. Here are a few links to some interesting parts of the
+      code:'
+    - "Na koniec, o ile zadaniem tej aplikacji jest zaprezentowa\u0107 kilka moich
+      projekt\xF3w, to apka sama w sobie jest warta przejrzenia. Poni\u017Cej znajdziesz
+      kilka link\xF3w do interesuj\u0105cych cz\u0119\u015Bci programu:"
   m_CsvFile: {fileID: 4900000, guid: bebe169563b0c1d4dbdcf11c1e4ab6c0, type: 3}

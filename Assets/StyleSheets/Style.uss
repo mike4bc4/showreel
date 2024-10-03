@@ -1045,3 +1045,21 @@
     right: 0;
     bottom: 0;
 }
+
+.bullet-list {
+}
+
+.bullet-list > #container {
+    flex-direction: row;
+    margin-bottom: 16px;
+}
+
+.bullet-list > #container > #icon {
+    background-image: url("project://database/Assets/Textures/DiamondFill.png?fileID=2800000&guid=f164d7cb61904fa4b9f722e671a217b9&type=3#DiamondFill");
+    -unity-background-image-tint-color: var(--color-primary);
+    width: 12px;
+    height: 24px;
+    -unity-background-scale-mode: scale-to-fit;
+    margin-right: 8px;
+    background-position: left center;
+}
