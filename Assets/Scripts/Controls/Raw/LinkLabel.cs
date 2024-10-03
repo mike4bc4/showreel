@@ -200,6 +200,7 @@ namespace Controls.Raw
 
             public TextInfo(string rawText)
             {
+                m_Text = string.Empty;
                 m_LinkInfos = new List<LinkInfo>();
 
                 var xmlDocument = new XmlDocument();
