@@ -82,6 +82,11 @@ namespace Localization
 
         public override string ToString()
         {
+            if (isEmpty)
+            {
+                return "Null";
+            }
+
             return (m_Table == null ? "Null" : m_Table) + ":" + (m_Key == null ? "Null" : m_Key);
         }
 
