@@ -110,6 +110,9 @@ namespace Localization
             }
 
             RebuildLookup();
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+#endif
         }
 
         void RebuildLookup()

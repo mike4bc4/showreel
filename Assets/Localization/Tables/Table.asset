@@ -16,7 +16,7 @@ MonoBehaviour:
   - key: key
     translations:
     - Press any key to continue
-    - "Naci\u015Bnij dowolny klawisz aby kontynuowa\u0107\r"
+    - "Naci\u015Bnij dowolny klawisz aby kontynuowa\u0107ac\r"
   - key: ProjectPolitco
     translations:
     - Project Politco
@@ -25,4 +25,468 @@ MonoBehaviour:
     translations:
     - Press any key to continue
     - "Naci\u015Bnij dowolny klawisz aby kontynuowa\u0107\r"
+  - key: ProjectPolitico
+    translations:
+    - Project Politico
+    - "Projekt Politico\r"
+  - key: Showreel
+    translations:
+    - Showreel
+    - "Showreel\r"
+  - key: Welcome
+    translations:
+    - Welcome!
+    - "Witaj!\r"
+  - key: Continue
+    translations:
+    - Continue
+    - "Kontynuuj\r"
+  - key: Info
+    translations:
+    - Info
+    - "Info\r"
+  - key: Settings
+    translations:
+    - Settings
+    - "Ustawienia\r"
+  - key: Save
+    translations:
+    - Save
+    - "Zapisz\r"
+  - key: Cancel
+    translations:
+    - Cancel
+    - "Anuluj\r"
+  - key: QuitQuestion
+    translations:
+    - Quit?
+    - "Wyj\u015B\u0107?\r"
+  - key: Yes
+    translations:
+    - Yes
+    - "Tak\r"
+  - key: DoYouWantToCloseQuestion
+    translations:
+    - Do you want to close application?
+    - "Czy chcesz zamkn\u0105\u0107 aplikacj\u0119?\r"
+  - key: PlacingRooms
+    translations:
+    - Placing Rooms
+    - "Umieszczanie Pokoj\xF3w\r"
+  - key: PlacingRoomsText
+    translations:
+    - The fundamental mechanism of this project involves constructing rooms that
+      deliver particular products and meet the requirements of the party leader.
+      The addition of a new room replaces the existing interior and triggers a series
+      of animations, such as repainting the walls and floors, which are managed by
+      a custom shader. Additionally, the overlay system that offers a semi-transparent
+      preview of the new room's interior is noteworthy.
+    - "G\u0142\xF3wny mechanizm niniejszego projektu polega na konstruowaniu pokoj\xF3w,
+      kt\xF3re dostarczaj\u0105 odpowiednich produkt\xF3w i zaspokajaj\u0105 potrzeby
+      lidera partii. Dodanie nowego pokoju skutkuje zast\u0105pieniem poprzedniego
+      wn\u0119trza i uruchamia sekwencj\u0119 animacji, takich jak przemalowywanie
+      \u015Bcian i pod\u0142\xF3g, kt\xF3re s\u0105 obs\u0142ugiwane przez niestandardowy
+      shader. Dodatkowo, na uwag\u0119 zas\u0142uguje system przys\u0142aniania,
+      kt\xF3ry wy\u015Bwietla p\xF3\u0142przezroczysty podgl\u0105d wn\u0119trza
+      nowego pokoju."
+  - key: WorkerNavigation
+    translations:
+    - Worker Navigation
+    - "Nawigacja Pracownik\xF3w\r"
+  - key: WorkerNavigationText
+    translations:
+    - When the game is loaded, the navigation system is activated, establishing a
+      series of interconnected navigation points. It employs the AStar algorithm
+      to determine the most efficient route whenever a worker needs to move from
+      one room to another. The positioning of workers within a room is managed through
+      animations specific to that room.
+    - "System nawigacji jest aktywowany po wczytaniu si\u0119 gry, co skutkuje utworzeniem
+      siatki po\u0142\u0105czonych ze sob\u0105 punkt\xF3w. Wykorzystuje on algorytm
+      Astar aby wyznacza\u0107 najefektywniejsze \u015Bcie\u017Cki gdy dany pracownik
+      musi przej\u015B\u0107 z jednego pokoju do drugiego. Pozycjonowanie pracownik\xF3w
+      w pokojach jest natomiast obs\u0142ugiwane za pomoc\u0105 animacji dedykowanych
+      dla danego pokoju."
+  - key: ProductionCycle
+    translations:
+    - Production Cycle
+    - "Cykl Produkcyjny\r"
+  - key: ProductionCycleText
+    translations:
+    - The game's prototype enables the assignment of workers to various rooms. These
+      workers produce either money or goods that must be transported to the nearest
+      warehouse. Throughout the workday, workers accumulate experience at the cost
+      of their energy, necessitating visits to relaxation rooms to restore this resource
+      before returning to their tasks.
+    - "Prototyp gry umo\u017Cliwia przypisywanie pracownik\xF3w do r\xF3\u017Cnych
+      pokoj\xF3w. Wspomniani pracownicy generuj\u0105 dochody oraz dobra, kt\xF3re
+      musz\u0105 zosta\u0107 dostarczone do najbli\u017Cszego magazynu. Wykonuj\u0105c
+      obowi\u0105zki, pracownicy gromadz\u0105 do\u015Bwiadczenie kosztem energii,
+      kt\xF3r\u0105 musz\u0105 zregenerowa\u0107 w pokojach relaksacyjnych zanim
+      powr\xF3c\u0105 do pracy. "
+  - key: EquipmentSystem
+    translations:
+    - Equipment System
+    - "System Wyposa\u017Cenia\r"
+  - key: EquipmentSystemText
+    translations:
+    - The present condition of the project enables employees to utilize various types
+      of equipment, thereby enhancing their abilities in executing specific tasks,
+      such as augmenting their experience acquisition or increasing the volume of
+      goods produced. The appearance of workers is updated in real-time, and each
+      item can be depicted using distinct 3D models.
+    - "Na aktualnym etapie rozwoju projektu pracownicy mog\u0105 wykorzystywa\u0107
+      r\xF3\u017Cne rodzaje wyposa\u017Cenia, kt\xF3re wp\u0142ywaj\u0105 na ich
+      zdolno\u015Bci do wykonywania okre\u015Blonych zada\u0144, np. zwi\u0119kszaj\u0105c
+      ilo\u015B\u0107 produkowanych d\xF3br lub gromadzonego do\u015Bwiadczenia.
+      Wygl\u0105d pracownik\xF3w jest aktualizowany w czasie rzeczywistym, a ka\u017Cdy
+      przedmiot jest reprezentowany przez inny model 3D."
+  - key: EditingWorkers
+    translations:
+    - Editing Workers
+    - "Edycja Pracownik\xF3w\r"
+  - key: EditingWorkersText
+    translations:
+    - In the future, every worker will possess distinct physical characteristics,
+      including variations in body shape, hair, gender, and more. To facilitate the
+      creation of these diverse avatars, a worker body system has been established,
+      enabling the interchange of body parts in edit mode. This allows for the development
+      and preservation of unique presets as prefabs.
+    - "W przysz\u0142o\u015Bci ka\u017Cdy pracownik b\u0119dzie posiada\u0142 inne
+      cechy, jak na przyk\u0142ad: kszta\u0142t cia\u0142a, fryzura, p\u0142e\u0107
+      itd. Aby usprawni\u0107 proces tworzenia r\xF3\u017Cnorodnych awatar\xF3w,
+      wprowadzono system umo\u017Cliwiaj\u0105cy modyfikacj\u0119 element\xF3w sk\u0142adaj\u0105cych
+      si\u0119 na model pracownika w edytorze. Pozwala to na generowanie unikalnych
+      prefabrykat\xF3w. "
+  - key: Display
+    translations:
+    - Display
+    - "Obraz\r"
+  - key: WindowMode
+    translations:
+    - Window Mode
+    - "Tryb Wy\u015Bwietlania\r"
+  - key: Windowed
+    translations:
+    - Windowed
+    - "W Oknie\r"
+  - key: Fullscreen
+    translations:
+    - Fullscreen
+    - "Pe\u0142ny Ekran\r"
+  - key: Resolution
+    translations:
+    - Resolution
+    - "Rozdzielczo\u015B\u0107\r"
+  - key: RefreshRate
+    translations:
+    - Refresh Rate
+    - "Cz\u0119stotliwo\u015B\u0107 Od\u015Bwie\u017Cania\r"
+  - key: Unlimited
+    translations:
+    - Unlimited
+    - "Nielimitowana\r"
+  - key: VerticalSync
+    translations:
+    - Vertical Sync
+    - "Synchronizacja Pionowa\r"
+  - key: On
+    translations:
+    - On
+    - "W\u0142\u0105czono\r"
+  - key: Off
+    translations:
+    - Off
+    - "Wy\u0142\u0105czono\r"
+  - key: Effects
+    translations:
+    - Effects
+    - "Efekty\r"
+  - key: BlurQuality
+    translations:
+    - Blur Quality
+    - "Jako\u015B\u0107 Rozmycia\r"
+  - key: Low
+    translations:
+    - Low
+    - "Niska\r"
+  - key: Medium
+    translations:
+    - Medium
+    - "\u015Arednia\r"
+  - key: High
+    translations:
+    - High
+    - "Wysoka\r"
+  - key: Other
+    translations:
+    - Other
+    - "Inne\r"
+  - key: ShowWelcomeWindow
+    translations:
+    - Show Welcome Window
+    - "Poka\u017C Okno Powitalne\r"
+  - key: No
+    translations:
+    - No
+    - "Nie\r"
+  - key: Theme
+    translations:
+    - Theme
+    - "Motyw\r"
+  - key: Light
+    translations:
+    - Light
+    - "Jasny\r"
+  - key: Dark
+    translations:
+    - Dark
+    - "Ciemny\r"
+  - key: Language
+    translations:
+    - Language
+    - "J\u0119zyk\r"
+  - key: English
+    translations:
+    - English (en)
+    - "Angielski (en)\r"
+  - key: Polish
+    translations:
+    - Polish (pl)
+    - "Polski (pl)\r"
+  - key: LayoutSystem
+    translations:
+    - Layout System
+    - "System Planowania UI\r"
+  - key: StandaloneComponent
+    translations:
+    - Standalone Component
+    - "Samodzielny Komponent\r"
+  - key: StandaloneComponentText
+    translations:
+    - The layout system provides the Layout Frame component, which can be added to
+      a game object using the standard ""Add Component"" button or through the Transform
+      context menu. When the Layout Frame component is added in editor mode, the
+      interface layout will be automatically adjusted without the need for any further
+      actions.
+    - "System planowania UI zawiera komponent Layout Frame, kt\xF3ry mo\u017Ce zosta\u0107
+      dodany do obiektu gry za pomoc\u0105 standardowego przycisku \u201EAdd Component\u201D
+      lub poprzez menu kontekstowe elementu Transform. Po dodaniu komponentu Layout
+      Frame w trybie edycji, elementy interfejsu s\u0105 rozmieszczane automatycznie."
+  - key: FlowAndAlignment
+    translations:
+    - Flow and Alignment
+    - "Przep\u0142yw i Wyr\xF3wnywanie\r"
+  - key: FlowAndAlignmentText
+    translations:
+    - The Layout Frame provides the capability to modify the flow and alignment of
+      content. Child elements can be arranged horizontally, vertically, or in wrap
+      mode, which functions similarly to text, causing overflowing frames to move
+      to the next line. Additionally, it is possible to adjust the positioning of
+      child elements to align with the right, left, or center of the parent container.
+    - "Komponent Layout Frame pozwala zarz\u0105dza\u0107 uk\u0142adem element\xF3w
+      sk\u0142adowych. Wspominane elementy mog\u0105 by\u0107 u\u0142o\u017Cone poziomo,
+      pionowo lub w trybie zawijania, kt\xF3ry dzia\u0142a podobnie do teksu, powoduj\u0105c
+      przemieszczenie element\xF3w powoduj\u0105cych przepe\u0142nienie do nast\u0119pnej
+      linii. Dodatkowo, istnieje mo\u017Cliwo\u015B\u0107 pozycjonowania ramek podrz\u0119dnych,
+      tak by przylega\u0142y do lewej lub prawej kraw\u0119dzi elementu nadrz\u0119dnego,
+      albo pozostawa\u0142y wy\u015Brodkowane."
+  - key: ResizingAndAnimation
+    translations:
+    - Resizing and Animation
+    - "Rozmiar i Animacje\r"
+  - key: ResizingAndAnimationText
+    translations:
+    - The child and parent interface elements, while maintaining a fixed pixel size,
+      can be modified to either occupy the entire parent container or reduce in size
+      to align with the content, whether vertically, horizontally, or in both dimensions.
+      In addition to the rotation property, a specialized content offset property
+      has been introduced to facilitate efficient animation without the necessity
+      of reconstructing the entire layout.
+    - "Zar\xF3wno g\u0142\xF3wny komponent jak i jego elementy podrz\u0119dne, poza
+      podstawowym wymiarem podanym w pikselach, mog\u0105 by\u0107 modyfikowane aby
+      zajmowa\u0142y dost\u0119pn\u0105 przestrze\u0144 lub dopasowywa\u0142y si\u0119
+      do zawarto\u015Bci zar\xF3wno w pionie, jak i w poziomie. Udost\u0119pniono
+      r\xF3wnie\u017C w\u0142a\u015Bciwo\u015Bci rotacji oraz przesuni\u0119cia zawarto\u015Bci,
+      kt\xF3re pozwalaj\u0105 na tworzenie animacji bez konieczno\u015Bci rekonstrukcji
+      ca\u0142ego interfejsu."
+  - key: PaddingAndSpacingWorkflow
+    translations:
+    - Padding and Spacing Workflow
+    - "Praca z Marginesami i Odst\u0119pami\r"
+  - key: PaddingAndSpacingWorkflowText
+    translations:
+    - The custom layout system enables the utilization of a padding and spacing workflow,
+      allowing users to manage multiple child frames through a limited set of properties,
+      rather than manually positioning each object or individually adjusting the
+      margin properties of each item.
+    - "Wprowadzony system planowania interfejsu k\u0142adzie nacisk na korzystanie
+      z techniki \u201EPadding and Spacing Workflow\u201D, kt\xF3ra pozwala zarz\u0105dza\u0107
+      pozycjonowaniem wielu element\xF3w za pomoc\u0105 niewielkiego zbioru w\u0142a\u015Bciwo\u015Bci,
+      zamiast zmusza\u0107 u\u017Cytkownika do dostosowywania pozycji ka\u017Cdego
+      elementu z osobna. "
+  - key: ErrorDetection
+    translations:
+    - Error Detection
+    - "Wykrywanie B\u0142\u0119d\xF3w\r"
+  - key: ErrorDetectionText
+    translations:
+    - A significant drawback of the proposed solution is the potential for encountering
+      a scenario that can be characterized as a collision. This occurs, for instance,
+      when a container attempts to resize itself to fit the dimensions of a child
+      element, while the child element simultaneously strives to conform to the size
+      of its parent. Instances of such conflicts are indicated by marking invalid
+      properties and presenting a warning icon within the hierarchy window.
+    - "Znacz\u0105c\u0105 wad\u0105 zaproponowanego rozwi\u0105zania jest mo\u017Cliwo\u015B\u0107
+      napotkania sytuacji, kt\xF3r\u0105 mo\u017Cna okre\u015Bli\u0107 jako kolizj\u0119.
+      Przyk\u0142adowo, wyst\u0119puje ona gdy gdy element nadrz\u0119dny usi\u0142uje
+      dopasowa\u0107 si\u0119 do element\xF3w podrz\u0119dnych, podczas gdy te staraj\u0105
+      si\u0119 wype\u0142ni\u0107 przestrze\u0144 ramki-rodzica. W przypadku wyst\u0105pienia
+      takiego konfliktu, system oznacza zwi\u0105zane z nim w\u0142a\u015Bciwo\u015Bci
+      jako nieprawid\u0142owe i umieszcza ikony ostrze\u017Cenia w oknie hierarchii."
+  - key: TextSupport
+    translations:
+    - Text Support
+    - "Pozycjonowanie Tekstu\r"
+  - key: TextSupportText
+    translations:
+    - A user interface is not considered complete without the inclusion of text support;
+      therefore, Text Mesh UI components are incorporated. When a component of this
+      nature is added, the Layout Frame recognizes it and provides a designated field
+      for text input. Subsequently, additional properties can be utilized to modify
+      the text's behavior, such as enabling the wrapping container to expand in response
+      to an increasing character string.
+    - "Interfejs u\u017Cytkownika nie by\u0142by kompletny bez element\xF3w tekstowych,
+      tote\u017C zaimplementowano wsparcie komponent\xF3w Text Mesh UI. Komponent
+      Layout Frame automatycznie wykrywa dodany element tekstowy i udost\u0119pnia
+      specjalne pole w oknie inspektora. Nast\u0119pnie, w\u0142a\u015Bciwo\u015Bci
+      Layout Frame mog\u0105 zosta\u0107 wykorzystane, by odpowiednio dopasowa\u0107
+      ramk\u0119 do tekstu, kt\xF3ra mo\u017Ce rosn\u0105\u0107 wraz z \u0142a\u0144cuchem
+      znak\xF3w lub ograniczy\u0107 jego d\u0142ugo\u015B\u0107."
+  - key: UIToolkitLocalization
+    translations:
+    - UI Toolkit Localization
+    - "UI Toolkit \u2013 Lokalizacja\r"
+  - key: LocalizationWindow
+    translations:
+    - Localization Window
+    - "Okno Lokalizacji\r"
+  - key: LocalizationWindowText
+    translations:
+    - The localization process can be administered via a dedicated interface that
+      reveals the localization address for each registered text element, which comprises
+      a localization table and a key. Every text element is stored in a database
+      and is recognized by a unique identifier, allowing users to modify the label's
+      name or even the complete structure of the Visual Tree, while ensuring that
+      the UI element remains accurately localized.
+    - "Proces lokalizacji jest zarz\u0105dzany za po\u015Brednictwem dedykowanego
+      okna, kt\xF3re wy\u015Bwietla adres lokalizacji (nazwa tabeli i klucz) ka\u017Cdego
+      zarejestrowanego elementu tekstowego. Ka\u017Cdy ze wspomnianych element\xF3w
+      jest przechowywany w bazie danych pod unikalnym identyfikatorem. Pozwala to
+      na bezpieczn\u0105 modyfikacj\u0119 nie tylko w\u0142a\u015Bciwo\u015Bci elementu,
+      ale r\xF3wnie\u017C struktury hierarchicznej."
+  - key: LocalizationTables
+    translations:
+    - Localization Tables
+    - "Tabele Lokalizacyjne\r"
+  - key: LocalizationTablesText
+    translations:
+    - The plugin prototype facilitates the creation of localization tables. An editable
+      version of these tables is provided in a CSV format, which can be modified
+      using a basic text editor or a more sophisticated spreadsheet application.
+      The original tables can be linked to table assets that monitor changes in the
+      source, subsequently enabling the localization of text elements.
+    - "Prototyp niniejszego dodatku pozwala na tworzenie tabel lokalizacyjnych. Edytowalnym
+      formatem takowych tabel jest plik CSV, kt\xF3ry mo\u017Ce by\u0107 modyfikowany
+      za pomoc\u0105 prostego edytora tekstowego lub bardziej z\u0142o\u017Conej
+      aplikacji. Wspomniane pliki mog\u0105 zosta\u0107 po\u0142\u0105czone z plikami
+      zasob\xF3w, kt\xF3re monitoruj\u0105 zachodz\u0105ce w nich zmiany, umo\u017Cliwiaj\u0105c
+      w ten spos\xF3b lokalizacj\u0119 element\xF3w tekstowych."
+  - key: Usage
+    translations:
+    - Usage
+    - "Korzystanie\r"
+  - key: UsageText
+    translations:
+    - In Unity 2022, the UI Toolkit lacks localization support; therefore, the proposed
+      solution aims to address this limitation. Users have the ability to associate
+      tables and keys with each text element, regardless of whether the element is
+      part of a custom control or a Visual Tree template. Any modifications made
+      to the localization table will be updated in real-time upon saving the table
+      file.
+    - "Pakiet UI Toolkit w Unity 2022 jest pozbawiony systemu lokalizacji, za\u015B
+      celem proponowanego dodatku jest rozwi\u0105zanie tego problemu. U\u017Cytkownik
+      b\u0119dzie m\xF3g\u0142 powi\u0105za\u0107 tabele i klucze z elementami tekstowymi
+      niezale\u017Cnie od tego czy s\u0105 one cz\u0119\u015Bci\u0105 obiektu Visual
+      Tree, czy niestandardowej kontrolki interfejsu, a wszystkie modyfikacje wprowadzone
+      w tablicy lokalizacyjnej b\u0119d\u0105 aktualizowane po zapisaniu pliku tabeli."
+  - key: SettingsText
+    translations:
+    - Upon the installation of the plugin, an asset for settings and a database are
+      established. At this stage of development, the primary function of the settings
+      asset is to facilitate the selection, addition, modification, and removal of
+      locales. It is important to highlight that any alterations made to the settings
+      asset are instantly visible in the UI Builder window.
+    - "Po zainstalowaniu wtyczki, tworzone s\u0105 zasoby ustawie\u0144 i bazy danych.
+      Na aktualnym etapie rozwoju dodatku, g\u0142\xF3wnym zadaniem ustawie\u0144
+      jest umo\u017Cliwienie wyboru, dodania, modyfikacji lub usuni\u0119cia j\u0119zyka.
+      Warto przy okazji zaznaczy\u0107, \u017Ce wspomniane zmiany s\u0105 natychmiastowo
+      odzwierciedlane w oknie UI Builder."
+  - key: OtherProjects
+    translations:
+    - Other Project
+    - "Inne Projekty\r"
+  - key: ArcaneLands
+    translations:
+    - Arcane Lands
+    - "Arcane Lands\r"
+  - key: ArcaneLandsText
+    translations:
+    - The project is primarily focused on the PC platform and is being developed
+      using the Godot Game Engine. At this stage of development, the game enables
+      users to construct buildings, create roads, collect resources, and assign quests.
+      To facilitate the development process, several supplementary tools have been
+      created, including a map editor and a decal drawer, as older versions of Godot
+      did not support decals.
+    - "Projekt jest przede wszystkim dedykowany dla platformy PC i jest rozwijany
+      z wykorzystaniem silnika Godot Game Engine. Na aktualnym stadium opracowania
+      gra umo\u017Cliwia u\u017Cytkownikom tworzenie budynk\xF3w i dr\xF3g, gromadzeni
+      zasob\xF3w i przydzielanie zada\u0144. Aby u\u0142atwi\u0107 proces tworzenia
+      gry, opracowano kilka dodatkowych narz\u0119dzi jak edytor map czy narz\u0119dzie
+      do rysowania decali, nie wspieranych w starszych wersjach silnika Godot."
+  - key: AerobaticAircraftGame
+    translations:
+    - Aerobatic Aircraft Game
+    - "Samolot Akrobacyjny \u2013 Gra\r"
+  - key: AerobaticAircraftGameText
+    translations:
+    - This game serves as a showcase for the functionalities of a custom game engine
+      developed from the ground up. While it may appear straightforward, it is, in
+      fact, a sophisticated piece of software that facilitates the integration of
+      custom scripts, the reading of 3D models, textures, and shaders, as well as
+      the implementation of a fundamental collision system. The game engine has been
+      constructed using the JavaScript programming language and the Electron framework.
+    - "Ta gra jest pewnego rodzaju pokazem funkcjonalno\u015Bci niestandardowego
+      silnika gry stworzonego od podstaw. Chocia\u017C mo\u017Ce si\u0119 on wydawa\u0107
+      prosty, jest w rzeczywisto\u015Bci z\u0142o\u017Conym oprogramowaniem, kt\xF3re
+      pozwala na dodawanie dedykowanych skrypt\xF3w, wczytywanie modeli 3D, plik\xF3w
+      tekstur i shader\xF3w. Zawiera on r\xF3wnie\u017C podstawowy system kolizji.
+      Wspomniany silnik zosta\u0142 wykonany z u\u017Cyciem j\u0119zyka JavaScript
+      i platformy Electron."
+  - key: TheOldOnes
+    translations:
+    - The ""Old Ones
+    - "Projekty \u201EPradawne\u201D\r"
+  - key: TheOldOnesText
+    translations:
+    - While earlier projects may not showcase my skills effectively and may lack
+      in impressiveness, they nonetheless serve as evidence that my journey in game
+      development commenced more than ten years ago. The River Boat project and vehicle
+      suspension tests were developed using the UnityScript programming language
+      in Unity version 3.0.
+    - "O ile moje pierwsze projekty nie s\u0105 imponuj\u0105ce i efektywnie nie
+      oddaj\u0105 moich umiej\u0119tno\u015Bci, o tyle s\u0105 stanowczym dowodem
+      na to, \u017Ce moja przygoda z rozwojem gier komputerowych rozpocz\u0119\u0142a
+      si\u0119 ponad dekad\u0119 temu. Projekt \u201ERiver Boat\u201D i testy zawieszenia
+      pojazd\xF3w zosta\u0142y stworzone jeszcze z wykorzystaniem j\u0119zyka UnityScript
+      w Unity 3.0."
   m_CsvFile: {fileID: 4900000, guid: bebe169563b0c1d4dbdcf11c1e4ab6c0, type: 3}
