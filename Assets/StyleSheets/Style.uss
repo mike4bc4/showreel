@@ -1011,3 +1011,37 @@
     justify-content: center;
     align-items: center;
 }
+
+.link-element {
+    position: absolute;
+    color: var(--color-link);
+    transition-property: color;
+    transition-duration: 0.1s;
+}
+
+.link-element--hover {
+    color: var(--color-link-highlight);
+}
+
+.link-element > #border {
+    background-color: var(--color-link);
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2px;
+    height: 1px;
+    transition-property: opacity;
+    transition-duration: 0.1s;
+}
+
+.link-element--hover > #border {
+    opacity: 0;
+}
+
+.link-label__link-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}

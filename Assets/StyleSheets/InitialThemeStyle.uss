@@ -15,6 +15,9 @@
     --color-shadow: rgba(0, 0, 0, 0.2);
     --color-shadow-light: rgba(0, 0, 0, 0.1);
 
+    --color-link: rgb(230, 46, 107);
+    --color-link-highlight: rgb(255, 103, 154);
+
     font-size: var(--font-size-default);
     color: var(--color-primary);
     -unity-font-definition: url("project://database/Assets/Fonts/ModernSans-Light-Extended%20SDF.asset?fileID=11400000&guid=dee5b7a5ccbed6a46b2204ca7c75408f&type=2#ModernSans-Light-Extended SDF");

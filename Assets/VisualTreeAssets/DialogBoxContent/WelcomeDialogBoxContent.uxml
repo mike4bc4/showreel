@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:VisualElement style="flex-grow: 1;">
-        <ui:Label tabindex="-1" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eu tempor augue, rhoncus ornare purus. Ut nisl orci, molestie id magna et, suscipit pellentesque risus. Curabitur id porttitor purus." parse-escape-sequences="true" display-tooltip-when-elided="true" />
+    <ui:VisualElement style="flex-grow: 1; flex-direction: row; flex-wrap: wrap;">
+        <ui:Label tabindex="-1" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eu tempor augue, rhoncus ornare purus. Ut nisl orci, molestie id magna et, suscipit pellentesque risus. Curabitur id porttitor purus. &lt;a href=&quot;https://www.unity.com&quot;&gt;Visit Unity!&lt;/a&gt;" parse-escape-sequences="true" display-tooltip-when-elided="true" />
         <ui:Label tabindex="-1" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eu tempor augue, rhoncus ornare purus. Ut nisl orci, molestie id magna et, suscipit pellentesque risus. Curabitur id porttitor purus." parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 8px;" />
     </ui:VisualElement>
 </ui:UXML>
