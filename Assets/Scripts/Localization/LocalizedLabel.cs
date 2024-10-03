@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,8 +8,8 @@ namespace Localization
 {
     public interface ILocalizedElement
     {
-        public string text { get; set; }
         public LocalizationAddress localizationAddress { get; set; }
+        internal void SetText(string text);
     }
 
     public class LocalizedLabel : Label, ILocalizedElement
@@ -27,6 +28,8 @@ namespace Localization
             }
         }
 
+        public event Action<string> onLocalized;
+
         LocalizationAddress m_LocalizationAddress;
         public LocalizationAddress localizationAddress
         {
@@ -42,6 +45,12 @@ namespace Localization
         public LocalizedLabel(string text) : base(text)
         {
             RegisterElement();
+        }
+
+        void ILocalizedElement.SetText(string text)
+        {
+            this.text = text;
+            onLocalized?.Invoke(text);
         }
 
         public void Localize(string locale = null)

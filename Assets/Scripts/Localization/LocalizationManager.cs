@@ -111,16 +111,16 @@ namespace Localization
                     var translation = table.GetTranslation(element.localizationAddress.key, localeIndex);
                     if (translation != null)
                     {
-                        element.text = translation;
+                        element.SetText(translation);
                     }
                     else
                     {
-                        element.text = $"Cannot find translation for '{element.localizationAddress.key}' in '{element.localizationAddress.table}' for '{locale}' locale.";
+                        element.SetText($"Cannot find translation for '{element.localizationAddress.key}' in '{element.localizationAddress.table}' for '{locale}' locale.");
                     }
                 }
                 else
                 {
-                    element.text = $"Cannot find '{element.localizationAddress.table}' table.";
+                    element.SetText($"Cannot find '{element.localizationAddress.table}' table.");
                 }
             }
         }
