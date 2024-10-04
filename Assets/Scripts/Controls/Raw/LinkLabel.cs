@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Xml;
 using Localization;
 using TimerUtility;
@@ -189,6 +192,7 @@ namespace Controls.Raw
 
         class TextInfo
         {
+            const string k_RootTag = "root";
             const string k_HiddenStartTag = "<alpha=#00>";
             const string k_HiddenEndTag = "<alpha=#FF>";
 
@@ -203,27 +207,35 @@ namespace Controls.Raw
                 m_Text = string.Empty;
                 m_LinkInfos = new List<LinkInfo>();
 
+                // Unescape raw text to avoid taking escaped characters into account when calculating
+                // link position in text.
+                string unescapedText = Regex.Unescape(rawText);
+                
                 var xmlDocument = new XmlDocument();
                 try
                 {
-                    xmlDocument.LoadXml($"<root>{rawText}</root>");
+                    xmlDocument.LoadXml($"<{k_RootTag}>{unescapedText}</{k_RootTag}>");
                 }
                 catch (Exception)
                 {
-                    Debug.LogWarning($"Unable to parse text '{rawText}'.");
+                    m_Text = "PARSE ERROR";
                     return;
                 }
 
                 var rootNode = xmlDocument.ChildNodes[0];
                 foreach (XmlNode node in rootNode)
                 {
-                    if (node is XmlText xmlText)
+                    if (node.Name.Equals(k_TagName, StringComparison.OrdinalIgnoreCase))
                     {
-                        m_Text += xmlText.Value;
+                        m_LinkInfos.Add(new LinkInfo(m_Text.Length, node.Attributes["href"]?.Value, node.InnerText));
+                        m_Text += node.InnerText;
                     }
-                    else if (node.Name.Equals(k_TagName, StringComparison.OrdinalIgnoreCase))
+                    else if (node is XmlText)
                     {
-                        m_LinkInfos.Add(new LinkInfo(m_Text.Length, node.Attributes["href"].Value, node.InnerText));
+                        m_Text += node.Value;
+                    }
+                    else
+                    {
                         m_Text += node.InnerText;
                     }
                 }
@@ -249,7 +261,7 @@ namespace Controls.Raw
 
         public new class UxmlTraits : LocalizedElement.UxmlTraits
         {
-            UxmlStringAttributeDescription m_Text = new UxmlStringAttributeDescription() { name = "text", defaultValue = "lorem ipsum <link href=\"http://unity3d.com/\">Link.com</link> dolor <link href=\"http://unity3d.com/\">Link.com</link> sit" };
+            UxmlStringAttributeDescription m_Text = new UxmlStringAttributeDescription() { name = "text", defaultValue = "Lorem ipsum <link href=\"\">Link.com</link> dolor <link href=\"\">Link.com</link> sit amet." };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
@@ -345,8 +357,14 @@ namespace Controls.Raw
                     {
                         splits[currentSplitIndex]++;
                         currentPosition = m_Label.selection.cursorPosition;
-                        splits.Add(0);
                         currentSplitIndex++;
+
+                        // Only add another split if there will be next loop, otherwise there will
+                        // be an empty split if link is at the end of line.
+                        if (i + 1 < link.entry.length)
+                        {
+                            splits.Add(0);
+                        }
                     }
                 }
 
