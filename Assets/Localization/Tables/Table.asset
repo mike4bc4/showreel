@@ -566,10 +566,10 @@ MonoBehaviour:
     - Hello and welcome to my little showreel application! I'm really happy you made
       it this far, as downloading and installing an app takes a bit of effort, so
       thank you once again!
-    - "Cze\u015B\u0107 i czo\u0142em! Witam w mojej ma\u0142ej aplikacji pokazowej.
-      Szczerze powiedziawszy to ciesz\u0119 si\u0119, \u017Ce dotar\u0142e\u015B/\u0142a\u015B
-      a\u017C tutaj, szczeg\xF3lnie \u017Ce apka nie pobiera i nie instaluje si\u0119
-      sama, zatem jeszcze raz dzi\u0119ki!"
+    - "Cze\u015B\u0107! Witam w mojej skromnej aplikacji pokazowej. Szczerze powiedziawszy
+      to ciesz\u0119 si\u0119, \u017Ce dotar\u0142e\u015B/\u0142a\u015B a\u017C tutaj,
+      szczeg\xF3lnie \u017Ce apka nie pobiera i nie instaluje si\u0119 sama, zatem
+      jeszcze raz dzi\u0119ki!"
   - key: WelcomeDialogBoxText2
     translations:
     - 'Now, before you dive in, there are a few things to keep in mind. First, here''s
