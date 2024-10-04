@@ -365,7 +365,7 @@ MonoBehaviour:
   - key: UIToolkitLocalization
     translations:
     - UI Toolkit Localization
-    - "UI Toolkit \u2013 Lokalizacja\r"
+    - "UI Toolkit - Lokalizacja\r"
   - key: LocalizationWindow
     translations:
     - Localization Window
@@ -456,7 +456,7 @@ MonoBehaviour:
   - key: AerobaticAircraftGame
     translations:
     - Aerobatic Aircraft Game
-    - "Samolot Akrobacyjny \u2013 Gra\r"
+    - "Samolot Akrobacyjny - Gra\r"
   - key: AerobaticAircraftGameText
     translations:
     - This game serves as a showcase for the functionalities of a custom game engine
@@ -529,9 +529,9 @@ MonoBehaviour:
     - <link href="https://unity.com/">Boards System</link> - Boards are made up of
       layers that work together like a composite, using a state pattern to ensure
       smooth navigation.
-    - "<link href=\"https://unity.com/\">System Plansz</link> - Plansze sk\u0142adaj\u0105
-      si\u0119 z warstw, kt\xF3re razem stanowi\u0105 kompozyt, a dzi\u0119ki wzorcowi
-      \"state\" mamy p\u0142ynn\u0105 nawigacj\u0119."
+    - "<link href=\"https://unity.com/\">System Plansz</link> - Plansze to takie
+      kompozyty warstw, kt\xF3re wykorzystuj\u0105 wzorzec \"state\", \u017Ceby prze\u0142\u0105cza\u0107
+      si\u0119 mi\u0119dzy sob\u0105."
   - key: ControlsLink
     translations:
     - <link href="https://unity.com/">Controls</link> - If you know your way around
@@ -544,24 +544,23 @@ MonoBehaviour:
     - <link href="https://unity.com/">Keyframe System</link> - This is a better animation
       component that lets you animate more than just serialized properties.
     - "<link href=\"https://unity.com/\">System Klatek</link> - To jest w zasadzie
-      ulepszony komponent Animation, w przeciwie\u0144stwie do niego, pozwala na
-      animacj\u0119 czego\u015B wi\u0119cej ni\u017C tylko w\u0142a\u015Bciwo\u015Bci
-      serializowane."
+      ulepszony komponent Animation, jednak w przeciwie\u0144stwie do niego obs\u0142uguje
+      nie tylko w\u0142a\u015Bciwo\u015Bci serializowane."
   - key: LayerManagementLink
     translations:
     - <link href="https://unity.com/">Layer Management</link> - This app has multiple
       UI layers that are displayed through a custom rendering pipeline!
     - "<link href=\"https://unity.com/\">Zarz\u0105dzanie Warstwami</link> - Aplikacja
-      wy\u015Bwietla interfejs sk\u0142adaj\u0105cy si\u0119 z wielu warstw sk\u0142adanych
-      przez niestandardowy system renderowania."
+      wy\u015Bwietla interfejs zbudowany z wielu warstw, sk\u0142adanych przez niestandardowy
+      system renderowania."
   - key: LocalizationLink
     translations:
     - <link href="https://unity.com/">Localization</link> - Even though the localization
       system is included in this presentation (spoiler alert), I'm just using a simplified
       version here.
     - "<link href=\"https://unity.com/\">Lokalizacja</link> - Niniejsza prezentacja
-      co prawda zawiera system lokalizacji (spoiler alert), ale tutaj r\xF3wnie\u017C
-      takow\u0105 wykorzystuj\u0119 \u2013 w uproszczonej formie."
+      co prawda zawiera system lokalizacji (spoiler), ale tutaj r\xF3wnie\u017C takow\u0105
+      wykorzystuj\u0119 - w uproszczonej formie."
   - key: WelcomeDialogBoxText1
     translations:
     - Hello and welcome to my little showreel application! I'm really happy you made
@@ -570,7 +569,7 @@ MonoBehaviour:
     - "Cze\u015B\u0107 i czo\u0142em! Witam w mojej ma\u0142ej aplikacji pokazowej.
       Szczerze powiedziawszy to ciesz\u0119 si\u0119, \u017Ce dotar\u0142e\u015B/\u0142a\u015B
       a\u017C tutaj, szczeg\xF3lnie \u017Ce apka nie pobiera i nie instaluje si\u0119
-      sama,  zatem jeszcze raz dzi\u0119ki!"
+      sama, zatem jeszcze raz dzi\u0119ki!"
   - key: WelcomeDialogBoxText2
     translations:
     - 'Now, before you dive in, there are a few things to keep in mind. First, here''s
@@ -585,9 +584,9 @@ MonoBehaviour:
       rogu."
   - key: WelcomeDialogBoxText3
     translations:
-    - "Secondly, I assume you downloaded this app from the source, so you might have
-      already visited my repository. If you haven't, no worries \u2013 here's a <link
-      href=\"https://unity.com/\">link</link> for you."
+    - Secondly, I assume you downloaded this app from the source, so you might have
+      already visited my repository. If you haven't, no worries - here's a <link
+      href="https://unity.com/">link</link> for you.
     - "Druga rzecz, zak\u0142adam, \u017Ce pobra\u0142e\u015B/\u0142a\u015B aplikacj\u0119
       ze \u017Ar\xF3d\u0142a, wi\u0119c pewnie moje repozytorium jest Ci ju\u017C
       znane. Ale je\u015Bli tak nie jest, to tu masz <link href=\"https://unity.com/\">link</link>."
@@ -598,5 +597,105 @@ MonoBehaviour:
       code:'
     - "Na koniec, o ile zadaniem tej aplikacji jest zaprezentowa\u0107 kilka moich
       projekt\xF3w, to apka sama w sobie jest warta przejrzenia. Poni\u017Cej znajdziesz
-      kilka link\xF3w do interesuj\u0105cych cz\u0119\u015Bci programu:"
+      kilka link\xF3w do ciekawszych cz\u0119\u015Bci programu:"
+  - key: General
+    translations:
+    - General
+    - "Og\xF3lne\r"
+  - key: InfoDialogBoxGeneralText
+    translations:
+    - The primary objective of this application is to showcase my software development
+      capabilities. Although significant effort has been dedicated to ensuring it
+      is free of bugs, there remains a possibility that you may experience errors
+      or malfunctions while using the application. Should you encounter any issues,
+      please feel free to send an email to <link href="mailto:mchkafka@gmail.com">this
+      address</link>, detailing the problem you have faced.
+    - "G\u0142\xF3wnym celem tej aplikacji jest zaprezentowanie moich umiej\u0119tno\u015Bci
+      dotycz\u0105cych tworzenia oprogramowania i chocia\u017C do\u0142o\u017Cy\u0142em
+      wszelkich stara\u0144 by by\u0142a ona pozbawiona b\u0142\u0119d\xF3w, istnieje
+      mo\u017Cliwo\u015B\u0107, \u017Ce aplikacja nie b\u0119dzie dzia\u0142a\u0107
+      prawid\u0142owo. Gdyby\u015B wi\u0119c podczas korzystania z niej spotka\u0142(-a)
+      si\u0119 z problemami, mo\u017Cesz mnie o tym poinformowa\u0107, wysy\u0142aj\u0105c
+      wiadomo\u015B\u0107 e-mail na <link href=\"mailto:mchkafka@gmail.com\">ten
+      adres</link> wraz z opisem napotkanego b\u0142\u0119du."
+  - key: Interface
+    translations:
+    - Interface
+    - "Interfejs\r"
+  - key: InfoDialogBoxInterfaceText1
+    translations:
+    - The primary user interface layer consists of five buttons. Two buttons are
+      located in the bottom left and right corners of the screen, enabling users
+      to switch between the displayed boards. Additionally, three buttons are positioned
+      in the upper right corner, providing options to display current dialog box,
+      access settings, or open the quit window.
+    - "G\u0142\xF3wna warstwa interfejsu u\u017Cytkownika zawiera pi\u0119\u0107
+      przycisk\xF3w. Dwa z nich znajduj\u0105 si\u0119 w prawym oraz lewym dolnym
+      rogu ekranu i pozwalaj\u0105 prze\u0142\u0105cza\u0107 wy\u015Bwietlane plansze.
+      Ponadto, w prawym g\xF3rnym rogu umieszczono trzy przyciski pozwalaj\u0105ce
+      na wy\u015Bwietlenie niniejszego okna, dost\u0119p do ustawie\u0144 oraz wyj\u015Bcie
+      z aplikacji."
+  - key: InfoDialogBoxInterfaceText2
+    translations:
+    - Each board that presents the project description is designed to be interactive.
+      Users can click on each item in the bullet list, which will trigger the display
+      of an appropriate video showcasing the feature in the area adjacent to the
+      bullet list.
+    - "Ka\u017Cda plansza, kt\xF3ra prezentuje okre\u015Blony projekt jest interaktywna.
+      Mo\u017Cesz klikn\u0105\u0107 w element listy wypunktowanej, co spowoduje wy\u015Bwietlenie
+      si\u0119 odpowiedniego filmu, prezentuj\u0105cego dan\u0105 cech\u0119 projektu
+      w obszarze obok listy."
+  - key: InfoDialogBoxInterfaceText3
+    translations:
+    - Every board features animation, and I recognize that repeatedly viewing the
+      same animation may become monotonous. Therefore, the majority of animations
+      can be bypassed by pressing any key on your keyboard.
+    - "Prze\u0142\u0105czanie plansz jest zwi\u0105zane z odtworzeniem animacji,
+      kt\xF3rych wielokrotne wy\u015Bwietlanie mo\u017Ce okaza\u0107 si\u0119 monotonnym
+      do\u015Bwiadczeniem, tote\u017C wiele z nich mo\u017Cna pomin\u0105\u0107 naciskaj\u0105c
+      dowolny przycisk na klawiaturze.        "
+  - key: Shorcuts
+    translations:
+    - Shortcuts
+    - "Skr\xF3ty Klawiszowe\r"
+  - key: Command
+    translations:
+    - Command
+    - "Komenda\r"
+  - key: Keys
+    translations:
+    - Keys
+    - "Klawisze\r"
+  - key: OpenInfoDialog
+    translations:
+    - Open Info Dialog
+    - "Otw\xF3rz Okno Informacji\r"
+  - key: Confirm
+    translations:
+    - Confirm
+    - "Potwierd\u017A\r"
+  - key: Forward
+    translations:
+    - Forward
+    - "Naprz\xF3d\r"
+  - key: Backward
+    translations:
+    - Backward
+    - "Wstecz\r"
+  - key: OpenSettings
+    translations:
+    - Open Settings
+    - "Otw\xF3rz Ustawienia\r"
+  - key: RightArrow
+    translations:
+    - Right Arrow
+    - "Prawa Strza\u0142ka\r"
+  - key: LeftArrow
+    translations:
+    - Left Arrow
+    - "Lewa Strza\u0142ka\r"
+  - key: Shortcuts
+    translations:
+    - Shortcuts
+    - "Skr\xF3ty Klawiszowe\r"
   m_CsvFile: {fileID: 4900000, guid: bebe169563b0c1d4dbdcf11c1e4ab6c0, type: 3}

@@ -962,7 +962,7 @@
 
 .settings__header {
     flex-direction: row;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
     margin-top: 8px;
 }
 
@@ -1051,7 +1051,7 @@
 
 .bullet-list > #container {
     flex-direction: row;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
 }
 
 .bullet-list > #container > #icon {
@@ -1062,4 +1062,81 @@
     -unity-background-scale-mode: scale-to-fit;
     margin-right: 8px;
     background-position: left center;
+}
+
+.info-dialog-box__header {
+    flex-direction: row;
+    margin-bottom: 16px;
+    margin-top: 8px;
+}
+
+.info-dialog-box__header #label {
+    font-size: var(--font-size-large);
+}
+
+.key-pill {
+    padding-bottom: 8px;
+    padding-right: 0;
+    background-color: var(--color-key-background);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-width: 1px;
+    border-color: var(--color-key-border);
+    padding-top: 0;
+    padding-left: 0;
+    align-self: flex-start;
+}
+
+.key-pill > #label {
+    color: var(--color-primary);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    background-color: var(--color-key);
+    padding-top: 8px;
+    padding-right: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+}
+
+.key-pill-split-text {
+    padding-left: 8px;
+    padding-right: 8px;
+    -unity-text-align: middle-center;
+    font-size: var(--font-size-large);
+}
+
+.key-pill-split-text--small {
+    font-size: var(--font-size-default);
+}
+
+.info-dialog-box__table {
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
+.info-dialog-box__table__row {
+    flex-direction: row;
+    padding-bottom: 8px;
+}
+
+.info-dialog-box__table__row--header {
+    border-bottom-width: 1px;
+    border-color: var(--color-secondary);
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+}
+
+.info-dialog-box__table__cell {
+    width: 50%;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.welcome-dialog-box__paragraph {
+    margin-bottom: 16px;
 }

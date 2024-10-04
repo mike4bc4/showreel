@@ -34,6 +34,7 @@ namespace Boards.States
                     break;
                 case SettingsDialogBoxState:
                 case QuitDialogBoxState:
+                case InfoDialogBoxState:
                     listBoard.interactable = true;
                     break;
             }
@@ -94,6 +95,16 @@ namespace Boards.States
                 listBoard.interactable = false;
                 listBoard.onListElementClicked -= OnListElementClicked;
                 context.state = new SettingsDialogBoxState(context);
+            }
+        }
+
+        public override void Info()
+        {
+            if (listBoard.interactable)
+            {
+                listBoard.interactable = false;
+                listBoard.onListElementClicked -= OnListElementClicked;
+                context.state = new InfoDialogBoxState(context);
             }
         }
 

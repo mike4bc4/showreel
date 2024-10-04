@@ -3,5 +3,6 @@
     <ui:VisualElement name="loading-screen__background" class="loading-screen__background" style="top: -2px; right: 1px; left: 0; bottom: 3px;">
         <Controls.Raw.DiamondTiled target-tile-scale="0,66" name="diamond" style="-unity-background-image-tint-color: rgb(198, 198, 198);" />
     </ui:VisualElement>
-    <Controls.Raw.LinkLabel text="lorem ipsum &lt;link href=&quot;http://unity3d.com/&quot;&gt;Link.com&lt;/link&gt; dolor sit amet lorem" style="position: absolute; width: 113px; top: 494px; left: 677px;" />
+    <Controls.Raw.LinkLabel style="position: absolute; width: 120px; top: 494px; left: 677px;" />
+    <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" style="position: absolute; height: 167px; width: 140px; top: 498px; left: 506px;" />
 </ui:UXML>

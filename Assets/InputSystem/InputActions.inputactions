@@ -138,17 +138,6 @@
                 },
                 {
                     "name": "",
-                    "id": "0eec5337-ccc1-424a-b780-903f4dff9a12",
-                    "path": "<Keyboard>/h",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Info",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "55a1c91a-c72d-4ba8-b9fa-9ae26810daa2",
                     "path": "<Keyboard>/f1",
                     "interactions": "",

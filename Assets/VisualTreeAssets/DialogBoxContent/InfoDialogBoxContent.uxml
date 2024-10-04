@@ -1,7 +1,122 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
     <ui:VisualElement style="flex-grow: 1;">
-        <ui:Label tabindex="-1" text="General:" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-bottom: 8px;" />
-        <ui:Label tabindex="-1" text="Navigation:" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-bottom: 8px;" />
-        <ui:Label tabindex="-1" text="Shotrcuts:" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-bottom: 8px;" />
+        <ui:VisualElement name="general-header" class="info-dialog-box__header" style="margin-top: 0;">
+            <Localization.LocalizedLabel name="label" text="General" localization-address="Table:General" />
+        </ui:VisualElement>
+        <ui:VisualElement name="bullet-list" class="bullet-list">
+            <ui:VisualElement name="container">
+                <ui:VisualElement name="icon" />
+                <Controls.Raw.LinkLabel localization-address="Table:InfoDialogBoxGeneralText" text="The primary objective of this application is to showcase my software development capabilities. Although significant effort has been dedicated to ensuring it is free of bugs, there remains a possibility that you may experience errors or malfunctions while using the application. Should you encounter any issues, please feel free to send an email to &lt;link href=&quot;&quot;&gt;this address&lt;/link&gt;, detailing the problem you have faced." />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="interface-label" class="info-dialog-box__header">
+            <Localization.LocalizedLabel name="label" text="Interface" localization-address="Table:Interface" />
+        </ui:VisualElement>
+        <ui:VisualElement name="bullet-list" class="bullet-list">
+            <ui:VisualElement name="container">
+                <ui:VisualElement name="icon" />
+                <Localization.LocalizedLabel localization-address="Table:InfoDialogBoxInterfaceText1" text="The primary user interface layer consists of five buttons. Two buttons are located in the bottom left and right corners of the screen, enabling users to switch between the displayed boards. Additionally, three buttons are positioned in the upper right corner, providing options to display current dialog box, access settings, or open the quit window." />
+            </ui:VisualElement>
+            <ui:VisualElement name="container">
+                <ui:VisualElement name="icon" />
+                <Localization.LocalizedLabel localization-address="Table:InfoDialogBoxInterfaceText2" text="Each board that presents the project description is designed to be interactive. Users can click on each item in the bullet list, which will trigger the display of an appropriate video showcasing the feature in the area adjacent to the bullet list." />
+            </ui:VisualElement>
+            <ui:VisualElement name="container">
+                <ui:VisualElement name="icon" />
+                <Localization.LocalizedLabel localization-address="Table:InfoDialogBoxInterfaceText3" text="Every board features animation, and I recognize that repeatedly viewing the same animation may become monotonous. Therefore, the majority of animations can be bypassed by pressing any key on your keyboard." />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="shortcuts-label" class="info-dialog-box__header">
+            <Localization.LocalizedLabel name="label" text="Shortcuts" localization-address="Table:Shortcuts" />
+        </ui:VisualElement>
+        <ui:VisualElement name="table" class="info-dialog-box__table">
+            <ui:VisualElement name="row" class="info-dialog-box__table__row info-dialog-box__table__row--header">
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell">
+                    <Localization.LocalizedLabel localization-address="Table:Command" text="Command" name="label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell" style="flex-direction: row;">
+                    <Localization.LocalizedLabel localization-address="Table:Keys" text="Keys" name="label" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="row" class="info-dialog-box__table__row">
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell">
+                    <Localization.LocalizedLabel localization-address="Table:OpenInfoDialog" text="Open Info Dialog" name="label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell" style="flex-direction: row;">
+                    <ui:VisualElement name="key-pill" class="key-pill">
+                        <Localization.LocalizedLabel localization-address="Null" name="label" text="F1" />
+                    </ui:VisualElement>
+                    <ui:Label tabindex="-1" text="or" parse-escape-sequences="true" display-tooltip-when-elided="true" class="key-pill-split-text key-pill-split-text--small" />
+                    <ui:VisualElement name="key-pill" class="key-pill">
+                        <Localization.LocalizedLabel localization-address="Null" name="label" text="Control" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="key-pill" class="key-pill" style="margin-left: 8px;">
+                        <Localization.LocalizedLabel localization-address="Null" name="label" text="H" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="row" class="info-dialog-box__table__row">
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell">
+                    <Localization.LocalizedLabel localization-address="Table:Confirm" text="Confirm" name="label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell" style="flex-direction: row;">
+                    <ui:VisualElement name="key-pill" class="key-pill">
+                        <Localization.LocalizedLabel localization-address="Null" name="label" text="Enter" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="row" class="info-dialog-box__table__row">
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell">
+                    <Localization.LocalizedLabel localization-address="Table:Cancel" text="Cancel" name="label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell" style="flex-direction: row;">
+                    <ui:VisualElement name="key-pill" class="key-pill">
+                        <Localization.LocalizedLabel localization-address="Null" name="label" text="Esc" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="row" class="info-dialog-box__table__row">
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell">
+                    <Localization.LocalizedLabel localization-address="Table:Forward" text="Forward" name="label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell" style="flex-direction: row;">
+                    <ui:VisualElement name="key-pill" class="key-pill">
+                        <Localization.LocalizedLabel localization-address="Null" name="label" text="D" />
+                    </ui:VisualElement>
+                    <ui:Label tabindex="-1" text="or" parse-escape-sequences="true" display-tooltip-when-elided="true" class="key-pill-split-text key-pill-split-text--small" />
+                    <ui:VisualElement name="key-pill" class="key-pill">
+                        <Localization.LocalizedLabel localization-address="Table:RightArrow" name="label" text="Right Arrow" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="row" class="info-dialog-box__table__row">
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell">
+                    <Localization.LocalizedLabel localization-address="Table:Backward" text="Backward" name="label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell" style="flex-direction: row;">
+                    <ui:VisualElement name="key-pill" class="key-pill">
+                        <Localization.LocalizedLabel localization-address="Null" name="label" text="A" />
+                    </ui:VisualElement>
+                    <ui:Label tabindex="-1" text="or" parse-escape-sequences="true" display-tooltip-when-elided="true" class="key-pill-split-text key-pill-split-text--small" />
+                    <ui:VisualElement name="key-pill" class="key-pill">
+                        <Localization.LocalizedLabel localization-address="Table:LeftArrow" name="label" text="Left Arrow" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="row" class="info-dialog-box__table__row">
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell">
+                    <Localization.LocalizedLabel localization-address="Table:OpenSettings" text="Open Settings" name="label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="cell" class="info-dialog-box__table__cell" style="flex-direction: row;">
+                    <ui:VisualElement name="key-pill" class="key-pill">
+                        <Localization.LocalizedLabel localization-address="Null" name="label" text="Control" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="key-pill" class="key-pill" style="margin-left: 8px;">
+                        <Localization.LocalizedLabel localization-address="Null" name="label" text="I" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

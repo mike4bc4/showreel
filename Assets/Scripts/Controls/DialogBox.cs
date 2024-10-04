@@ -51,6 +51,7 @@ namespace Controls
         List<Action> m_ClickDelegates = new List<Action>();
         Status m_Status;
         Action m_HideCompletedCallback;
+        Action m_ShowCompletedCallback;
 
         public bool isHidden => status == Status.Hidden;
         public bool isHiding => status == Status.Hiding;
@@ -204,8 +205,9 @@ namespace Controls
             status = Status.Hidden;
         }
 
-        public void Show()
+        public void Show(Action onCompleted = null)
         {
+            m_ShowCompletedCallback += onCompleted;
             if (isShown)
             {
                 return;
@@ -299,6 +301,7 @@ namespace Controls
                     m_UILayer.interactable = true;
                     m_TitleAnimationPlayer.Play();
                     status = Status.Shown;
+                    m_ShowCompletedCallback?.Invoke();
                 }
                 else
                 {
