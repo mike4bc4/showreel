@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,11 +13,11 @@ namespace Localization
         internal void SetText(string text);
     }
 
-    public class LocalizedLabel : Label, ILocalizedElement
+    public class LocalizedLabel : LabelControl, ILocalizedElement
     {
         public new class UxmlFactory : UxmlFactory<LocalizedLabel, UxmlTraits> { }
 
-        public new class UxmlTraits : Label.UxmlTraits
+        public new class UxmlTraits : LabelControl.UxmlTraits
         {
             UxmlStringAttributeDescription m_LocalizationAddress = new UxmlStringAttributeDescription() { name = "localization-address", defaultValue = null };
 

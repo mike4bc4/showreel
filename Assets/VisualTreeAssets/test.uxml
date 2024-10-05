@@ -1,12 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
-    <ui:VisualElement style="flex-grow: 1;">
-        <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
-    </ui:VisualElement>
-    <Controls.Raw.DiamondBullet animation-progress="1.05" focusable="false" style="position: absolute; width: 103px; top: 99px; left: 26px; visibility: visible;" />
-    <Controls.Raw.DiamondTiled target-tile-scale="0,66" name="DiamondTiled" animation-progress="-0.45" style="position: absolute; top: 179px; left: 100px; opacity: 0.55;" />
-    <Controls.Raw.Diamond animation-progress="1.37" style="position: absolute; top: 242px; left: 97px;" />
-    <Controls.Raw.DialogBox style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
-    <Controls.Raw.DiamondTitle style="position: absolute; top: 105px; left: 328px;" />
-    <ui:Label tabindex="-1" text="zażółć gęślą jaźń ZAŻÓŁĆ GĘŚLĄ JAŹŃ„" parse-escape-sequences="true" display-tooltip-when-elided="true" style="position: absolute; top: 63px; left: 44px;" />
+    <Controls.Raw.DialogBox>
+        <UI.LabelControl text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dignissim mattis ex ut posuere. Duis efficitur vestibulum aliquet. Nullam ullamcorper odio eros. Aenean suscipit commodo volutpat. Aliquam consequat est in interdum viverra. Quisque eget ipsum velit. Aenean interdum tempus mattis. Curabitur sed ullamcorper velit. In aliquam vestibulum maximus. " />
+        <UI.LabelControl text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dignissim mattis ex ut posuere. Duis efficitur vestibulum aliquet. Nullam ullamcorper odio eros. Aenean suscipit commodo volutpat. Aliquam consequat est in interdum viverra. Quisque eget ipsum velit. Aenean interdum tempus mattis. Curabitur sed ullamcorper velit. In aliquam vestibulum maximus. " />
+        <UI.LabelControl text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dignissim mattis ex ut posuere. Duis efficitur vestibulum aliquet. Nullam ullamcorper odio eros. Aenean suscipit commodo volutpat. Aliquam consequat est in interdum viverra. Quisque eget ipsum velit. Aenean interdum tempus mattis. Curabitur sed ullamcorper velit. In aliquam vestibulum maximus. " />
+        <UI.LabelControl text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dignissim mattis ex ut posuere. Duis efficitur vestibulum aliquet. Nullam ullamcorper odio eros. Aenean suscipit commodo volutpat. Aliquam consequat est in interdum viverra. Quisque eget ipsum velit. Aenean interdum tempus mattis. Curabitur sed ullamcorper velit. In aliquam vestibulum maximus. " />
+    </Controls.Raw.DialogBox>
 </ui:UXML>

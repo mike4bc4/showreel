@@ -2,12 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using KeyframeSystem;
+using UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Controls.Raw
 {
-    public class DiamondBullet : VisualElement
+    public class DiamondBullet : Control
     {
         const string k_UssClassName = "diamond-bullet";
         const string k_LineContainerUssClassName = k_UssClassName + "__line-container";
@@ -19,7 +20,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<DiamondBullet, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : Control.UxmlTraits
         {
             UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = k_DefaultAnimationProgress };
 
@@ -31,10 +32,10 @@ namespace Controls.Raw
             }
         }
 
-        VisualElement m_LineContainer;
-        VisualElement m_Line;
+        Control m_LineContainer;
+        Control m_Line;
         DiamondSpreading m_Diamond;
-        VisualElement m_Spacer;
+        Control m_Spacer;
         AnimationPlayer m_Player;
 
         public float animationProgress
@@ -60,7 +61,7 @@ namespace Controls.Raw
 
             AddToClassList(k_UssClassName);
 
-            m_Spacer = new VisualElement() { name = "spacer" };
+            m_Spacer = new Control() { name = "spacer" };
             m_Spacer.AddToClassList(k_SpacerUssClassName);
             Add(m_Spacer);
 
@@ -68,7 +69,7 @@ namespace Controls.Raw
             m_Diamond.AddToClassList(k_DiamondUssClassName);
             Add(m_Diamond);
 
-            m_Line = new VisualElement() { name = "line" };
+            m_Line = new Control() { name = "line" };
             m_Line.AddToClassList(k_LineUssClassName);
             m_Spacer.Add(m_Line);
 

@@ -6,10 +6,11 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Extensions;
 using UnityEditor;
+using UI;
 
 namespace Controls.Raw
 {
-    public class DiamondBar : VisualElement
+    public class DiamondBar : Control
     {
         public const int DefaultSize = 3;
         public const float DefaultDiamondSize = 32f;
@@ -22,7 +23,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<DiamondBar, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : Control.UxmlTraits
         {
             UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
             UxmlIntAttributeDescription m_Size = new UxmlIntAttributeDescription() { name = "size", defaultValue = DefaultSize };
@@ -43,7 +44,7 @@ namespace Controls.Raw
         }
 
         int m_Size;
-        List<VisualElement> m_Elements;
+        List<Control> m_Elements;
         List<DiamondTiled> m_Diamonds;
         float m_ElementSize;
         AnimationPlayer m_Player;
@@ -143,7 +144,7 @@ namespace Controls.Raw
             m_Player.AddAnimation(CreateScaleAnimation(), k_ScaleAnimationName);
             m_Player.animation = m_Player[k_ScaleAnimationName];
 
-            m_Elements = new List<VisualElement>();
+            m_Elements = new List<Control>();
             m_Diamonds = new List<DiamondTiled>();
 
             AddToClassList(k_UssClassName);
@@ -162,7 +163,7 @@ namespace Controls.Raw
 
             for (int i = 0; i < size; i++)
             {
-                var element = new VisualElement();
+                var element = new Control();
                 element.name = "element-" + i;
                 element.AddToClassList(k_ElementUssClassName);
                 Add(element);
@@ -170,7 +171,7 @@ namespace Controls.Raw
 
                 if (i > 0)
                 {
-                    var barLeft = new VisualElement();
+                    var barLeft = new Control();
                     barLeft.name = "bar-left";
                     barLeft.AddToClassList(k_BarUssClassName);
                     barLeft.style.marginRight = -2f;
@@ -184,7 +185,7 @@ namespace Controls.Raw
 
                 if (i < size - 1)
                 {
-                    var barRight = new VisualElement();
+                    var barRight = new Control();
                     barRight.name = "bar-right";
                     barRight.AddToClassList(k_BarUssClassName);
                     barRight.style.marginLeft = -2f;

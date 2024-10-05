@@ -1,31 +1,31 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
-    <ui:VisualElement>
+    <UI.Control>
         <Localization.LocalizedLabel localization-address="Table:WelcomeDialogBoxText1" text="Hello and welcome to my little showreel application! I&apos;m really happy you made it this far, as downloading and installing an app takes a bit of effort, so thank you once again!" class="welcome-dialog-box__paragraph" />
         <Localization.LocalizedLabel localization-address="Table:WelcomeDialogBoxText2" text="Now, before you dive in, there are a few things to keep in mind. First, here&apos;s a handy tip: check the corners of the window for navigation buttons. You can also control the entire application using your keyboard. If you&apos;re curious about what each button does, just click the info button in the top right corner." class="welcome-dialog-box__paragraph" />
         <Controls.Raw.LinkLabel text="Secondly, I assume you downloaded this app from the source, so you might have already visited my repository. If you haven&apos;t, no worries – here&apos;s a &lt;link href=&quot;https://unity.com/&quot;&gt;link&lt;/link&gt; for you." localization-address="Table:WelcomeDialogBoxText3" class="welcome-dialog-box__paragraph" />
         <Localization.LocalizedLabel localization-address="Table:WelcomeDialogBoxText4" text="Lastly, while this app showcases some of my projects, it&apos;s also quite enjoyable to explore on its own. Here are a few links to some interesting parts of the code:" class="welcome-dialog-box__paragraph" />
-        <ui:VisualElement class="bullet-list">
-            <ui:VisualElement name="container">
-                <ui:VisualElement name="icon" />
+        <UI.Control class="bullet-list">
+            <UI.Control name="container">
+                <UI.Control name="icon" />
                 <Controls.Raw.LinkLabel text="&lt;link href=&quot;https://unity.com/&quot;&gt;Boards System&lt;/link&gt; - Boards are made up of layers that work together like a composite, using a state pattern to ensure smooth navigation." localization-address="Table:BoardsSystemLink" />
-            </ui:VisualElement>
-            <ui:VisualElement name="container">
-                <ui:VisualElement name="icon" />
+            </UI.Control>
+            <UI.Control name="container">
+                <UI.Control name="icon" />
                 <Controls.Raw.LinkLabel text="&lt;link href=&quot;https://unity.com/&quot;&gt;Controls&lt;/link&gt; - If you know your way around Unity Toolkit, you should definitely take a look at those custom controls." name="LinkLabel" localization-address="Table:ControlsLink" />
-            </ui:VisualElement>
-            <ui:VisualElement name="container">
-                <ui:VisualElement name="icon" />
+            </UI.Control>
+            <UI.Control name="container">
+                <UI.Control name="icon" />
                 <Controls.Raw.LinkLabel text="&lt;link href=&quot;https://unity.com/&quot;&gt;Keyframe System&lt;/link&gt; - This is a better animation component that lets you animate more than just serialized properties." name="LinkLabel" localization-address="Table:KeyframeSystemLink" />
-            </ui:VisualElement>
-            <ui:VisualElement name="container">
-                <ui:VisualElement name="icon" />
+            </UI.Control>
+            <UI.Control name="container">
+                <UI.Control name="icon" />
                 <Controls.Raw.LinkLabel text="&lt;link href=&quot;https://unity.com/&quot;&gt;Layer Management&lt;/link&gt; - This app has multiple UI layers that are displayed through a custom rendering pipeline!" name="LinkLabel" localization-address="Table:LayerManagementLink" />
-            </ui:VisualElement>
-            <ui:VisualElement name="container">
-                <ui:VisualElement name="icon" />
+            </UI.Control>
+            <UI.Control name="container">
+                <UI.Control name="icon" />
                 <Controls.Raw.LinkLabel localization-address="Table:LocalizationLink" text="&lt;link href=&quot;https://unity.com/&quot;&gt;Localization&lt;/link&gt; - Even though the localization system is included in this presentation (spoiler alert), I&apos;m just using a simplified version here." />
-            </ui:VisualElement>
-        </ui:VisualElement>
-    </ui:VisualElement>
+            </UI.Control>
+        </UI.Control>
+    </UI.Control>
 </ui:UXML>

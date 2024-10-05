@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Extensions;
+using UI;
 
 namespace Layers
 {
@@ -13,7 +14,7 @@ namespace Layers
         const string k_LayerRootUssClassName = "layer-root";
 
         UIDocument m_UIDocument;
-        VisualElement m_RootVisualElement;
+        Control m_RootVisualElement;
         int? m_InputSortOrder;
 
         public override bool visible
@@ -68,15 +69,17 @@ namespace Layers
             }
         }
 
-        public VisualElement rootVisualElement
+        public Control rootVisualElement
         {
             get => m_RootVisualElement;
         }
 
         public bool interactable
         {
-            get => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelEventHandler>().isActiveAndEnabled;
-            set => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelEventHandler>().enabled = value;
+            get => uiDocument.rootVisualElement.enabledSelf;
+            set => uiDocument.rootVisualElement.SetEnabled(value);
+            // get => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelEventHandler>().isActiveAndEnabled;
+            // set => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelEventHandler>().enabled = value;
         }
 
         // This actually is kind of workaround, as normally we would have to change picking mode for
@@ -88,8 +91,11 @@ namespace Layers
         // and hidden behind IPanel interface.
         public bool blocksRaycasts
         {
-            get => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelRaycaster>().isActiveAndEnabled;
-            set => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelRaycaster>().enabled = value;
+            get => m_RootVisualElement.extension.pickingModeExtended != PickingModeExtended.Ignore;
+            set => m_RootVisualElement.extension.pickingModeExtended = value ? PickingModeExtended.IgnoreSelf : PickingModeExtended.Ignore;
+
+            // get => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelRaycaster>().isActiveAndEnabled;
+            // set => uiDocument.rootVisualElement.GetSelectableGameObject().GetComponent<PanelRaycaster>().enabled = value;
         }
 
         public void Init(Material material, UIDocument uiDocument)
@@ -97,20 +103,22 @@ namespace Layers
             base.Init(material);
             m_UIDocument = uiDocument;
 
-            m_RootVisualElement = new VisualElement();
+            m_RootVisualElement = new Control();
             m_RootVisualElement.name = "layer-root";
-            m_RootVisualElement.pickingMode = PickingMode.Ignore;
+            m_RootVisualElement.extension.pickingModeExtended = PickingModeExtended.IgnoreSelf;
             m_RootVisualElement.AddToClassList(k_LayerRootUssClassName);
             uiDocument.rootVisualElement.Add(m_RootVisualElement);
         }
 
-        public TemplateContainer AddTemplateFromVisualTreeAsset(VisualTreeAsset visualTreeAsset)
+        public Control AddTemplateFromVisualTreeAsset(VisualTreeAsset visualTreeAsset)
         {
-            var templateContainer = visualTreeAsset.Instantiate();
-            templateContainer.pickingMode = PickingMode.Ignore;
-            templateContainer.style.flexGrow = 1f;
-            rootVisualElement.Add(templateContainer);
-            return templateContainer;
+            var container = new Control();
+            container.name = visualTreeAsset.name + "-container";
+            visualTreeAsset.CloneTree(container);
+            container.style.flexGrow = 1f;
+            container.extension.pickingModeExtended = PickingModeExtended.IgnoreSelf;
+            rootVisualElement.Add(container);
+            return container;
         }
 
         public void Clear()

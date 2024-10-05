@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Controls.Raw
 {
-    public class ScrollBarVertical : VisualElement
+    public class ScrollBarVertical : Control
     {
         const string k_UssClassName = "scroll-bar";
         const string k_DraggerContainerUssClassName = k_UssClassName + "__dragger-container";
@@ -20,13 +21,13 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<ScrollBarVertical, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits { }
+        public new class UxmlTraits : Control.UxmlTraits { }
 
         public Action offsetChanged;
 
-        VisualElement m_DraggerContainer;
-        VisualElement m_Dragger;
-        VisualElement m_DraggerBackground;
+        Control m_DraggerContainer;
+        Control m_Dragger;
+        Control m_DraggerBackground;
         bool m_PointerCaptured;
         float m_NormalizedOffset;
         bool m_PointerOver;
@@ -41,7 +42,7 @@ namespace Controls.Raw
             get => m_DraggerContainer.layout.height - m_Dragger.layout.height;
         }
 
-        public VisualElement dragger
+        public Control dragger
         {
             get => m_Dragger;
         }
@@ -67,29 +68,29 @@ namespace Controls.Raw
         {
             AddToClassList(k_UssClassName);
 
-            var line = new VisualElement() { name = "line" };
+            var line = new Control() { name = "line" };
             line.AddToClassList(k_LineUssClassName);
             Add(line);
 
-            var topDiamond = new VisualElement() { name = "diamond-top" };
+            var topDiamond = new Control() { name = "diamond-top" };
             topDiamond.AddToClassList(k_DiamondUssClassName);
             topDiamond.AddToClassList(k_TopVariantDiamondUssClassName);
             Add(topDiamond);
 
-            var bottomDiamond = new VisualElement() { name = "bottom-diamond" };
+            var bottomDiamond = new Control() { name = "bottom-diamond" };
             bottomDiamond.AddToClassList(k_DiamondUssClassName);
             bottomDiamond.AddToClassList(k_BottomVariantDiamondUssClassName);
             Add(bottomDiamond);
 
-            m_DraggerContainer = new VisualElement() { name = "dragger-container" };
+            m_DraggerContainer = new Control() { name = "dragger-container" };
             m_DraggerContainer.AddToClassList(k_DraggerContainerUssClassName);
             Add(m_DraggerContainer);
 
-            m_Dragger = new VisualElement() { name = "dragger" };
+            m_Dragger = new Control() { name = "dragger" };
             m_Dragger.AddToClassList(k_DraggerUssClassName);
             m_DraggerContainer.Add(m_Dragger);
 
-            m_DraggerBackground = new VisualElement() { name = "dragger-background" };
+            m_DraggerBackground = new Control() { name = "dragger-background" };
             m_DraggerBackground.AddToClassList(k_DraggerBackgroundUssClassName);
             m_Dragger.Add(m_DraggerBackground);
 

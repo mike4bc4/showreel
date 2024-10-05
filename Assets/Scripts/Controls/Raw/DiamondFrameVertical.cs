@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Extensions;
 using KeyframeSystem;
+using UI;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,7 +11,7 @@ using Utility;
 
 namespace Controls.Raw
 {
-    public class DiamondFrameVertical : VisualElement
+    public class DiamondFrameVertical : Control
     {
         const string k_UssClassName = "diamond-frame-vertical";
         const string k_DiamondTopUssClassName = k_UssClassName + "__diamond-top";
@@ -27,7 +28,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<DiamondFrameVertical, UxmlTraits> { };
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : Control.UxmlTraits
         {
             UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
             UxmlIntAttributeDescription m_CornerRadius = new UxmlIntAttributeDescription() { name = "corner-radius", defaultValue = k_DefaultCornerRadius };
@@ -43,11 +44,11 @@ namespace Controls.Raw
 
         Diamond m_DiamondTop;
         Diamond m_DiamondBottom;
-        VisualElement m_FrameContainer;
+        Control m_FrameContainer;
         RoundedFrame m_RoundedFrameRight;
         RoundedFrame m_RoundedFrameLeft;
-        VisualElement m_ContentContainer;
-        VisualElement m_ResizeElement;
+        Control m_ContentContainer;
+        Control m_ResizeElement;
         // Color m_Color;
         float m_Fill;
         int m_CornerRadius;
@@ -104,7 +105,7 @@ namespace Controls.Raw
             m_DiamondTop.AddToClassList(k_DiamondTopUssClassName);
             hierarchy.Add(m_DiamondTop);
 
-            m_ContentContainer = new VisualElement() { name = "content-container" };
+            m_ContentContainer = new Control() { name = "content-container" };
             m_ContentContainer.AddToClassList(k_ContentContainerUssClassName);
             hierarchy.Add(m_ContentContainer);
 
@@ -112,7 +113,7 @@ namespace Controls.Raw
             m_DiamondBottom.AddToClassList(k_DiamondBottomUssClassName);
             hierarchy.Add(m_DiamondBottom);
 
-            m_FrameContainer = new VisualElement() { name = "frame-container" };
+            m_FrameContainer = new Control() { name = "frame-container" };
             m_FrameContainer.AddToClassList(k_FrameContainerUssClassName);
             hierarchy.Add(m_FrameContainer);
 
@@ -126,7 +127,7 @@ namespace Controls.Raw
             m_RoundedFrameLeft.fill = 0f;
             m_FrameContainer.Add(m_RoundedFrameLeft);
 
-            m_ResizeElement = new VisualElement() { name = "resize-element" };
+            m_ResizeElement = new Control() { name = "resize-element" };
             m_ResizeElement.AddToClassList(k_ResizeElementUssClassName);
             hierarchy.Add(m_ResizeElement);
 

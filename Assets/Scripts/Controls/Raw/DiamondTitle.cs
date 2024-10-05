@@ -5,6 +5,7 @@ using System.Linq;
 using Extensions;
 using KeyframeSystem;
 using Localization;
+using UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -40,8 +41,8 @@ namespace Controls.Raw
         Diamond m_DiamondLeft;
         Diamond m_DiamondRight;
         LocalizedLabel m_Label;
-        VisualElement m_Separator;
-        VisualElement m_LabelContainer;
+        Control m_Separator;
+        Control m_LabelContainer;
         bool m_Unfolded;
         AnimationPlayer m_Player;
 
@@ -59,7 +60,7 @@ namespace Controls.Raw
             }
         }
 
-        public Label label
+        public LabelControl label
         {
             get => m_Label;
         }
@@ -90,7 +91,7 @@ namespace Controls.Raw
             m_DiamondLeft.AddToClassList(k_DiamondUssClassName);
             Add(m_DiamondLeft);
 
-            m_LabelContainer = new VisualElement();
+            m_LabelContainer = new Control();
             m_LabelContainer.name = "label-container";
             m_LabelContainer.AddToClassList(k_LabelContainerUssClassName);
             Add(m_LabelContainer);
@@ -100,7 +101,7 @@ namespace Controls.Raw
             m_Label.AddToClassList(k_LabelUssClassName);
             m_LabelContainer.Add(m_Label);
 
-            m_Separator = new VisualElement();
+            m_Separator = new Control();
             m_Separator.name = "separator";
             m_Separator.AddToClassList(k_SeparatorUssClassName);
             m_LabelContainer.Add(m_Separator);

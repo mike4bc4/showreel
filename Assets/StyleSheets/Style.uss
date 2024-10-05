@@ -465,16 +465,16 @@
     align-self: center;
 }
 
-.interface__button:hover {
+.interface__button:hover:enabled {
     background-color: var(--color-secondary-semi-transparent);
     -unity-background-image-tint-color: var(--color-primary);
 }
 
-.interface__button:active {
+.interface__button:active:enabled {
     scale: 0.9 0.9;
 }
 
-.interface__button:hover #border {
+.interface__button:hover:enabled #border {
     border-bottom-color: var(--color-primary);
     margin-left: 0;
     margin-right: 0;
@@ -508,7 +508,7 @@
     margin-left: 24px;
 }
 
-.interface__button:hover > #text {
+.interface__button:hover:enabled > #text {
     color: var(--color-primary);
 }
 
@@ -693,15 +693,15 @@
     flex-grow: 1;
 }
 
-.list-element__button:hover {
+.list-element__button:hover:enabled {
     background-color: var(--color-secondary-semi-transparent);
 }
 
-.list-element__button:active {
+.list-element__button:active:enabled {
     scale: 0.95 0.95;
 }
 
-.list-element__button:hover .list-element__border {
+.list-element__button:hover:enabled .list-element__border {
     scale: 1 1;
 }
 
@@ -859,11 +859,11 @@
     transition-duration: 0.2s, 0.1s;
 }
 
-.select__button:hover {
+.select__button:hover:enabled {
     background-color: var(--color-secondary-semi-transparent);
 }
 
-.select__button:active {
+.select__button:active:enabled {
     scale: 0.9 0.9;
 }
 
@@ -880,7 +880,7 @@
     bottom: 0;
 }
 
-.select__button:hover > #border {
+.select__button:hover:enabled > #border {
     scale: 1 1;
 }
 
@@ -894,7 +894,7 @@
     margin-bottom: 8px;
 }
 
-.select__button:hover > #label {
+.select__button:hover:enabled > #label {
     color: var(--color-primary);
 }
 
@@ -905,11 +905,11 @@
     flex-direction: row;
 }
 
-.select__option-button:hover {
+.select__option-button:hover:enabled {
     background-color: var(--color-secondary-semi-transparent);
 }
 
-.select__option-button:active {
+.select__option-button:active:enabled {
     scale: 0.9 0.9;
 }
 
@@ -924,7 +924,7 @@
     position: absolute;
 }
 
-.select__option-button:hover > #border {
+.select__option-button:hover:enabled > #border {
     background-color: var(--color-primary);
     left: 0;
     right: 0;
@@ -940,7 +940,7 @@
     margin-bottom: 8px;
 }
 
-.select__option-button:hover > #label {
+.select__option-button:hover:enabled > #label {
     color: var(--color-primary);
 }
 
@@ -956,7 +956,7 @@
     margin-left: 12px;
 }
 
-.select__option-button:hover > #icon {
+.select__option-button:hover:enabled > #icon {
     -unity-background-image-tint-color: var(--color-primary);
 }
 
@@ -1019,7 +1019,7 @@
     transition-duration: 0.1s;
 }
 
-.link-element--hover {
+.link-element--hover:enabled {
     color: var(--color-link-highlight);
 }
 
@@ -1034,7 +1034,7 @@
     transition-duration: 0.1s;
 }
 
-.link-element--hover > #border {
+.link-element--hover:enabled > #border {
     opacity: 0;
 }
 
@@ -1139,4 +1139,26 @@
 
 .welcome-dialog-box__paragraph {
     margin-bottom: 16px;
+}
+
+.test {
+    background-color: rgba(255, 0, 0, 0.1);
+    transition-property: background-color;
+    transition-duration: 0.2s;
+}
+
+.test:hover {
+    background-color: rgb(255, 0, 0);
+}
+
+.test:disabled {
+    background-color: rgb(0, 255, 0);
+}
+
+.video-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }

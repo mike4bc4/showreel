@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using Extensions;
 using KeyframeSystem;
 using StyleUtility;
+using UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Controls.Raw
 {
-    public class DiamondSpreading : VisualElement
+    public class DiamondSpreading : Control
     {
         const string k_UssClassName = "diamond-spreading";
         const string k_CornerContainerUssClassName = k_UssClassName + "__corner-container";
@@ -29,7 +30,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<DiamondSpreading, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : Control.UxmlTraits
         {
             UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = k_DefaultAnimationProgress };
 
@@ -41,13 +42,13 @@ namespace Controls.Raw
             }
         }
 
-        VisualElement m_CornerContainer;
-        VisualElement m_CornerW;
-        VisualElement m_CornerN;
-        VisualElement m_CornerE;
-        VisualElement m_CornerS;
-        VisualElement m_DiamondFull;
-        List<VisualElement> m_CornerBodies;
+        Control m_CornerContainer;
+        Control m_CornerW;
+        Control m_CornerN;
+        Control m_CornerE;
+        Control m_CornerS;
+        Control m_DiamondFull;
+        List<Control> m_CornerBodies;
         float m_EdgeWidth;
         float m_Spread;
         float m_Fill;
@@ -117,9 +118,9 @@ namespace Controls.Raw
         public float initialEdgeWidth { get; set; }
         public float targetEdgeWidth { get; set; }
 
-        List<VisualElement> corners
+        List<Control> corners
         {
-            get => new List<VisualElement>() { m_CornerW, m_CornerN, m_CornerE, m_CornerS };
+            get => new List<Control>() { m_CornerW, m_CornerN, m_CornerE, m_CornerS };
         }
 
         public DiamondSpreading()
@@ -128,55 +129,55 @@ namespace Controls.Raw
             m_Player.AddAnimation(CreateSpreadAnimation(), k_SpreadAnimationName);
             m_Player.animation = m_Player[k_SpreadAnimationName];
 
-            m_CornerBodies = new List<VisualElement>();
+            m_CornerBodies = new List<Control>();
 
             AddToClassList(k_UssClassName);
 
-            m_CornerContainer = new VisualElement() { name = "corner-container" };
+            m_CornerContainer = new Control() { name = "corner-container" };
             m_CornerContainer.AddToClassList(k_CornerContainerUssClassName);
             Add(m_CornerContainer);
 
-            m_CornerN = new VisualElement() { name = "corner-n" };
+            m_CornerN = new Control() { name = "corner-n" };
             m_CornerN.AddToClassList(k_CornerUssClassName);
             m_CornerN.AddToClassList(k_CornerNUssClassName);
             m_CornerContainer.Add(m_CornerN);
 
-            var cornerBody = new VisualElement() { name = "corner-body" };
+            var cornerBody = new Control() { name = "corner-body" };
             m_CornerBodies.Add(cornerBody);
             cornerBody.AddToClassList(k_CornerBodyUssClassName);
             m_CornerN.Add(cornerBody);
 
-            m_CornerW = new VisualElement() { name = "corner-w" };
+            m_CornerW = new Control() { name = "corner-w" };
             m_CornerW.AddToClassList(k_CornerUssClassName);
             m_CornerW.AddToClassList(k_CornerWUssClassName);
             m_CornerContainer.Add(m_CornerW);
 
-            cornerBody = new VisualElement() { name = "corner-body" };
+            cornerBody = new Control() { name = "corner-body" };
             m_CornerBodies.Add(cornerBody);
             cornerBody.AddToClassList(k_CornerBodyUssClassName);
             m_CornerW.Add(cornerBody);
 
-            m_CornerS = new VisualElement() { name = "corner-s" };
+            m_CornerS = new Control() { name = "corner-s" };
             m_CornerS.AddToClassList(k_CornerUssClassName);
             m_CornerS.AddToClassList(k_CornerSUssClassName);
             m_CornerContainer.Add(m_CornerS);
 
-            cornerBody = new VisualElement() { name = "corner-body" };
+            cornerBody = new Control() { name = "corner-body" };
             m_CornerBodies.Add(cornerBody);
             cornerBody.AddToClassList(k_CornerBodyUssClassName);
             m_CornerS.Add(cornerBody);
 
-            m_CornerE = new VisualElement() { name = "corner-e" };
+            m_CornerE = new Control() { name = "corner-e" };
             m_CornerE.AddToClassList(k_CornerUssClassName);
             m_CornerE.AddToClassList(k_CornerEUssClassName);
             m_CornerContainer.Add(m_CornerE);
 
-            cornerBody = new VisualElement() { name = "corner-body" };
+            cornerBody = new Control() { name = "corner-body" };
             m_CornerBodies.Add(cornerBody);
             cornerBody.AddToClassList(k_CornerBodyUssClassName);
             m_CornerE.Add(cornerBody);
 
-            m_DiamondFull = new VisualElement();
+            m_DiamondFull = new Control();
             m_DiamondFull.name = "diamond-full";
             m_DiamondFull.AddToClassList(k_FullUssClassName);
             m_CornerContainer.Add(m_DiamondFull);

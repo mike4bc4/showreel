@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using KeyframeSystem;
+using UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Controls.Raw
 {
-    public class DiamondTiled : VisualElement
+    public class DiamondTiled : Control
     {
         public const float DefaultTargetTileScale = 0.66f;
 
@@ -22,7 +23,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<DiamondTiled, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : Control.UxmlTraits
         {
             UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = 1f };
             UxmlFloatAttributeDescription m_TargetTileScale = new UxmlFloatAttributeDescription() { name = "target-tile-scale", defaultValue = DefaultTargetTileScale };
@@ -36,18 +37,18 @@ namespace Controls.Raw
             }
         }
 
-        VisualElement m_TileTop;
-        VisualElement m_TileRight;
-        VisualElement m_TileBottom;
-        VisualElement m_TileLeft;
-        VisualElement m_DiamondQuarterInverted;
-        VisualElement m_DiamondFull;
+        Control m_TileTop;
+        Control m_TileRight;
+        Control m_TileBottom;
+        Control m_TileLeft;
+        Control m_DiamondQuarterInverted;
+        Control m_DiamondFull;
         AnimationPlayer m_Player;
         float m_TargetTileScale;
 
-        List<VisualElement> tiles
+        List<Control> tiles
         {
-            get => new List<VisualElement>() { m_TileTop, m_TileRight, m_TileBottom, m_TileLeft };
+            get => new List<Control>() { m_TileTop, m_TileRight, m_TileBottom, m_TileLeft };
         }
 
         public float targetTileScale
@@ -82,31 +83,31 @@ namespace Controls.Raw
 
             AddToClassList(k_UssClassName);
 
-            m_TileTop = new VisualElement() { name = "tile-top" };
+            m_TileTop = new Control() { name = "tile-top" };
             m_TileTop.AddToClassList(k_TileUssClassName);
             m_TileTop.AddToClassList(k_TileTopUssClassName);
             Add(m_TileTop);
 
-            m_TileRight = new VisualElement() { name = "tile-right" };
+            m_TileRight = new Control() { name = "tile-right" };
             m_TileRight.AddToClassList(k_TileUssClassName);
             m_TileRight.AddToClassList(k_TileRightUssClassName);
             Add(m_TileRight);
 
-            m_TileBottom = new VisualElement() { name = "tile-bottom" };
+            m_TileBottom = new Control() { name = "tile-bottom" };
             m_TileBottom.AddToClassList(k_TileUssClassName);
             m_TileBottom.AddToClassList(k_TileBottomUssClassName);
             Add(m_TileBottom);
 
-            m_TileLeft = new VisualElement() { name = "tile-left" };
+            m_TileLeft = new Control() { name = "tile-left" };
             m_TileLeft.AddToClassList(k_TileUssClassName);
             m_TileLeft.AddToClassList(k_TileLeftUssClassName);
             Add(m_TileLeft);
 
-            m_DiamondQuarterInverted = new VisualElement() { name = "diamond-quarter-inverted" };
+            m_DiamondQuarterInverted = new Control() { name = "diamond-quarter-inverted" };
             m_DiamondQuarterInverted.AddToClassList(k_QuarterInvertedUssClassName);
             Add(m_DiamondQuarterInverted);
 
-            m_DiamondFull = new VisualElement() { name = "diamond-full" };
+            m_DiamondFull = new Control() { name = "diamond-full" };
             m_DiamondFull.AddToClassList(k_FullUssClassName);
             Add(m_DiamondFull);
 

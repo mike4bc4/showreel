@@ -2,12 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using KeyframeSystem;
+using UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Controls.Raw
 {
-    public class Diamond : VisualElement
+    public class Diamond : Control
     {
         const string k_UssClassName = "diamond";
         const string k_HalfUssClassName = k_UssClassName + "__half";
@@ -18,7 +19,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<Diamond, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : Control.UxmlTraits
         {
             UxmlFloatAttributeDescription m_AnimationProgress = new UxmlFloatAttributeDescription() { name = "animation-progress", defaultValue = k_DefaultAnimationProgress };
 
@@ -30,10 +31,10 @@ namespace Controls.Raw
             }
         }
 
-        VisualElement m_HalfLeft;
-        VisualElement m_HalfRight;
-        VisualElement m_DiamondFull;
-        VisualElement m_DiamondMiddle;
+        Control m_HalfLeft;
+        Control m_HalfRight;
+        Control m_DiamondFull;
+        Control m_DiamondMiddle;
         AnimationPlayer m_Player;
 
         public float animationProgress
@@ -58,22 +59,22 @@ namespace Controls.Raw
 
             AddToClassList(k_UssClassName);
 
-            m_HalfLeft = new VisualElement();
+            m_HalfLeft = new Control();
             m_HalfLeft.name = "half-left";
             m_HalfLeft.AddToClassList(k_HalfUssClassName);
             Add(m_HalfLeft);
 
-            m_HalfRight = new VisualElement();
+            m_HalfRight = new Control();
             m_HalfRight.name = "half-right";
             m_HalfRight.AddToClassList(k_HalfUssClassName);
             Add(m_HalfRight);
 
-            m_DiamondFull = new VisualElement();
+            m_DiamondFull = new Control();
             m_DiamondFull.name = "diamond-full";
             m_DiamondFull.AddToClassList(k_FullUssClassName);
             Add(m_DiamondFull);
 
-            m_DiamondMiddle = new VisualElement();
+            m_DiamondMiddle = new Control();
             m_DiamondMiddle.name = "diamond-middle";
             m_DiamondMiddle.AddToClassList(k_MiddleUssClassName);
             Add(m_DiamondMiddle);

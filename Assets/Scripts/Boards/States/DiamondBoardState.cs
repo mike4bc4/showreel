@@ -22,11 +22,27 @@ namespace Boards.States
             switch (context.previousState)
             {
                 case InterfaceBoardState:
-                    m_DiamondBarBoard.Show(() => context.state = SettingsManager.ShowWelcomeWindow ? new WelcomeDialogBoxState(context) : new PoliticoListBoardState(context));
+                    m_DiamondBarBoard.Show(SetWelcomeDialogBoxOrPoliticoListBoardState);
                     break;
                 case PoliticoListBoardState:
                     m_DiamondBarBoard.Hide(() => context.state = new InterfaceBoardState(context));
                     break;
+            }
+        }
+
+        void SetWelcomeDialogBoxOrPoliticoListBoardState()
+        {
+            if (SettingsManager.ShowWelcomeWindow)
+            {
+                context.state = new WelcomeDialogBoxState(context);
+            }
+            else
+            {
+                // Normally interface board would become interactable after welcome dialog
+                // box is closed, but if we are skipping right into list board we have to
+                // activate it here.
+                BoardManager.GetBoard<InterfaceBoard>().interactable = true;
+                context.state = new PoliticoListBoardState(context);
             }
         }
 
@@ -36,7 +52,7 @@ namespace Boards.States
             {
                 case InterfaceBoardState:
                     m_DiamondBarBoard.ShowImmediate();
-                    context.state = SettingsManager.ShowWelcomeWindow ? new WelcomeDialogBoxState(context) : new PoliticoListBoardState(context);
+                    SetWelcomeDialogBoxOrPoliticoListBoardState();
                     break;
                 case PoliticoListBoardState:
                     m_DiamondBarBoard.HideImmediate();

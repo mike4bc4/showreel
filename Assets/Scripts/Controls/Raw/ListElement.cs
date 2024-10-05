@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Localization;
+using UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -33,9 +34,9 @@ namespace Controls.Raw
         }
 
         DiamondBullet m_DiamondBullet;
-        Button m_Button;
-        VisualElement m_TextContainer;
-        VisualElement m_Border;
+        ButtonControl m_Button;
+        Control m_TextContainer;
+        Control m_Border;
         LocalizedLabel m_Header;
         LocalizedLabel m_Text;
 
@@ -44,7 +45,7 @@ namespace Controls.Raw
             get => m_DiamondBullet;
         }
 
-        public Button button
+        public ButtonControl button
         {
             get => m_Button;
         }
@@ -71,15 +72,15 @@ namespace Controls.Raw
             m_DiamondBullet.AddToClassList(bulletUssClassName);
             Add(m_DiamondBullet);
 
-            m_Button = new Button() { name = "button" };
+            m_Button = new ButtonControl() { name = "button" };
             m_Button.AddToClassList(buttonUssClassName);
             Add(m_Button);
 
-            m_TextContainer = new VisualElement() { name = "text-container" };
+            m_TextContainer = new Control() { name = "text-container" };
             m_TextContainer.AddToClassList(textContainerUssClassName);
             m_Button.Add(m_TextContainer);
 
-            m_Border = new VisualElement() { name = "border" };
+            m_Border = new Control() { name = "border" };
             m_Border.AddToClassList(borderUssClassName);
             m_Button.Add(m_Border);
 

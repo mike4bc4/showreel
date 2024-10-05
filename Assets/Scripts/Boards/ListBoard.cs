@@ -14,6 +14,7 @@ using Layers;
 using Controls.Raw;
 using Utility;
 using Localization;
+using UI;
 
 namespace Boards
 {
@@ -46,12 +47,12 @@ namespace Boards
         AnimationPlayer m_TitleAnimationPlayer;
         AnimationPlayer m_VideoSwapAnimationPlayer;
 
-        TemplateContainer m_TemplateContainer;
-        VisualElement m_FrameViewport;
+        Control m_TemplateContainer;
+        Control m_FrameViewport;
         DiamondFrameVertical m_Frame;
-        VisualElement m_VideoContainer;
-        List<VisualElement> m_VideoContainers;
-        VisualElement m_FrameSpacerLeft;
+        Control m_VideoContainer;
+        List<Control> m_VideoContainers;
+        Control m_FrameSpacerLeft;
         ScrollBox m_ScrollBox;
         List<ListElement> m_ListElements;
         DiamondTitle m_Title;
@@ -111,13 +112,13 @@ namespace Boards
             set => m_InitialVideoClip = value;
         }
 
-        VisualElement frameViewport
+        Control frameViewport
         {
             get
             {
                 if (m_FrameViewport == null || m_FrameViewport.panel == null)
                 {
-                    m_FrameViewport = m_Layer.rootVisualElement.Q("frame-viewport");
+                    m_FrameViewport = m_Layer.rootVisualElement.Q<Control>("frame-viewport");
                 }
 
                 return m_FrameViewport;
@@ -137,41 +138,41 @@ namespace Boards
             }
         }
 
-        VisualElement videoContainer
+        Control videoContainer
         {
             get
             {
                 if (m_VideoContainer == null || m_VideoContainer.panel == null)
                 {
-                    m_VideoContainer = frameViewport.Q("video-container");
+                    m_VideoContainer = frameViewport.Q<Control>("video-container");
                 }
 
                 return m_VideoContainer;
             }
         }
 
-        List<VisualElement> videoContainers
+        List<Control> videoContainers
         {
             get
             {
                 if (m_VideoContainers == null || m_VideoContainers.Count == 0 || m_VideoContainers[0].panel == null)
                 {
-                    m_VideoContainers = new List<VisualElement>();
-                    m_VideoContainers.Add(frameViewport.Q("video-container-1"));
-                    m_VideoContainers.Add(frameViewport.Q("video-container-2"));
+                    m_VideoContainers = new List<Control>();
+                    m_VideoContainers.Add(frameViewport.Q<Control>("video-container-1"));
+                    m_VideoContainers.Add(frameViewport.Q<Control>("video-container-2"));
                 }
 
                 return m_VideoContainers;
             }
         }
 
-        VisualElement frameSpacerLeft
+        Control frameSpacerLeft
         {
             get
             {
                 if (m_FrameSpacerLeft == null || m_FrameSpacerLeft.panel == null)
                 {
-                    m_FrameSpacerLeft = frameViewport.Q("spacer-left");
+                    m_FrameSpacerLeft = frameViewport.Q<Control>("spacer-left");
                 }
 
                 return m_FrameSpacerLeft;

@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Localization
 {
-    public abstract class LocalizedElement : VisualElement
+    public abstract class LocalizedElement : Control
     {
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : Control.UxmlTraits
         {
             UxmlStringAttributeDescription m_LocalizationAddress = new UxmlStringAttributeDescription() { name = "localization-address", defaultValue = null };
 
@@ -35,9 +36,9 @@ namespace Localization
         }
     }
 
-    public abstract class MultiLocalizedElement : VisualElement
+    public abstract class MultiLocalizedElement : Control
     {
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : Control.UxmlTraits
         {
             UxmlStringAttributeDescription m_LocalizationAddresses = new UxmlStringAttributeDescription() { name = "localization-addresses", defaultValue = null };
 

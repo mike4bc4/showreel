@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Extensions;
+using UI;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 
 namespace Controls.Raw
 {
-    public class RoundedFrame : VisualElement
+    public class RoundedFrame : Control
     {
         const string k_UssClassName = "rounded-frame";
         const string k_TopBorderContainerUssClassName = k_UssClassName + "__top-border-container";
@@ -28,7 +29,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<RoundedFrame, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : Control.UxmlTraits
         {
             UxmlFloatAttributeDescription m_Fill = new UxmlFloatAttributeDescription() { name = "fill", defaultValue = k_DefaultFill };
             UxmlIntAttributeDescription m_CornerRadius = new UxmlIntAttributeDescription() { name = "corner-radius", defaultValue = k_DefaultCornerRadius };
@@ -44,16 +45,16 @@ namespace Controls.Raw
             }
         }
 
-        VisualElement m_TopBorderContainer;
-        VisualElement m_TopBorder;
-        VisualElement m_TopRightCornerContainer;
-        VisualElement m_TopRightCorner;
-        VisualElement m_RightBorderContainer;
-        VisualElement m_RightBorder;
-        VisualElement m_BottomRightCornerContainer;
-        VisualElement m_BottomRightCorner;
-        VisualElement m_BottomBorderContainer;
-        VisualElement m_BottomBorder;
+        Control m_TopBorderContainer;
+        Control m_TopBorder;
+        Control m_TopRightCornerContainer;
+        Control m_TopRightCorner;
+        Control m_RightBorderContainer;
+        Control m_RightBorder;
+        Control m_BottomRightCornerContainer;
+        Control m_BottomRightCorner;
+        Control m_BottomBorderContainer;
+        Control m_BottomBorder;
         float m_Fill;
         int m_CornerRadius;
         int m_BorderWidth;
@@ -148,43 +149,43 @@ namespace Controls.Raw
         {
             AddToClassList(k_UssClassName);
 
-            m_TopBorderContainer = new VisualElement() { name = "top-border-container" };
+            m_TopBorderContainer = new Control() { name = "top-border-container" };
             m_TopBorderContainer.AddToClassList(k_TopBorderContainerUssClassName);
             Add(m_TopBorderContainer);
 
-            m_TopBorder = new VisualElement() { name = "top-border" };
+            m_TopBorder = new Control() { name = "top-border" };
             m_TopBorder.AddToClassList(k_TopBorderUssClassName);
             m_TopBorderContainer.Add(m_TopBorder);
 
-            m_TopRightCornerContainer = new VisualElement() { name = "top-right-corner-container" };
+            m_TopRightCornerContainer = new Control() { name = "top-right-corner-container" };
             m_TopRightCornerContainer.AddToClassList(k_TopRightCornerContainerUssClassName);
             Add(m_TopRightCornerContainer);
 
-            m_TopRightCorner = new VisualElement() { name = "top-right-corner" };
+            m_TopRightCorner = new Control() { name = "top-right-corner" };
             m_TopRightCorner.AddToClassList(k_TopRightCornerUssClassName);
             m_TopRightCornerContainer.Add(m_TopRightCorner);
 
-            m_RightBorderContainer = new VisualElement() { name = "right-border-container" };
+            m_RightBorderContainer = new Control() { name = "right-border-container" };
             m_RightBorderContainer.AddToClassList(k_RightBorderContainerUssClassName);
             Add(m_RightBorderContainer);
 
-            m_RightBorder = new VisualElement() { name = "right-border" };
+            m_RightBorder = new Control() { name = "right-border" };
             m_RightBorder.AddToClassList(k_RightBorderUssClassName);
             m_RightBorderContainer.Add(m_RightBorder);
 
-            m_BottomRightCornerContainer = new VisualElement() { name = "bottom-right-corner-container" };
+            m_BottomRightCornerContainer = new Control() { name = "bottom-right-corner-container" };
             m_BottomRightCornerContainer.AddToClassList(k_BottomRightCornerContainerUssClassName);
             Add(m_BottomRightCornerContainer);
 
-            m_BottomRightCorner = new VisualElement() { name = "bottom-right-corner" };
+            m_BottomRightCorner = new Control() { name = "bottom-right-corner" };
             m_BottomRightCorner.AddToClassList(k_BottomRightCornerUssClassName);
             m_BottomRightCornerContainer.Add(m_BottomRightCorner);
 
-            m_BottomBorderContainer = new VisualElement() { name = "bottom-border-container" };
+            m_BottomBorderContainer = new Control() { name = "bottom-border-container" };
             m_BottomBorderContainer.AddToClassList(k_BottomBorderContainerUssClassName);
             Add(m_BottomBorderContainer);
 
-            m_BottomBorder = new VisualElement() { name = "bottom-border" };
+            m_BottomBorder = new Control() { name = "bottom-border" };
             m_BottomBorder.AddToClassList(k_BottomBorderUssClassName);
             m_BottomBorderContainer.Add(m_BottomBorder);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Controls.Raw;
 using Localization;
+using UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -19,7 +20,7 @@ namespace Controls.Raw
         RightCenter,
     }
 
-    class DialogBox : VisualElement
+    class DialogBox : Control
     {
         const string k_UssClassName = "dialog-box";
         const string k_ShadowClassName = k_UssClassName + "__shadow";
@@ -32,7 +33,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<DialogBox, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : Control.UxmlTraits
         {
             UxmlEnumAttributeDescription<ButtonDisplay> m_ButtonDisplay = new UxmlEnumAttributeDescription<ButtonDisplay>()
             {
@@ -48,19 +49,19 @@ namespace Controls.Raw
             }
         }
 
-        VisualElement m_Shadow;
-        VisualElement m_Box;
+        Control m_Shadow;
+        Control m_Box;
         DiamondTitle m_Title;
         ScrollBox m_ScrollBox;
-        VisualElement m_ButtonContainer;
-        Button m_LeftButton;
+        Control m_ButtonContainer;
+        ButtonControl m_LeftButton;
         LocalizedLabel m_LeftButtonLabel;
-        Button m_RightButton;
+        ButtonControl m_RightButton;
         LocalizedLabel m_RightButtonLabel;
         ButtonDisplay m_ButtonDisplay;
 
         public DiamondTitle title => m_Title;
-        public VisualElement shadow => m_Shadow;
+        public Control shadow => m_Shadow;
 
         public ButtonDisplay buttonDisplay
         {
@@ -96,12 +97,12 @@ namespace Controls.Raw
             }
         }
 
-        public Button rightButton
+        public ButtonControl rightButton
         {
             get => m_RightButton;
         }
 
-        public Button leftButton
+        public ButtonControl leftButton
         {
             get => m_LeftButton;
         }
@@ -154,12 +155,12 @@ namespace Controls.Raw
         {
             AddToClassList(k_UssClassName);
 
-            m_Shadow = new VisualElement();
+            m_Shadow = new Control();
             m_Shadow.name = "shadow";
             m_Shadow.AddToClassList(k_ShadowClassName);
             hierarchy.Add(m_Shadow);
 
-            m_Box = new VisualElement();
+            m_Box = new Control();
             m_Box.name = "box";
             m_Box.AddToClassList(k_BoxUssClassName);
             m_Shadow.Add(m_Box);
@@ -175,12 +176,12 @@ namespace Controls.Raw
             m_ScrollBox.AddToClassList(k_ScrollBoxUssClassName);
             m_Box.Add(m_ScrollBox);
 
-            m_ButtonContainer = new VisualElement();
+            m_ButtonContainer = new Control();
             m_ButtonContainer.name = "buttons-container";
             m_ButtonContainer.AddToClassList(k_ButtonContainerUssClassName);
             m_Box.Add(m_ButtonContainer);
 
-            m_LeftButton = new Button();
+            m_LeftButton = new ButtonControl();
             m_LeftButton.name = "button";
             m_LeftButton.AddToClassList(k_InterfaceButtonUssClassName);
             m_ButtonContainer.Add(m_LeftButton);
@@ -190,11 +191,11 @@ namespace Controls.Raw
             m_LeftButtonLabel.text = "Left Button";
             m_LeftButton.Add(m_LeftButtonLabel);
 
-            var leftButtonBorder = new VisualElement();
+            var leftButtonBorder = new Control();
             leftButtonBorder.name = "border";
             m_LeftButton.Add(leftButtonBorder);
 
-            m_RightButton = new Button();
+            m_RightButton = new ButtonControl();
             m_RightButton.name = "button";
             m_RightButton.AddToClassList(k_InterfaceButtonUssClassName);
             m_ButtonContainer.Add(m_RightButton);
@@ -204,7 +205,7 @@ namespace Controls.Raw
             m_RightButtonLabel.text = "Right Button";
             m_RightButton.Add(m_RightButtonLabel);
 
-            var rightButtonBorder = new VisualElement();
+            var rightButtonBorder = new Control();
             rightButtonBorder.name = "border";
             m_RightButton.Add(rightButtonBorder);
         }

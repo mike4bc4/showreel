@@ -1,12 +1,7 @@
 {
-    "name": "Localization",
+    "name": "UI",
     "rootNamespace": "",
-    "references": [
-        "GUID:78677e4ff3d805b488dcd0dfbb64ee89",
-        "GUID:0a149036d35609a48ac4602ee2a15a23",
-        "GUID:183cb49d26e5c2f40a9eccfbd004b894",
-        "GUID:1e0239a0c101a6c4ba54cb706fbf11a8"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

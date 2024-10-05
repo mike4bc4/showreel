@@ -23,24 +23,9 @@ namespace Boards.States
             m_DialogBox = DialogBox.CreateWelcomeDialogBox();
             m_DialogBox.displaySortOrder = DisplaySortOrder;
             m_DialogBox.inputSortOrder = InputSortOrder;
-            m_DialogBox.onStatusChanged += OnStatusChanged;
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Left, OnConfirmOrCancel);
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Background, OnConfirmOrCancel);
-            m_DialogBox.Show();
-        }
-
-        void OnStatusChanged(DialogBox.Status previousStatus)
-        {
-            if (m_DialogBox.isShown)
-            {
-                m_Interactable = true;
-            }
-            else if (m_DialogBox.isHidden)
-            {
-                m_DialogBox.Dispose();
-                BoardManager.GetBoard<InterfaceBoard>().interactable = true;
-                context.state = new PoliticoListBoardState(context);
-            }
+            m_DialogBox.Show(() => m_Interactable = true);
         }
 
         void OnConfirmOrCancel()
@@ -48,8 +33,15 @@ namespace Boards.States
             if (m_Interactable)
             {
                 m_Interactable = false;
-                m_DialogBox.Hide();
+                m_DialogBox.Hide(OnHide);
             }
+        }
+
+        void OnHide()
+        {
+            m_DialogBox.Dispose();
+            BoardManager.GetBoard<InterfaceBoard>().interactable = true;
+            context.state = new PoliticoListBoardState(context);
         }
 
         public override void Cancel()

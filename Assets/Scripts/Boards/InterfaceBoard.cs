@@ -8,6 +8,7 @@ using FSM;
 using InputHelper;
 using KeyframeSystem;
 using Layers;
+using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -25,10 +26,10 @@ namespace Boards
         AnimationPlayer m_ShowHideAnimationPlayer;
         DialogBox m_InfoDialogBox;
         DialogBox m_QuitDialogBox;
-        Button m_LeftButton;
-        Button m_RightButton;
-        Button m_InfoButton;
-        Button m_QuitButton;
+        ButtonControl m_LeftButton;
+        ButtonControl m_RightButton;
+        ButtonControl m_InfoButton;
+        ButtonControl m_QuitButton;
 
         public override bool interactable
         {

@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using Localization;
 using TimerUtility;
+using UI;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -20,7 +21,7 @@ namespace Controls.Raw
         const string k_LinkContainerUssClassName = k_UssClassName + "__link-container";
         const string k_TagName = "link";
 
-        class LinkElement : VisualElement
+        class LinkElement : Control
         {
             public enum State
             {
@@ -31,8 +32,8 @@ namespace Controls.Raw
             const string k_UssClassName = "link-element";
             const string k_UssClassNameHoverVariant = k_UssClassName + "--hover";
 
-            Label m_Label;
-            VisualElement m_Border;
+            LabelControl m_Label;
+            Control m_Border;
             State m_State;
             Vector2 m_Position;
 
@@ -75,14 +76,14 @@ namespace Controls.Raw
             {
                 AddToClassList(k_UssClassName);
 
-                m_Label = new Label();
+                m_Label = new LabelControl();
                 m_Label.name = "label";
-                m_Label.pickingMode = PickingMode.Ignore;
+                m_Label.extension.pickingModeExtended = PickingModeExtended.IgnoreSelf;
                 Add(m_Label);
 
-                m_Border = new VisualElement();
+                m_Border = new Control();
                 m_Border.name = "border";
-                m_Border.pickingMode = PickingMode.Ignore;
+                m_Border.extension.pickingModeExtended = PickingModeExtended.IgnoreSelf;
                 Add(m_Border);
             }
         }
@@ -91,7 +92,7 @@ namespace Controls.Raw
         {
             LinkInfo m_LinkEntry;
             List<LinkElement> m_Elements;
-            VisualElement m_ElementContainer;
+            Control m_ElementContainer;
 
             public LinkInfo entry => m_LinkEntry;
 
@@ -108,7 +109,7 @@ namespace Controls.Raw
                 }
             }
 
-            public Link(VisualElement elementContainer, LinkInfo linkEntry)
+            public Link(Control elementContainer, LinkInfo linkEntry)
             {
                 m_LinkEntry = linkEntry;
                 m_Elements = new List<LinkElement>();
@@ -272,7 +273,7 @@ namespace Controls.Raw
         }
 
         LocalizedLabel m_Label;
-        VisualElement m_LinkContainer;
+        Control m_LinkContainer;
         List<Link> m_Links;
         TextInfo m_TextInfo;
         ITimerHandle m_TimerHandle1;
@@ -327,7 +328,7 @@ namespace Controls.Raw
             m_Label.onLocalized += translation => text = translation;
             Add(m_Label);
 
-            m_LinkContainer = new VisualElement();
+            m_LinkContainer = new Control();
             m_LinkContainer.name = "link-container";
             m_LinkContainer.AddToClassList(k_LinkContainerUssClassName);
             Add(m_LinkContainer);

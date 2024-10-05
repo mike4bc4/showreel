@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,7 +13,7 @@ namespace Controls.Raw
         Smooth,
     }
 
-    public class ScrollBox : VisualElement
+    public class ScrollBox : Control
     {
         const string k_UssClassName = "scroll-box";
         const string k_ViewportContainerUssClassName = k_UssClassName + "__viewport-container";
@@ -23,7 +24,7 @@ namespace Controls.Raw
 
         public new class UxmlFactory : UxmlFactory<ScrollBox, UxmlTraits> { }
 
-        public new class UxmlTraits : VisualElement.UxmlTraits
+        public new class UxmlTraits : Control.UxmlTraits
         {
             UxmlIntAttributeDescription m_ScrolledLines = new UxmlIntAttributeDescription() { name = "scrolled-lines", defaultValue = 3 };
             UxmlIntAttributeDescription m_LineHeight = new UxmlIntAttributeDescription() { name = "line-height", defaultValue = 24 };
@@ -41,9 +42,9 @@ namespace Controls.Raw
             }
         }
 
-        VisualElement m_ViewportContainer;
-        VisualElement m_Viewport;
-        VisualElement m_ContentContainer;
+        Control m_ViewportContainer;
+        Control m_Viewport;
+        Control m_ContentContainer;
         ScrollBarVertical m_ScrollBar;
         int m_LineHeight;
         IVisualElementScheduledItem m_ScrollBarAnimation;
@@ -52,7 +53,7 @@ namespace Controls.Raw
         float m_Deceleration;
         int m_ScrolledLines;
 
-        public VisualElement viewport
+        public Control viewport
         {
             get => m_Viewport;
         }
@@ -120,15 +121,15 @@ namespace Controls.Raw
         {
             AddToClassList(k_UssClassName);
 
-            m_ViewportContainer = new VisualElement() { name = "viewport-container" };
+            m_ViewportContainer = new Control() { name = "viewport-container" };
             m_ViewportContainer.AddToClassList(k_ViewportContainerUssClassName);
             hierarchy.Add(m_ViewportContainer);
 
-            m_Viewport = new VisualElement() { name = "viewport" };
+            m_Viewport = new Control() { name = "viewport" };
             m_Viewport.AddToClassList(k_ViewportUssClassName);
             m_ViewportContainer.Add(m_Viewport);
 
-            m_ContentContainer = new VisualElement() { name = "content-container" };
+            m_ContentContainer = new Control() { name = "content-container" };
             m_ContentContainer.AddToClassList(k_ContentContainerUssClassName);
             m_Viewport.Add(m_ContentContainer);
 

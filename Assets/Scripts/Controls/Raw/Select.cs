@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Extensions;
 using Localization;
+using UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Utility;
@@ -48,13 +49,13 @@ namespace Controls.Raw
         public event Action onChoiceChanged;
 
         LocalizedLabel m_Label;
-        VisualElement m_OptionContainer;
-        Button m_OptionButton;
+        Control m_OptionContainer;
+        ButtonControl m_OptionButton;
         LocalizedLabel m_OptionButtonLabel;
-        VisualElement m_ScrollBoxOverlay;
-        VisualElement m_ScrollBoxContainer;
+        Control m_ScrollBoxOverlay;
+        Control m_ScrollBoxContainer;
         ScrollBox m_ScrollBox;
-        VisualElement m_ScrollBoxContentWrapper;
+        Control m_ScrollBoxContentWrapper;
         IVisualElementScheduledItem m_ListPositionUpdater;
         int m_Index;
         List<string> m_Choices;
@@ -99,12 +100,12 @@ namespace Controls.Raw
             m_Label.AddToClassList(k_LabelUssClassName);
             Add(m_Label);
 
-            m_OptionContainer = new VisualElement();
+            m_OptionContainer = new Control();
             m_OptionContainer.name = "option-container";
             m_OptionContainer.AddToClassList(k_OptionContainerUssClassName);
             Add(m_OptionContainer);
 
-            m_OptionButton = new Button();
+            m_OptionButton = new ButtonControl();
             m_OptionButton.name = "button";
             m_OptionButton.AddToClassList(k_OptionButtonUssClassName);
             m_OptionContainer.Add(m_OptionButton);
@@ -113,15 +114,15 @@ namespace Controls.Raw
             m_OptionButtonLabel.name = "label";
             m_OptionButton.Add(m_OptionButtonLabel);
 
-            var border = new VisualElement();
+            var border = new Control();
             border.name = "border";
             m_OptionButton.Add(border);
 
-            var arrowIcon = new VisualElement();
+            var arrowIcon = new Control();
             arrowIcon.name = "icon";
             m_OptionButton.Add(arrowIcon);
 
-            m_ScrollBoxOverlay = new VisualElement();
+            m_ScrollBoxOverlay = new Control();
             m_ScrollBoxOverlay.name = "list-container";
             m_ScrollBoxOverlay.AddToClassList(k_ScrollBoxOverlayUssClassName);
             m_ScrollBoxOverlay.RegisterCallback<ClickEvent>(evt =>
@@ -132,7 +133,7 @@ namespace Controls.Raw
                 }
             });
 
-            m_ScrollBoxContainer = new VisualElement();
+            m_ScrollBoxContainer = new Control();
             m_ScrollBoxContainer.name = "scroll-box-container";
             m_ScrollBoxContainer.AddToClassList(k_ScrollBoxContainerUssClassName);
             m_ScrollBoxOverlay.Add(m_ScrollBoxContainer);
@@ -142,7 +143,7 @@ namespace Controls.Raw
             m_ScrollBox.scrollMode = ScrollMode.Smooth;
             m_ScrollBoxContainer.Add(m_ScrollBox);
 
-            m_ScrollBoxContentWrapper = new VisualElement();
+            m_ScrollBoxContentWrapper = new Control();
             m_ScrollBoxContentWrapper.name = "content-wrapper";
             m_ScrollBoxContentWrapper.AddToClassList(k_ScrollBoxContentWrapperUssClassName);
             m_ScrollBox.Add(m_ScrollBoxContentWrapper);
@@ -280,9 +281,9 @@ namespace Controls.Raw
             SetIndexInternal(m_Index);
         }
 
-        Button CreateChoiceButton(int index, string choice)
+        ButtonControl CreateChoiceButton(int index, string choice)
         {
-            var button = new Button() { name = "button-" + index };
+            var button = new ButtonControl() { name = "button-" + index };
             button.AddToClassList(k_ButtonUssClassName);
 
             var label = new LocalizedLabel()
@@ -300,7 +301,7 @@ namespace Controls.Raw
 
             button.Add(label);
 
-            var border = new VisualElement() { name = "border" };
+            var border = new Control() { name = "border" };
             button.Add(border);
 
             button.clicked += () =>

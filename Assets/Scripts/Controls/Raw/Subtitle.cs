@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using KeyframeSystem;
 using Localization;
+using UI;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -36,7 +37,7 @@ namespace Controls.Raw
         }
 
         LocalizedLabel m_Label;
-        VisualElement m_Border;
+        Control m_Border;
         float m_BorderScale;
         AnimationPlayer m_Player;
 
@@ -85,7 +86,7 @@ namespace Controls.Raw
             m_Label.AddToClassList(k_LabelUssClassName);
             Add(m_Label);
 
-            m_Border = new VisualElement() { name = "border" };
+            m_Border = new Control() { name = "border" };
             m_Border.AddToClassList(k_BorderUssClassName);
             Add(m_Border);
         }

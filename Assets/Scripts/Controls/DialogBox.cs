@@ -8,6 +8,7 @@ using UnityEngine.UIElements;
 using Layers;
 using Templates;
 using Localization;
+using UI;
 
 namespace Controls
 {
@@ -58,7 +59,7 @@ namespace Controls
         public bool isShown => status == Status.Shown;
         public bool isShowing => status == Status.Showing;
 
-        public VisualElement rootVisualElement
+        public Control rootVisualElement
         {
             get => m_DialogBox;
         }
