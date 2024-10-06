@@ -11,18 +11,19 @@ namespace Boards.States
         const int k_InputSortOrder = 2000;
 
         DialogBox m_DialogBox;
-        bool m_Interactable;
 
         public InfoDialogBoxState(BoardStateContext context) : base(context) { }
 
         public override void Init()
         {
+            enabled = false;
+
             m_DialogBox = DialogBox.CreateInfoDialogBox();
             m_DialogBox.displaySortOrder = k_DisplaySortOrder;
             m_DialogBox.inputSortOrder = k_InputSortOrder;
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Left, OnConfirmOrCancel);
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Background, OnConfirmOrCancel);
-            m_DialogBox.Show(() => m_Interactable = true);
+            m_DialogBox.Show(() => enabled = true);
         }
 
         void OnHide()
@@ -47,24 +48,21 @@ namespace Boards.States
 
         void OnConfirmOrCancel()
         {
-            if (m_Interactable)
-            {
-                m_Interactable = false;
-                m_DialogBox.Hide(OnHide);
-            }
+            enabled = false;
+            m_DialogBox.Hide(OnHide);
         }
 
-        public override void Info()
+        protected override void OnInfo()
         {
             OnConfirmOrCancel();
         }
 
-        public override void Cancel()
+        protected override void OnCancel()
         {
             OnConfirmOrCancel();
         }
 
-        public override void Confirm()
+        protected override void OnConfirm()
         {
             OnConfirmOrCancel();
         }

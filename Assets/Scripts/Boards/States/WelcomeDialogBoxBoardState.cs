@@ -14,42 +14,40 @@ namespace Boards.States
 
         InputActionMap m_ActionMap;
         DialogBox m_DialogBox;
-        bool m_Interactable;
 
         public WelcomeDialogBoxState(BoardStateContext context) : base(context) { }
 
         public override void Init()
         {
+            enabled = false;
+
             m_DialogBox = DialogBox.CreateWelcomeDialogBox();
             m_DialogBox.displaySortOrder = DisplaySortOrder;
             m_DialogBox.inputSortOrder = InputSortOrder;
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Left, OnConfirmOrCancel);
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Background, OnConfirmOrCancel);
-            m_DialogBox.Show(() => m_Interactable = true);
+            m_DialogBox.Show(() => enabled = true);
         }
 
         void OnConfirmOrCancel()
         {
-            if (m_Interactable)
-            {
-                m_Interactable = false;
-                m_DialogBox.Hide(OnHide);
-            }
+            enabled = false;
+            m_DialogBox.Hide(OnHide);
         }
 
         void OnHide()
         {
             m_DialogBox.Dispose();
-            BoardManager.GetBoard<InterfaceBoard>().interactable = true;
+            BoardManager.InterfaceBoard.interactable = true;
             context.state = new PoliticoListBoardState(context);
         }
 
-        public override void Cancel()
+        protected override void OnCancel()
         {
             OnConfirmOrCancel();
         }
 
-        public override void Confirm()
+        protected override void OnConfirm()
         {
             OnConfirmOrCancel();
         }

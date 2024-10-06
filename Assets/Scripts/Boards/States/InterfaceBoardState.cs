@@ -29,8 +29,9 @@ namespace Boards.States
             }
         }
 
-        public override void Any()
+        protected override void OnAny()
         {
+            enabled = false;
             switch (context.previousState)
             {
                 case InitialBoardState:

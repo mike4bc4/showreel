@@ -14,6 +14,7 @@ namespace Boards.States
 
         public override void Init()
         {
+            base.Init();
             listBoard.onListElementClicked += OnListElementClicked;
             listBoard.visualTreeAsset = ListBoardResources.GetVisualTreeAsset("OtherListBoard");
 
@@ -21,18 +22,14 @@ namespace Boards.States
             switch (context.previousState)
             {
                 case LocalizationListBoardState:
-                    allowShowSkip = true;
                     listBoard.initialVideoClip = ListBoardResources.GetVideoClip("ArcaneLands");
                     diamondBarBoard.activeIndex = 3;
-                    listBoard.Show(() =>
-                    {
-                        allowShowSkip = false;
-                        listBoard.interactable = true;
-                    });
+                    ShowBoard();
                     break;
                 case SettingsDialogBoxState:
                 case QuitDialogBoxState:
                 case InfoDialogBoxState:
+                    showCompleted = true;
                     listBoard.interactable = true;
                     break;
             }
@@ -45,56 +42,45 @@ namespace Boards.States
             };
         }
 
-        public override void Left()
+        protected override void OnLeft()
         {
-            if (listBoard.interactable)
+            enabled = false;
+            listBoard.interactable = false;
+            listBoard.onListElementClicked -= OnListElementClicked;
+            listBoard.Hide(() =>
             {
-                listBoard.interactable = false;
-                listBoard.onListElementClicked -= OnListElementClicked;
-                listBoard.Hide(() =>
-                {
-                    listBoard.blocksRaycasts = false;
-                    context.state = new LocalizationListBoardState(context);
-                });
-            }
+                listBoard.blocksRaycasts = false;
+                context.state = new LocalizationListBoardState(context);
+            });
         }
 
-        public override void Right()
+        protected override void OnRight()
         {
-            if (listBoard.interactable)
-            {
-                Debug.Log("Next board not implemented yet.");
-            }
+            // enabled = false;
+            Debug.Log("Next board not implemented yet.");
         }
 
-        public override void Cancel()
+        protected override void OnCancel()
         {
-            if (listBoard.interactable)
-            {
-                listBoard.interactable = false;
-                listBoard.onListElementClicked -= OnListElementClicked;
-                context.state = new QuitDialogBoxState(context);
-            }
+            enabled = false; listBoard.interactable = false;
+            listBoard.onListElementClicked -= OnListElementClicked;
+            context.state = new QuitDialogBoxState(context);
         }
 
-        public override void Settings()
+        protected override void OnSettings()
         {
-            if (listBoard.interactable)
-            {
-                listBoard.interactable = false;
-                listBoard.onListElementClicked -= OnListElementClicked;
-                context.state = new SettingsDialogBoxState(context);
-            }
+            enabled = false;
+            listBoard.interactable = false;
+            listBoard.onListElementClicked -= OnListElementClicked;
+            context.state = new SettingsDialogBoxState(context);
         }
 
-        public override void Info()
+        protected override void OnInfo()
         {
-            if (listBoard.interactable)
-            {
-                listBoard.interactable = false;
-                listBoard.onListElementClicked -= OnListElementClicked;
-                context.state = new InfoDialogBoxState(context);
-            }
+            enabled = false;
+            listBoard.interactable = false;
+            listBoard.onListElementClicked -= OnListElementClicked;
+            context.state = new InfoDialogBoxState(context);
         }
 
         void OnListElementClicked(int index)

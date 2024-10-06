@@ -9,52 +9,66 @@ namespace Boards.States
     {
         ListBoard m_ListBoard;
         DiamondBarBoard m_DiamondBarBoard;
-        bool m_AllowShowSkip;
-
-        protected bool allowShowSkip
-        {
-            get => m_AllowShowSkip;
-            set => m_AllowShowSkip = value;
-        }
+        bool m_ShowCompleted;
 
         protected ListBoard listBoard
         {
-            get
-            {
-                if (m_ListBoard == null)
-                {
-                    m_ListBoard = BoardManager.GetBoard<ListBoard>();
-                }
-
-                return m_ListBoard;
-            }
+            get => m_ListBoard;
         }
 
         protected DiamondBarBoard diamondBarBoard
         {
-            get
-            {
-                if (m_DiamondBarBoard == null)
-                {
-                    m_DiamondBarBoard = BoardManager.GetBoard<DiamondBarBoard>();
-                }
+            get => m_DiamondBarBoard;
+        }
 
-                return m_DiamondBarBoard;
-            }
+        protected bool showCompleted
+        {
+            get => m_ShowCompleted;
+            set => m_ShowCompleted = value;
         }
 
         public BaseListBoardState(BoardStateContext context) : base(context) { }
 
-        public override void Any()
+        public override void Init()
         {
-            if (allowShowSkip)
+            m_ListBoard = BoardManager.GetBoard<ListBoard>();
+            m_DiamondBarBoard = BoardManager.GetBoard<DiamondBarBoard>();
+        }
+
+        protected void ShowBoard()
+        {
+            listBoard.blocksRaycasts = true;
+            listBoard.Show(() =>
             {
-                allowShowSkip = false;
                 listBoard.interactable = true;
-                listBoard.blocksRaycasts = true;
-                listBoard.ShowImmediate();
-                BoardManager.InputManager.cancelAction.GetHelper().isSuppressedThisFrame = true;
+                m_ShowCompleted = true;
+            });
+        }
+
+
+        protected override void OnBeforeActionExecution()
+        {
+            if (IsAnyOfActionsScheduled(OnInfo, OnSettings, OnCancel))
+            {
+                UnscheduleActions(OnLeft, OnRight, OnAny);
             }
+            else if (showCompleted)
+            {
+                UnscheduleAction(OnAny);
+            }
+            else
+            {
+                UnscheduleActions(OnLeft, OnRight, OnCancel, OnSettings, OnInfo);
+            }
+        }
+
+        protected override void OnAny()
+        {
+            // State is not being disabled here as further actions should be served.
+            listBoard.ShowImmediate();
+            listBoard.interactable = true;
+            listBoard.blocksRaycasts = true;
+            m_ShowCompleted = true;
         }
     }
 }

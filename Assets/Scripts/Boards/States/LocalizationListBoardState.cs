@@ -14,6 +14,7 @@ namespace Boards.States
 
         public override void Init()
         {
+            base.Init();
             listBoard.onListElementClicked += OnListElementClicked;
             listBoard.visualTreeAsset = ListBoardResources.GetVisualTreeAsset("LocalizationListBoard");
 
@@ -22,18 +23,14 @@ namespace Boards.States
             {
                 case LayoutSystemListBoardState:
                 case OtherListBoardState:
-                    allowShowSkip = true;
                     listBoard.initialVideoClip = ListBoardResources.GetVideoClip("LocalizationWindow");
                     diamondBarBoard.activeIndex = 2;
-                    listBoard.Show(() =>
-                    {
-                        allowShowSkip = false;
-                        listBoard.interactable = true;
-                    });
+                    ShowBoard();
                     break;
                 case SettingsDialogBoxState:
                 case QuitDialogBoxState:
                 case InfoDialogBoxState:
+                    showCompleted = true;
                     listBoard.interactable = true;
                     break;
             }
@@ -47,62 +44,52 @@ namespace Boards.States
             };
         }
 
-        public override void Left()
+        protected override void OnLeft()
         {
-            if (listBoard.interactable)
+            enabled = false;
+            listBoard.interactable = false;
+            listBoard.onListElementClicked -= OnListElementClicked;
+            listBoard.Hide(() =>
             {
-                listBoard.interactable = false;
-                listBoard.onListElementClicked -= OnListElementClicked;
-                listBoard.Hide(() =>
-                {
-                    listBoard.blocksRaycasts = false;
-                    context.state = new LayoutSystemListBoardState(context);
-                });
-            }
+                listBoard.blocksRaycasts = false;
+                context.state = new LayoutSystemListBoardState(context);
+            });
         }
 
-        public override void Right()
+        protected override void OnRight()
         {
-            if (listBoard.interactable)
+            enabled = false;
+            listBoard.interactable = false;
+            listBoard.onListElementClicked -= OnListElementClicked;
+            listBoard.Hide(() =>
             {
-                listBoard.interactable = false;
-                listBoard.onListElementClicked -= OnListElementClicked;
-                listBoard.Hide(() =>
-                {
-                    listBoard.blocksRaycasts = false;
-                    context.state = new OtherListBoardState(context);
-                });
-            }
+                listBoard.blocksRaycasts = false;
+                context.state = new OtherListBoardState(context);
+            });
         }
 
-        public override void Cancel()
+        protected override void OnCancel()
         {
-            if (listBoard.interactable)
-            {
-                listBoard.interactable = false;
-                listBoard.onListElementClicked -= OnListElementClicked;
-                context.state = new QuitDialogBoxState(context);
-            }
+            enabled = false;
+            listBoard.interactable = false;
+            listBoard.onListElementClicked -= OnListElementClicked;
+            context.state = new QuitDialogBoxState(context);
         }
 
-        public override void Settings()
+        protected override void OnSettings()
         {
-            if (listBoard.interactable)
-            {
-                listBoard.interactable = false;
-                listBoard.onListElementClicked -= OnListElementClicked;
-                context.state = new SettingsDialogBoxState(context);
-            }
+            enabled = false;
+            listBoard.interactable = false;
+            listBoard.onListElementClicked -= OnListElementClicked;
+            context.state = new SettingsDialogBoxState(context);
         }
 
-        public override void Info()
+        protected override void OnInfo()
         {
-            if (listBoard.interactable)
-            {
-                listBoard.interactable = false;
-                listBoard.onListElementClicked -= OnListElementClicked;
-                context.state = new InfoDialogBoxState(context);
-            }
+            enabled = false;
+            listBoard.interactable = false;
+            listBoard.onListElementClicked -= OnListElementClicked;
+            context.state = new InfoDialogBoxState(context);
         }
 
         void OnListElementClicked(int index)

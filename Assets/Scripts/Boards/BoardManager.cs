@@ -72,6 +72,8 @@ namespace Boards
         BoardStateContext m_StateContext;
 
         public static InputManager InputManager => s_Instance.m_InputManager;
+        public static InterfaceBoard InterfaceBoard => GetBoard<InterfaceBoard>();
+        public static BoardStateContext BoardStateContext => s_Instance.m_StateContext;
 
         void Awake()
         {

@@ -29,6 +29,7 @@ namespace Boards
         ButtonControl m_LeftButton;
         ButtonControl m_RightButton;
         ButtonControl m_InfoButton;
+        ButtonControl m_SettingsButton;
         ButtonControl m_QuitButton;
 
         public override bool interactable
@@ -53,9 +54,51 @@ namespace Boards
             m_Layer.AddTemplateFromVisualTreeAsset(m_InterfaceBoardVisualTreeAsset);
             m_Layer.displaySortOrder = DisplaySortOrder;
 
+            m_LeftButton = m_Layer.rootVisualElement.Q<ButtonControl>("left-button");
+            m_RightButton = m_Layer.rootVisualElement.Q<ButtonControl>("right-button");
+            m_InfoButton = m_Layer.rootVisualElement.Q<ButtonControl>("info-button");
+            m_SettingsButton = m_Layer.rootVisualElement.Q<ButtonControl>("settings-button");
+            m_QuitButton = m_Layer.rootVisualElement.Q<ButtonControl>("quit-button");
+
+            m_LeftButton.clicked += OnLeftButtonClicked;
+            m_RightButton.clicked += OnRightButtonClicked;
+            m_InfoButton.clicked += OnInfoButtonClicked;
+            m_SettingsButton.clicked += OnSettingsButtonClicked;
+            m_QuitButton.clicked += OnQuitButtonClicked;
+
             HideImmediate();
             interactable = false;
             blocksRaycasts = false;
+        }
+
+        void OnLeftButtonClicked()
+        {
+            BoardManager.BoardStateContext.Any();
+            BoardManager.BoardStateContext.Left();
+        }
+
+        void OnRightButtonClicked()
+        {
+            BoardManager.BoardStateContext.Any();
+            BoardManager.BoardStateContext.Right();
+        }
+
+        void OnInfoButtonClicked()
+        {
+            BoardManager.BoardStateContext.Any();
+            BoardManager.BoardStateContext.Info();
+        }
+
+        void OnSettingsButtonClicked()
+        {
+            BoardManager.BoardStateContext.Any();
+            BoardManager.BoardStateContext.Settings();
+        }
+
+        void OnQuitButtonClicked()
+        {
+            BoardManager.BoardStateContext.Any();
+            BoardManager.BoardStateContext.Cancel();
         }
 
         public override void Show(Action onCompleted = null)

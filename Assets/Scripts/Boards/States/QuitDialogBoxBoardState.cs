@@ -17,59 +17,50 @@ namespace Boards.States
 
         public override void Init()
         {
+            // Dialog boxes do not receive input until shown, so we are not going to serve any actions either.
+            enabled = false;
+
             m_DialogBox = DialogBox.CreateQuitDialogBox();
             m_DialogBox.displaySortOrder = k_DisplaySortOrder;
             m_DialogBox.inputSortOrder = k_DefaultInputSortOrder;
-            m_DialogBox.onStatusChanged += OnStatusChanged;
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Right, Cancel);
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Background, Cancel);
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Left, Confirm);
-            m_DialogBox.Show();
+            m_DialogBox.Show(() => enabled = true);
         }
 
-        void OnStatusChanged(DialogBox.Status previousStatus)
+        void OnHide()
         {
-            if (m_DialogBox.isHidden)
+            m_DialogBox.Dispose();
+            switch (context.previousState)
             {
-                m_DialogBox.Dispose();
-                switch (context.previousState)
-                {
-                    case InitialBoardState:
-                        context.state = new InitialBoardState(context);
-                        break;
-                    case PoliticoListBoardState:
-                        context.state = new PoliticoListBoardState(context);
-                        break;
-                    case LayoutSystemListBoardState:
-                        context.state = new LayoutSystemListBoardState(context);
-                        break;
-                    case LocalizationListBoardState:
-                        context.state = new LocalizationListBoardState(context);
-                        break;
-                    case OtherListBoardState:
-                        context.state = new OtherListBoardState(context);
-                        break;
-                }
+                case InitialBoardState:
+                    context.state = new InitialBoardState(context);
+                    break;
+                case PoliticoListBoardState:
+                    context.state = new PoliticoListBoardState(context);
+                    break;
+                case LayoutSystemListBoardState:
+                    context.state = new LayoutSystemListBoardState(context);
+                    break;
+                case LocalizationListBoardState:
+                    context.state = new LocalizationListBoardState(context);
+                    break;
+                case OtherListBoardState:
+                    context.state = new OtherListBoardState(context);
+                    break;
             }
         }
 
-        public override void Cancel()
+        protected override void OnCancel()
         {
-            if (!m_DialogBox.isShown)
-            {
-                return;
-            }
-
-            m_DialogBox.Hide();
+            enabled = false;
+            m_DialogBox.Hide(OnHide);
         }
 
-        public override void Confirm()
+        protected override void OnConfirm()
         {
-            if (!m_DialogBox.isShown)
-            {
-                return;
-            }
-
+            enabled = false;
             Application.Quit();
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;

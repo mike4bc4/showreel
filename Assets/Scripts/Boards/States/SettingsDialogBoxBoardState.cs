@@ -27,6 +27,7 @@ namespace Boards.States
 
         public override void Init()
         {
+            enabled = false;
             m_DialogBox = DialogBox.CreateSettingsDialogBox();
 
             m_WindowModeSelect = m_DialogBox.rootVisualElement.Q<Select>("window-mode-select");
@@ -64,7 +65,7 @@ namespace Boards.States
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Left, Confirm);
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Right, Cancel);
             m_DialogBox.RegisterClickCallback(DialogBox.ButtonIndex.Background, Cancel);
-            m_DialogBox.Show();
+            m_DialogBox.Show(() => enabled = true);
         }
 
         void UpdateWindowModeSelect()
@@ -108,8 +109,9 @@ namespace Boards.States
             });
         }
 
-        public override void Confirm()
+        protected override void OnConfirm()
         {
+            enabled = false;
             SettingsManager.WindowMode.SetValueByName(m_WindowModeSelect.choice);
             SettingsManager.Resolution.SetValueByName(m_ResolutionSelect.choice);
             SettingsManager.RefreshRate.SetValueByName(m_RefreshRateSelect.choice);
@@ -123,14 +125,19 @@ namespace Boards.States
             Close();
         }
 
-        public override void Cancel()
+        protected override void OnCancel()
         {
-            SettingsManager.Restore();
-            Close();
+            OnCancelOrSettings();
         }
 
-        public override void Settings()
+        protected override void OnSettings()
         {
+            OnCancelOrSettings();
+        }
+
+        void OnCancelOrSettings()
+        {
+            enabled = false;
             SettingsManager.Restore();
             Close();
         }

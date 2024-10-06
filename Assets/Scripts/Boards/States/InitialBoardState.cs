@@ -14,6 +14,7 @@ namespace Boards.States
     public class InitialBoardState : BoardState
     {
         InitialBoard m_InitialBoard;
+        bool m_ShowCompleted;
 
         public InitialBoardState(BoardStateContext context) : base(context) { }
 
@@ -23,40 +24,50 @@ namespace Boards.States
             m_InitialBoard.blocksRaycasts = false;
             m_InitialBoard.interactable = true;
 
-            if (context.previousState is not QuitDialogBoxState)
+            switch (context.previousState)
             {
-                m_InitialBoard.Show();
+                case QuitDialogBoxState:
+                    m_ShowCompleted = true;
+                    break;
+                default:
+                    m_InitialBoard.Show(() => m_ShowCompleted = true);
+                    break;
             }
         }
 
-        public override void Any()
+        protected override void OnBeforeActionExecution()
         {
-            if (!m_InitialBoard.interactable)
+            // Any is always scheduled, no need to check.
+            if (!m_ShowCompleted)
             {
-                return;
+                UnscheduleAction(OnCancel); // Suppress cancel if any skips animation.
             }
+            else if (IsActionScheduled(OnCancel))
+            {
+                UnscheduleAction(OnAny);    // Suppress any if animation cannot be skipped and cancel was pressed.
+            }
+        }
 
-            if (!m_InitialBoard.isVisible)
+        protected override void OnAny()
+        {
+            if (!m_ShowCompleted)
             {
                 m_InitialBoard.ShowImmediate();
-                BoardManager.InputManager.cancelAction.GetHelper().isSuppressedThisFrame = true;
+                m_InitialBoard.interactable = false;
+                m_ShowCompleted = true;
             }
-            else if (!BoardManager.InputManager.cancelAction.WasPerformedThisFrame())
+            else
             {
-                m_InitialBoard.Hide(() =>
-                {
-                    m_InitialBoard.interactable = false;
-                    context.state = new InterfaceBoardState(context);
-                });
+                enabled = false;
+                m_InitialBoard.Hide(() => context.state = new InterfaceBoardState(context));
             }
         }
 
-        public override void Cancel()
+        protected override void OnCancel()
         {
-            if (m_InitialBoard.isVisible)
-            {
-                context.state = new QuitDialogBoxState(context);
-            }
+            m_InitialBoard.interactable = false;
+            enabled = false;
+            context.state = new QuitDialogBoxState(context);
         }
     }
 }

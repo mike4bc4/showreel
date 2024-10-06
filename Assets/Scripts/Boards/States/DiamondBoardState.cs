@@ -41,13 +41,14 @@ namespace Boards.States
                 // Normally interface board would become interactable after welcome dialog
                 // box is closed, but if we are skipping right into list board we have to
                 // activate it here.
-                BoardManager.GetBoard<InterfaceBoard>().interactable = true;
+                BoardManager.InterfaceBoard.interactable = true;
                 context.state = new PoliticoListBoardState(context);
             }
         }
 
-        public override void Any()
+        protected override void OnAny()
         {
+            enabled = false;
             switch (context.previousState)
             {
                 case InterfaceBoardState:
