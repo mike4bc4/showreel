@@ -4,11 +4,9 @@
         <UI.Control name="frame-container" picking-mode="IgnoreSelf" style="flex-direction: row; width: 1280px;">
             <UI.Control name="spacer-left" picking-mode="IgnoreSelf" style="flex-grow: 1;" />
             <Controls.Raw.DiamondFrameVertical color="#333333FF" corner-radius="4" name="frame" unfolded="true">
-                <UI.Control name="padding-box" style="flex-grow: 1; width: 360px; height: 640px; padding-top: 4px; padding-right: 4px; padding-bottom: 4px; padding-left: 4px;">
-                    <UI.Control name="video-container" class="video-container">
-                        <UI.Control name="video-container-1" class="video-container" />
-                        <UI.Control name="video-container-2" class="video-container" />
-                    </UI.Control>
+                <UI.Control name="video-size-box" style="width: 360px; height: 640px;">
+                    <UI.Control name="video-container-1" class="video-container" />
+                    <UI.Control name="video-container-2" class="video-container" />
                 </UI.Control>
             </Controls.Raw.DiamondFrameVertical>
             <UI.Control name="spacer-right" picking-mode="IgnoreSelf" />

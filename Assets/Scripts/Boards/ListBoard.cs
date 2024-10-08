@@ -138,19 +138,6 @@ namespace Boards
             }
         }
 
-        Control videoContainer
-        {
-            get
-            {
-                if (m_VideoContainer == null || m_VideoContainer.panel == null)
-                {
-                    m_VideoContainer = frameViewport.Q<Control>("video-container");
-                }
-
-                return m_VideoContainer;
-            }
-        }
-
         List<Control> videoContainers
         {
             get
@@ -381,18 +368,22 @@ namespace Boards
         KeyframeAnimation CreateVideoSwapAnimation()
         {
             var animation = new KeyframeAnimation();
+            
+            // Using secondary post processing layer here to avoid potential collision with title 
+            // show/hide animation which may be playing at the same time and is mapped to first layer.
+            var postProcessingLayer = m_PostProcessingLayers[1];
 
             animation.AddEvent(0, () =>
             {
                 if (animation.player.isPlayingForward)
                 {
-                    m_PostProcessingLayers[0].visible = true;
-                    m_PostProcessingLayers[0].overscan = Overscan.FromReferenceResolution(8f);
-                    m_PostProcessingLayers[0].maskElement = videoContainer;
+                    postProcessingLayer.visible = true;
+                    postProcessingLayer.overscan = 0f;
+                    postProcessingLayer.maskElement = frame.contentContainer;
                 }
             });
 
-            var t1 = animation.AddTrack(blurSize => m_PostProcessingLayers[0].blurSize = blurSize);
+            var t1 = animation.AddTrack(blurSize => postProcessingLayer.blurSize = blurSize);
             t1.AddKeyframe(0, 0f);
             t1.AddKeyframe(30, PostProcessingLayer.DefaultBlurSize);
             t1.AddKeyframe(60, 0f);
@@ -405,7 +396,7 @@ namespace Boards
             {
                 if (animation.player.isPlayingForward)
                 {
-                    m_PostProcessingLayers[0].visible = false;
+                    postProcessingLayer.visible = false;
 
                     videoContainers[0].style.backgroundImage = videoContainers[1].resolvedStyle.backgroundImage;
                     videoContainers[1].style.backgroundImage = null;
@@ -475,6 +466,7 @@ namespace Boards
                 {
                     m_MoviePlayers[0].PlayClip(initialVideoClip);
                     videoContainers[0].style.backgroundImage = Background.FromRenderTexture(m_MoviePlayers[0].renderTexture);
+                    m_PostProcessingLayers[0].overscan = 0f;
                     m_PostProcessingLayers[0].maskElement = frame.contentContainer;
                 }
             });
