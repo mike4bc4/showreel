@@ -560,7 +560,7 @@ namespace Boards
                 {
                     scrollBox.style.opacity = 1f;
                     SetPostProcessingLayersVisible(true);
-                    SetPostProcessingLayersOverscan(Overscan.FromReferenceResolution(8f));
+                    SetPostProcessingLayersOverscan(Overscan.FromReferenceResolution(8f, 4f, 8f, 8f));
                 }
             });
 
