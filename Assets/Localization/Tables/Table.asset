@@ -475,7 +475,7 @@ MonoBehaviour:
   - key: TheOldOnes
     translations:
     - The "Old Ones"
-    - "Projekty \u201EPradawne\u201D\r"
+    - "Stare Projekty\r"
   - key: TheOldOnesText
     translations:
     - While earlier projects may not showcase my skills effectively and may lack
@@ -698,4 +698,22 @@ MonoBehaviour:
     translations:
     - Shortcuts
     - "Skr\xF3ty Klawiszowe\r"
+  - key: TheEnd
+    translations:
+    - The End
+    - "Koniec\r"
+  - key: FinalDialogBoxText
+    translations:
+    - You have reached the end of the application. Would you like to quit, or rather
+      prefer to stay?
+    - "Dotar\u0142e\u015B\\\u0142a\u015B do ko\u0144ca aplikacji. Chcesz j\u0105
+      opu\u015Bci\u0107, czy mo\u017Ce wolisz jeszcze zosta\u0107?"
+  - key: Quit
+    translations:
+    - Quit
+    - "Wyjd\u017A\r"
+  - key: Stay
+    translations:
+    - Stay
+    - "Zosta\u0144\r"
   m_CsvFile: {fileID: 4900000, guid: bebe169563b0c1d4dbdcf11c1e4ab6c0, type: 3}

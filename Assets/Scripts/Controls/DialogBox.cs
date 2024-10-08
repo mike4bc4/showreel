@@ -432,5 +432,16 @@ namespace Controls
             LocalizationManager.LocalizeVisualTree(dialogBox.rootVisualElement);
             return dialogBox;
         }
+
+        public static DialogBox CreateFinalDialogBox()
+        {
+            var dialogBox = new DialogBox();
+            dialogBox.titleLocalizationAddress = "Table:TheEnd";
+            dialogBox.leftButtonLocalizationAddress = "Table:Quit";
+            dialogBox.rightButtonLocalizationAddress = "Table:Stay";
+            dialogBox.contentContainer.Add(DialogBoxResources.GetContentVisualTreeAsset("FinalDialogBoxContent").Instantiate());
+            LocalizationManager.LocalizeVisualTree(dialogBox.rootVisualElement);
+            return dialogBox;
+        }
     }
 }

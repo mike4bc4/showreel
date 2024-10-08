@@ -29,6 +29,7 @@ namespace Boards.States
                 case SettingsDialogBoxState:
                 case QuitDialogBoxState:
                 case InfoDialogBoxState:
+                case FinalDialogBoxState:
                     showCompleted = true;
                     listBoard.interactable = true;
                     break;
@@ -56,13 +57,16 @@ namespace Boards.States
 
         protected override void OnRight()
         {
-            // enabled = false;
-            Debug.Log("Next board not implemented yet.");
+            enabled = false;
+            listBoard.interactable = false;
+            listBoard.onListElementClicked -= OnListElementClicked;
+            context.state = new FinalDialogBoxState(context);
         }
 
         protected override void OnCancel()
         {
-            enabled = false; listBoard.interactable = false;
+            enabled = false;
+            listBoard.interactable = false;
             listBoard.onListElementClicked -= OnListElementClicked;
             context.state = new QuitDialogBoxState(context);
         }
