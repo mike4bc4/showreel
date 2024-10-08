@@ -25,11 +25,11 @@ namespace Controls.Raw
         const string k_UssClassName = "dialog-box";
         const string k_ShadowClassName = k_UssClassName + "__shadow";
         const string k_BoxUssClassName = k_UssClassName + "__box";
-        const string k_ScrollBoxUssClassName = k_UssClassName + "__scroll-box";
         const string k_InterfaceButtonUssClassName = "interface__button";
         const string k_ButtonContainerUssClassName = k_UssClassName + "__button-container";
         const string k_ButtonContainerRightVariantUssClassName = k_ButtonContainerUssClassName + "--right";
         const string k_ButtonContainerCenterVariantUssClassName = k_ButtonContainerUssClassName + "--center";
+        const string k_ScrollBoxContainerUssClassName = k_UssClassName +"__scroll-box-container";
 
         public new class UxmlFactory : UxmlFactory<DialogBox, UxmlTraits> { }
 
@@ -170,11 +170,15 @@ namespace Controls.Raw
             m_Title.animationProgress = 1f;
             m_Box.Add(m_Title);
 
+            var scrollBoxContainer = new Control();
+            scrollBoxContainer.name = "scroll-box-container";
+            scrollBoxContainer.AddToClassList(k_ScrollBoxContainerUssClassName);
+            m_Box.Add(scrollBoxContainer);
+
             m_ScrollBox = new ScrollBox();
             m_ScrollBox.name = "scroll-box";
             m_ScrollBox.scrollMode = ScrollMode.Smooth;
-            m_ScrollBox.AddToClassList(k_ScrollBoxUssClassName);
-            m_Box.Add(m_ScrollBox);
+            scrollBoxContainer.Add(m_ScrollBox);
 
             m_ButtonContainer = new Control();
             m_ButtonContainer.name = "buttons-container";

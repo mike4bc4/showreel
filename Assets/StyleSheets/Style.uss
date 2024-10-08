@@ -746,10 +746,11 @@
     min-height: 384px;
 }
 
-.dialog-box__scroll-box {
-    padding-top: 48px;
-    padding-bottom: 48px;
+.dialog-box__scroll-box-container {
     flex-grow: 1;
+    justify-content: center;
+    margin-top: 48px;
+    margin-bottom: 48px;
 }
 
 .dialog-box__button-container {
