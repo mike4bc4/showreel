@@ -113,14 +113,13 @@ Shader "Custom/UILayer"
                     }
 
                     color /= float(quality * quality);
+                    // We have to 'unpremultiply' output color.
+                    color.rgb /= color.a + 0.001;
                 #else
                     color = tex2D(_MainTex, i.uv);
                 #endif
 
                 fixed4 c0 = color * i.color * _Tint;
-                
-                // We have to 'unpremultiply' output color.
-                c0.rgb /= (c0.a + 0.001);
                 
                 return c0;
             }
