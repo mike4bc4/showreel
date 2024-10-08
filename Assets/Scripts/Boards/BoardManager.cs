@@ -116,7 +116,7 @@ namespace Boards
             }
 
             GetBoard<BackgroundBoard>().ShowImmediate();
-
+            GetBoard<VignetteBoard>().ShowImmediate();
         }
 
         public static T GetBoard<T>()

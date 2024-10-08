@@ -214,6 +214,60 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &452980027
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 452980028}
+  - component: {fileID: 452980029}
+  m_Layer: 0
+  m_Name: VignetteBoard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &452980028
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452980027}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1096446800}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &452980029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452980027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46bd40f374b18aa4a8ffb59a4cf68288, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_VignetteMaterial: {fileID: 2100000, guid: 956338cb298cab847bcc5bad4f785acc, type: 2}
+  m_VignetteDescriptors:
+  - m_Theme: 0
+    m_Color: {r: 0, g: 0, b: 0, a: 0.6509804}
+    m_Dither: 0.02
+    m_PowerFactor: 1.5
+  - m_Theme: 1
+    m_Color: {r: 0, g: 0, b: 0, a: 0.4}
+    m_Dither: 0.175
+    m_PowerFactor: 1.5
 --- !u!1 &550329974
 GameObject:
   m_ObjectHideFlags: 0
@@ -768,6 +822,7 @@ Transform:
   - {fileID: 894382375}
   - {fileID: 1711526176}
   - {fileID: 711666228}
+  - {fileID: 452980028}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1096446801

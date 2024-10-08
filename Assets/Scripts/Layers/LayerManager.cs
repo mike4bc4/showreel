@@ -161,6 +161,20 @@ namespace Layers
             commandBufferDirty = true;
         }
 
+        public static CustomLayer CreateCustomLayer(Material material, string name = "Unnamed")
+        {
+            var gameObject = new GameObject();
+            gameObject.transform.SetParent(transform);
+
+            var layer = gameObject.AddComponent<CustomLayer>();
+            layer.name = name;
+            layer.Init(material);
+            rootGroupLayer.Add(layer);
+
+            MarkCommandBufferDirty();
+            return layer;
+        }
+
         static GroupLayer CreateGroupLayerInternal(string name = "Unnamed")
         {
             var gameObject = new GameObject();
@@ -318,6 +332,13 @@ namespace Layers
                         commandBuffer.GetTemporaryRT(tempRT, -1, -1);
                         commandBuffer.CopyTexture(groupOutputTexId, tempRT);
                         commandBuffer.Blit(tempRT, groupOutputTexId, postProcessingLayer.material);
+                    }
+                    else if (layer is CustomLayer customLayer)
+                    {
+                        var tempRT = Shader.PropertyToID(CreateUniquePropertyName(layer.name));
+                        commandBuffer.GetTemporaryRT(tempRT, -1, -1);
+                        commandBuffer.CopyTexture(groupOutputTexId, tempRT);
+                        commandBuffer.Blit(tempRT, groupOutputTexId, customLayer.material);
                     }
                     else if (layer is GroupLayer gLayer)
                     {
