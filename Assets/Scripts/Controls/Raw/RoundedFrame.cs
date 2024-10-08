@@ -95,13 +95,14 @@ namespace Controls.Raw
                 m_TopBorder.style.width = Length.Percent(Mathf.Clamp01(l / horizontalBorderLength) * 100f);
                 l = Mathf.Max(0f, l - horizontalBorderLength);
 
-                m_TopRightCorner.style.rotate = new Rotate(Mathf.Clamp01(l / cornerLength) * 90f - 45f);
+                // Starting rotation from -46 instead -45 to avoid 'leaking' some pixels through the clipping mask.
+                m_TopRightCorner.style.rotate = new Rotate(Mathf.Lerp(-46, 45, Mathf.Clamp01(l / cornerLength)));
                 l = Mathf.Max(0f, l - cornerLength);
 
                 m_RightBorder.style.height = Length.Percent(Mathf.Clamp01(l / verticalBorderLength) * 100f);
                 l = Mathf.Max(0f, l - verticalBorderLength);
 
-                m_BottomRightCorner.style.rotate = new Rotate(Mathf.Clamp01(l / cornerLength) * 90f - 45f);
+                m_BottomRightCorner.style.rotate = new Rotate(Mathf.Lerp(-46, 45, Mathf.Clamp01(l / cornerLength)));
                 l = Mathf.Max(0f, l - cornerLength);
 
                 m_BottomBorder.style.width = Length.Percent(Mathf.Clamp01(l / horizontalBorderLength) * 100f);

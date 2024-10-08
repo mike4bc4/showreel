@@ -1,4 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/StyleSheets/Style.uss?fileID=7433441132597879392&amp;guid=df003e8f3fd55284da1e55878428eb09&amp;type=3#Style" />
     <UI.Control name="test" style="flex-grow: 1; background-color: rgb(230, 230, 230); width: 100px; height: 100px; position: absolute; top: 480px; left: 824px; background-image: url(&quot;project://database/Assets/Textures/DiamondFull.png?fileID=2800000&amp;guid=fa55b1d3937089e45ba6a5365a95afff&amp;type=3#DiamondFull&quot;); -unity-background-image-tint-color: rgb(0, 0, 0); opacity: 1;" />
+    <Controls.Raw.RoundedFrame />
 </ui:UXML>
