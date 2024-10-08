@@ -12,6 +12,16 @@ namespace Layers
 {
     public class LayerManager : MonoBehaviour
     {
+        [Serializable]
+        struct ThemeEntry
+        {
+            [SerializeField] Theme m_Theme;
+            [SerializeField] ThemeStyleSheet m_ThemeStyleSheet;
+
+            public Theme theme => m_Theme;
+            public ThemeStyleSheet themeStyleSheet => m_ThemeStyleSheet;
+        }
+
         const string k_CommandBufferName = "UIDocumentCommandBuffer";
         const CameraEvent k_CameraEvent = CameraEvent.AfterEverything;
         const int m_IntervalDelayMs = 500;
@@ -22,6 +32,7 @@ namespace Layers
         [SerializeField] PanelSettings m_PanelSettings;
         [SerializeField] Material m_BlitCopyMaterial;
         [SerializeField] Material m_BlitOverMaterial;
+        [SerializeField] List<ThemeEntry> m_Themes;
 
         CommandBuffer m_CommandBuffer;
         bool m_CommandBufferDirty;
@@ -78,7 +89,7 @@ namespace Layers
             m_PreviousScreenSize = new Vector2Int(Screen.width, Screen.height);
             Scheduler.SetInterval(TrackScreenSizeChanges, m_IntervalDelayMs);
 
-            m_ThemeStyleSheet = LayerManagerResources.GetThemeStyleSheet(SettingsManager.Theme.value) ?? panelSettings.themeStyleSheet;
+            m_ThemeStyleSheet = GetThemeStyleSheet(SettingsManager.Theme.value) ?? panelSettings.themeStyleSheet;
             m_BlurQuality = -1f;
             SettingsManager.OnSettingsApplied += OnSettingsApplied;
         }
@@ -99,7 +110,7 @@ namespace Layers
 
         void UpdateTheme()
         {
-            var tss = LayerManagerResources.GetThemeStyleSheet(SettingsManager.Theme.value);
+            var tss = GetThemeStyleSheet(SettingsManager.Theme.value);
             if (tss == m_ThemeStyleSheet)
             {
                 return;
@@ -353,6 +364,19 @@ namespace Layers
 
             commandBuffer.Blit(outputTexID, Camera.main.targetTexture);
             Camera.main.AddCommandBuffer(k_CameraEvent, commandBuffer);
+        }
+
+        static ThemeStyleSheet GetThemeStyleSheet(Theme theme)
+        {
+            foreach (var entry in Instance.m_Themes)
+            {
+                if (entry.theme == theme)
+                {
+                    return entry.themeStyleSheet;
+                }
+            }
+
+            return null;
         }
     }
 }
