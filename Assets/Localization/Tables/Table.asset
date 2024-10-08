@@ -716,4 +716,8 @@ MonoBehaviour:
     translations:
     - Stay
     - "Zosta\u0144\r"
+  - key: QuitDialogBoxText
+    translations:
+    - Do you want to close application?
+    - "Czy chcesz zamkn\u0105\u0107 aplikacj\u0119?\r"
   m_CsvFile: {fileID: 4900000, guid: bebe169563b0c1d4dbdcf11c1e4ab6c0, type: 3}

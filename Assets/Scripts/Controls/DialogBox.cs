@@ -389,11 +389,7 @@ namespace Controls
             dialogBox.titleLocalizationAddress = "Table:QuitQuestion";
             dialogBox.rightButtonLocalizationAddress = "Table:Cancel";
             dialogBox.leftButtonLocalizationAddress = "Table:Yes";
-
-            var label = new LocalizedLabel();
-            label.localizationAddress = "Table:DoYouWantToCloseQuestion";
-            label.AddToClassList(k_DialogBoxLabelQuitVariantUssClassName);
-            dialogBox.contentContainer.Add(label);
+            dialogBox.contentContainer.Add(DialogBoxResources.GetContentVisualTreeAsset("QuitDialogBoxContent").Instantiate());
             LocalizationManager.LocalizeVisualTree(dialogBox.rootVisualElement);
             return dialogBox;
         }
