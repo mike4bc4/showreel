@@ -44,7 +44,7 @@ MonoBehaviour:
   - key: Info
     translations:
     - Info
-    - "Info\r"
+    - "Informacje\r"
   - key: Settings
     translations:
     - Settings
@@ -82,13 +82,12 @@ MonoBehaviour:
       a custom shader. Additionally, the overlay system that offers a semi-transparent
       preview of the new room's interior is noteworthy.
     - "G\u0142\xF3wny mechanizm niniejszego projektu polega na konstruowaniu pokoj\xF3w,
-      kt\xF3re dostarczaj\u0105 odpowiednich produkt\xF3w i zaspokajaj\u0105 potrzeby
-      lidera partii. Dodanie nowego pokoju skutkuje zast\u0105pieniem poprzedniego
-      wn\u0119trza i uruchamia sekwencj\u0119 animacji, takich jak przemalowywanie
-      \u015Bcian i pod\u0142\xF3g, kt\xF3re s\u0105 obs\u0142ugiwane przez niestandardowy
-      shader. Dodatkowo, na uwag\u0119 zas\u0142uguje system przys\u0142aniania,
-      kt\xF3ry wy\u015Bwietla p\xF3\u0142przezroczysty podgl\u0105d wn\u0119trza
-      nowego pokoju."
+      kt\xF3re dostarczaj\u0105 odpowiednie produkty i zaspokajaj\u0105 potrzeby
+      lidera partii. W nast\u0119pstwie dodania nowego pokoju, usuwane jest poprzednie
+      wn\u0119trze i zostaje uruchomiona sekwencja animacji, m.in. przemalowywanie
+      \u015Bcian i pod\u0142\xF3g, kt\xF3re s\u0105 obs\u0142ugiwane przez dedykowany
+      shader. Dodatkowo, na uwag\u0119 zas\u0142uguje system nak\u0142adania p\xF3\u0142przezroczystego
+      podgl\u0105du wn\u0119trza nowego pokoju."
   - key: WorkerNavigation
     translations:
     - Worker Navigation
@@ -100,12 +99,12 @@ MonoBehaviour:
       to determine the most efficient route whenever a worker needs to move from
       one room to another. The positioning of workers within a room is managed through
       animations specific to that room.
-    - "System nawigacji jest aktywowany po wczytaniu si\u0119 gry, co skutkuje utworzeniem
-      siatki po\u0142\u0105czonych ze sob\u0105 punkt\xF3w. Wykorzystuje on algorytm
-      Astar aby wyznacza\u0107 najefektywniejsze \u015Bcie\u017Cki gdy dany pracownik
-      musi przej\u015B\u0107 z jednego pokoju do drugiego. Pozycjonowanie pracownik\xF3w
-      w pokojach jest natomiast obs\u0142ugiwane za pomoc\u0105 animacji dedykowanych
-      dla danego pokoju."
+    - "System nawigacji jest wczytywany w momencie uruchomienia gry i generuje on
+      siatk\u0119 po\u0142\u0105czonych ze sob\u0105 punkt\xF3w. W celu wyznaczenia
+      najefektywniejszej \u015Bcie\u017Cki, wykorzystywany jest algorytm AStar, co
+      pozwala na przemieszczanie pracownik\xF3w mi\u0119dzy pokojami. Pozycjonowanie
+      wewn\u0105trz danego pokoju, odbywa si\u0119 natomiast z u\u017Cyciem odpowiedniego
+      zestawu animacji."
   - key: ProductionCycle
     translations:
     - Production Cycle
@@ -117,12 +116,12 @@ MonoBehaviour:
       warehouse. Throughout the workday, workers accumulate experience at the cost
       of their energy, necessitating visits to relaxation rooms to restore this resource
       before returning to their tasks.
-    - "Prototyp gry umo\u017Cliwia przypisywanie pracownik\xF3w do r\xF3\u017Cnych
-      pokoj\xF3w. Wspomniani pracownicy generuj\u0105 dochody oraz dobra, kt\xF3re
-      musz\u0105 zosta\u0107 dostarczone do najbli\u017Cszego magazynu. Wykonuj\u0105c
-      obowi\u0105zki, pracownicy gromadz\u0105 do\u015Bwiadczenie kosztem energii,
-      kt\xF3r\u0105 musz\u0105 zregenerowa\u0107 w pokojach relaksacyjnych zanim
-      powr\xF3c\u0105 do pracy. "
+    - "Prototyp gry pozwala na przypisywanie pracownik\xF3w do r\xF3\u017Cnych pokoj\xF3w.
+      Wspomniani pracownicy generuj\u0105 dochody oraz dobra, kt\xF3re musz\u0105
+      zosta\u0107 dostarczone do najbli\u017Cszego magazynu. Realizacja zada\u0144
+      zwi\u0105zana jest ze zdobywaniem do\u015Bwiadczenia, odbywa si\u0119 to jednak
+      kosztem energii, kt\xF3r\u0105 pracownicy mog\u0105 regenerowa\u0107 w pokojach
+      relaksacyjnych."
   - key: EquipmentSystem
     translations:
     - Equipment System
@@ -134,12 +133,12 @@ MonoBehaviour:
       such as augmenting their experience acquisition or increasing the volume of
       goods produced. The appearance of workers is updated in real-time, and each
       item can be depicted using distinct 3D models.
-    - "Na aktualnym etapie rozwoju projektu pracownicy mog\u0105 wykorzystywa\u0107
+    - "Na aktualnym etapie rozwoju projektu, pracownicy mog\u0105 wykorzystywa\u0107
       r\xF3\u017Cne rodzaje wyposa\u017Cenia, kt\xF3re wp\u0142ywaj\u0105 na ich
-      zdolno\u015Bci do wykonywania okre\u015Blonych zada\u0144, np. zwi\u0119kszaj\u0105c
-      ilo\u015B\u0107 produkowanych d\xF3br lub gromadzonego do\u015Bwiadczenia.
-      Wygl\u0105d pracownik\xF3w jest aktualizowany w czasie rzeczywistym, a ka\u017Cdy
-      przedmiot jest reprezentowany przez inny model 3D."
+      umiej\u0119tno\u015Bci, przyk\u0142adowo zwi\u0119kszaj\u0105c ilo\u015B\u0107
+      produkowanych d\xF3br lub gromadzonego do\u015Bwiadczenia. Wygl\u0105d pracownik\xF3w
+      jest aktualizowany w czasie rzeczywistym, a ka\u017Cdy przedmiot jest reprezentowany
+      przez inny model 3D."
   - key: EditingWorkers
     translations:
     - Editing Workers
@@ -152,9 +151,9 @@ MonoBehaviour:
       enabling the interchange of body parts in edit mode. This allows for the development
       and preservation of unique presets as prefabs.
     - "W przysz\u0142o\u015Bci ka\u017Cdy pracownik b\u0119dzie posiada\u0142 inne
-      cechy, jak na przyk\u0142ad: kszta\u0142t cia\u0142a, fryzura, p\u0142e\u0107
-      itd. Aby usprawni\u0107 proces tworzenia r\xF3\u017Cnorodnych awatar\xF3w,
-      wprowadzono system umo\u017Cliwiaj\u0105cy modyfikacj\u0119 element\xF3w sk\u0142adaj\u0105cych
+      cechy, jak na przyk\u0142ad: kszta\u0142t cia\u0142a, fryzura czy p\u0142e\u0107.
+      Aby usprawni\u0107 proces tworzenia r\xF3\u017Cnorodnych awatar\xF3w, wprowadzono
+      system umo\u017Cliwiaj\u0105cy modyfikacj\u0119 element\xF3w sk\u0142adaj\u0105cych
       si\u0119 na model pracownika w edytorze. Pozwala to na generowanie unikalnych
       prefabrykat\xF3w. "
   - key: Display
@@ -269,13 +268,13 @@ MonoBehaviour:
       interface layout will be automatically adjusted without the need for any further
       actions.
     - "System planowania UI zawiera komponent Layout Frame, kt\xF3ry mo\u017Ce zosta\u0107
-      dodany do obiektu gry za pomoc\u0105 standardowego przycisku \u201EAdd Component\u201D
-      lub poprzez menu kontekstowe elementu Transform. Po dodaniu komponentu Layout
-      Frame w trybie edycji, elementy interfejsu s\u0105 rozmieszczane automatycznie."
+      dodany do obiektu gry za pomoc\u0105 standardowego przycisku \u201EAdd Component\"
+      lub poprzez menu kontekstowe elementu Transform. W edytorze, elementy interfejsu
+      s\u0105 rozmieszczane automatycznie po dodaniu komponentu Layout Frame."
   - key: FlowAndAlignment
     translations:
     - Flow and Alignment
-    - "Przep\u0142yw i Wyr\xF3wnywanie\r"
+    - "Uk\u0142ad i Wyr\xF3wnywanie\r"
   - key: FlowAndAlignmentText
     translations:
     - The Layout Frame provides the capability to modify the flow and alignment of
@@ -284,12 +283,12 @@ MonoBehaviour:
       to the next line. Additionally, it is possible to adjust the positioning of
       child elements to align with the right, left, or center of the parent container.
     - "Komponent Layout Frame pozwala zarz\u0105dza\u0107 uk\u0142adem element\xF3w
-      sk\u0142adowych. Wspominane elementy mog\u0105 by\u0107 u\u0142o\u017Cone poziomo,
-      pionowo lub w trybie zawijania, kt\xF3ry dzia\u0142a podobnie do teksu, powoduj\u0105c
-      przemieszczenie element\xF3w powoduj\u0105cych przepe\u0142nienie do nast\u0119pnej
-      linii. Dodatkowo, istnieje mo\u017Cliwo\u015B\u0107 pozycjonowania ramek podrz\u0119dnych,
-      tak by przylega\u0142y do lewej lub prawej kraw\u0119dzi elementu nadrz\u0119dnego,
-      albo pozostawa\u0142y wy\u015Brodkowane."
+      podrz\u0119dnych. Wspominane elementy mog\u0105 by\u0107 u\u0142o\u017Cone
+      poziomo, pionowo lub w trybie zawijania, kt\xF3ry dzia\u0142a podobnie do pozycjonowania
+      teksu, powoduj\u0105c przemieszczenie nadmiarowych element\xF3w do nast\u0119pnej
+      linii. Istnieje mo\u017Cliwo\u015B\u0107 pozycjonowania ramek, tak by przylega\u0142y
+      do lewej lub prawej kraw\u0119dzi elementu nadrz\u0119dnego, albo pozostawa\u0142y
+      wy\u015Brodkowane."
   - key: ResizingAndAnimation
     translations:
     - Resizing and Animation
@@ -303,12 +302,12 @@ MonoBehaviour:
       has been introduced to facilitate efficient animation without the necessity
       of reconstructing the entire layout.
     - "Zar\xF3wno g\u0142\xF3wny komponent jak i jego elementy podrz\u0119dne, poza
-      podstawowym wymiarem podanym w pikselach, mog\u0105 by\u0107 modyfikowane aby
-      zajmowa\u0142y dost\u0119pn\u0105 przestrze\u0144 lub dopasowywa\u0142y si\u0119
-      do zawarto\u015Bci zar\xF3wno w pionie, jak i w poziomie. Udost\u0119pniono
+      podstawowym wymiarem podanym w pikselach, mog\u0105 by\u0107 modyfikowane,
+      tak aby zajmowa\u0142y dost\u0119pn\u0105 przestrze\u0144 lub dopasowywa\u0142y
+      si\u0119 do zawarto\u015Bci zar\xF3wno w pionie, jak i w poziomie. Wprowadzono
       r\xF3wnie\u017C w\u0142a\u015Bciwo\u015Bci rotacji oraz przesuni\u0119cia zawarto\u015Bci,
-      kt\xF3re pozwalaj\u0105 na tworzenie animacji bez konieczno\u015Bci rekonstrukcji
-      ca\u0142ego interfejsu."
+      kt\xF3re pozwalaj\u0105 na tworzenie animacji bez konieczno\u015Bci rekalkulacji
+      ca\u0142ego uk\u0142adu."
   - key: PaddingAndSpacingWorkflow
     translations:
     - Padding and Spacing Workflow
@@ -320,10 +319,10 @@ MonoBehaviour:
       rather than manually positioning each object or individually adjusting the
       margin properties of each item.
     - "Wprowadzony system planowania interfejsu k\u0142adzie nacisk na korzystanie
-      z techniki \u201EPadding and Spacing Workflow\u201D, kt\xF3ra pozwala zarz\u0105dza\u0107
-      pozycjonowaniem wielu element\xF3w za pomoc\u0105 niewielkiego zbioru w\u0142a\u015Bciwo\u015Bci,
-      zamiast zmusza\u0107 u\u017Cytkownika do dostosowywania pozycji ka\u017Cdego
-      elementu z osobna. "
+      z techniki \u201EPadding and Spacing Workflow\", kt\xF3ra zamiast zmusza\u0107
+      u\u017Cytkownika do dostosowywania pozycji ka\u017Cdego elementu z osobna,
+      pozwala zarz\u0105dza\u0107 pozycjonowaniem wielu element\xF3w za pomoc\u0105
+      skromnego zbioru w\u0142a\u015Bciwo\u015Bci."
   - key: ErrorDetection
     translations:
     - Error Detection
@@ -336,9 +335,9 @@ MonoBehaviour:
       element, while the child element simultaneously strives to conform to the size
       of its parent. Instances of such conflicts are indicated by marking invalid
       properties and presenting a warning icon within the hierarchy window.
-    - "Znacz\u0105c\u0105 wad\u0105 zaproponowanego rozwi\u0105zania jest mo\u017Cliwo\u015B\u0107
+    - "Istotn\u0105 wad\u0105 zaproponowanego rozwi\u0105zania jest mo\u017Cliwo\u015B\u0107
       napotkania sytuacji, kt\xF3r\u0105 mo\u017Cna okre\u015Bli\u0107 jako kolizj\u0119.
-      Przyk\u0142adowo, wyst\u0119puje ona gdy gdy element nadrz\u0119dny usi\u0142uje
+      Przyk\u0142adowo, wyst\u0119puje ona gdy element nadrz\u0119dny usi\u0142uje
       dopasowa\u0107 si\u0119 do element\xF3w podrz\u0119dnych, podczas gdy te staraj\u0105
       si\u0119 wype\u0142ni\u0107 przestrze\u0144 ramki-rodzica. W przypadku wyst\u0105pienia
       takiego konfliktu, system oznacza zwi\u0105zane z nim w\u0142a\u015Bciwo\u015Bci
@@ -379,11 +378,11 @@ MonoBehaviour:
       name or even the complete structure of the Visual Tree, while ensuring that
       the UI element remains accurately localized.
     - "Proces lokalizacji jest zarz\u0105dzany za po\u015Brednictwem dedykowanego
-      okna, kt\xF3re wy\u015Bwietla adres lokalizacji (nazwa tabeli i klucz) ka\u017Cdego
-      zarejestrowanego elementu tekstowego. Ka\u017Cdy ze wspomnianych element\xF3w
+      okna, kt\xF3re wy\u015Bwietla adres lokalizacji (nazw\u0119 tabeli i klucz)
+      zarejestrowanych element\xF3w tekstowych. Ka\u017Cdy ze wspomnianych element\xF3w
       jest przechowywany w bazie danych pod unikalnym identyfikatorem. Pozwala to
       na bezpieczn\u0105 modyfikacj\u0119 nie tylko w\u0142a\u015Bciwo\u015Bci elementu,
-      ale r\xF3wnie\u017C struktury hierarchicznej."
+      ale r\xF3wnie\u017C ca\u0142ej struktury hierarchicznej."
   - key: LocalizationTables
     translations:
     - Localization Tables
@@ -397,14 +396,14 @@ MonoBehaviour:
       source, subsequently enabling the localization of text elements.
     - "Prototyp niniejszego dodatku pozwala na tworzenie tabel lokalizacyjnych. Edytowalnym
       formatem takowych tabel jest plik CSV, kt\xF3ry mo\u017Ce by\u0107 modyfikowany
-      za pomoc\u0105 prostego edytora tekstowego lub bardziej z\u0142o\u017Conej
-      aplikacji. Wspomniane pliki mog\u0105 zosta\u0107 po\u0142\u0105czone z plikami
-      zasob\xF3w, kt\xF3re monitoruj\u0105 zachodz\u0105ce w nich zmiany, umo\u017Cliwiaj\u0105c
+      za pomoc\u0105 prostego edytora tekstowego lub bardziej zaawansowanego oprogramowania.
+      Wspomniane pliki mog\u0105 zosta\u0107 po\u0142\u0105czone z plikami zasob\xF3w,
+      kt\xF3re monitoruj\u0105 zachodz\u0105ce w nich zmiany, umo\u017Cliwiaj\u0105c
       w ten spos\xF3b lokalizacj\u0119 element\xF3w tekstowych."
   - key: Usage
     translations:
     - Usage
-    - "Korzystanie\r"
+    - "U\u017Cycie\r"
   - key: UsageText
     translations:
     - In Unity 2022, the UI Toolkit lacks localization support; therefore, the proposed
@@ -426,11 +425,11 @@ MonoBehaviour:
       asset is to facilitate the selection, addition, modification, and removal of
       locales. It is important to highlight that any alterations made to the settings
       asset are instantly visible in the UI Builder window.
-    - "Po zainstalowaniu wtyczki, tworzone s\u0105 zasoby ustawie\u0144 i bazy danych.
+    - "Po zainstalowaniu wtyczki tworzone s\u0105 zasoby ustawie\u0144 i bazy danych.
       Na aktualnym etapie rozwoju dodatku, g\u0142\xF3wnym zadaniem ustawie\u0144
-      jest umo\u017Cliwienie wyboru, dodania, modyfikacji lub usuni\u0119cia j\u0119zyka.
-      Warto przy okazji zaznaczy\u0107, \u017Ce wspomniane zmiany s\u0105 natychmiastowo
-      odzwierciedlane w oknie UI Builder."
+      jest umo\u017Cliwienie wyboru, dodania, modyfikacji lub usuni\u0119cia wspieranego
+      j\u0119zyka. Warto przy okazji zaznaczy\u0107, \u017Ce wspomniane zmiany s\u0105
+      natychmiastowo odzwierciedlane w oknie UI Builder."
   - key: OtherProjects
     translations:
     - Other Project
@@ -447,11 +446,11 @@ MonoBehaviour:
       To facilitate the development process, several supplementary tools have been
       created, including a map editor and a decal drawer, as older versions of Godot
       did not support decals.
-    - "Projekt jest przede wszystkim dedykowany dla platformy PC i jest rozwijany
-      z wykorzystaniem silnika Godot Game Engine. Na aktualnym stadium opracowania
-      gra umo\u017Cliwia u\u017Cytkownikom tworzenie budynk\xF3w i dr\xF3g, gromadzeni
-      zasob\xF3w i przydzielanie zada\u0144. Aby u\u0142atwi\u0107 proces tworzenia
-      gry, opracowano kilka dodatkowych narz\u0119dzi jak edytor map czy narz\u0119dzie
+    - "Projekt ten jest dedykowany dla platformy PC, a jego rozw\xF3j przebiega z
+      wykorzystaniem silnika Godot Game Engine. Na aktualnym stadium opracowania,
+      gra umo\u017Cliwia u\u017Cytkownikom tworzenie budynk\xF3w i dr\xF3g, gromadzenie
+      zasob\xF3w i przydzielanie zada\u0144. Aby usprawni\u0107 proces tworzenia
+      gry, opracowano kilka dodatkowych narz\u0119dzi, jak edytor map czy narz\u0119dzie
       do rysowania decali, nie wspieranych w starszych wersjach silnika Godot."
   - key: AerobaticAircraftGame
     translations:
@@ -544,23 +543,23 @@ MonoBehaviour:
     - <link href="https://unity.com/">Keyframe System</link> - This is a better animation
       component that lets you animate more than just serialized properties.
     - "<link href=\"https://unity.com/\">System Klatek</link> - To jest w zasadzie
-      ulepszony komponent Animation, jednak w przeciwie\u0144stwie do niego obs\u0142uguje
+      ulepszony komponent Animation, jednak w przeciwie\u0144stwie do niego, obs\u0142uguje
       nie tylko w\u0142a\u015Bciwo\u015Bci serializowane."
   - key: LayerManagementLink
     translations:
     - <link href="https://unity.com/">Layer Management</link> - This app has multiple
       UI layers that are displayed through a custom rendering pipeline!
     - "<link href=\"https://unity.com/\">Zarz\u0105dzanie Warstwami</link> - Aplikacja
-      wy\u015Bwietla interfejs zbudowany z wielu warstw, sk\u0142adanych przez niestandardowy
-      system renderowania."
+      zawiera interfejs zbudowany z wielu warstw, kt\xF3ry jest generowany przez
+      dedykowany system renderowania."
   - key: LocalizationLink
     translations:
     - <link href="https://unity.com/">Localization</link> - Even though the localization
       system is included in this presentation (spoiler alert), I'm just using a simplified
       version here.
     - "<link href=\"https://unity.com/\">Lokalizacja</link> - Niniejsza prezentacja
-      co prawda zawiera system lokalizacji (spoiler), ale tutaj r\xF3wnie\u017C takow\u0105
-      wykorzystuj\u0119 - w uproszczonej formie."
+      co prawda zawiera system lokalizacji (spoiler), ale tutaj r\xF3wnie\u017C takowa
+      jest wykorzystywana - w uproszczonej formie."
   - key: WelcomeDialogBoxText1
     translations:
     - Hello and welcome to my little showreel application! I'm really happy you made
@@ -568,7 +567,7 @@ MonoBehaviour:
       thank you once again!
     - "Cze\u015B\u0107! Witam w mojej skromnej aplikacji pokazowej. Szczerze powiedziawszy
       to ciesz\u0119 si\u0119, \u017Ce dotar\u0142e\u015B/\u0142a\u015B a\u017C tutaj,
-      szczeg\xF3lnie \u017Ce apka nie pobiera i nie instaluje si\u0119 sama, zatem
+      szczeg\xF3lnie, \u017Ce program nie pobiera i nie instaluje si\u0119 sam, zatem
       jeszcze raz dzi\u0119ki!"
   - key: WelcomeDialogBoxText2
     translations:
@@ -577,19 +576,20 @@ MonoBehaviour:
       also control the entire application using your keyboard. If you''re curious
       about what each button does, just click the info button in the top right corner.'
     - "Teraz, zanim przejdziesz dalej, jest kilka spraw do om\xF3wienia. Po pierwsze,
-      ma\u0142a wskaz\xF3wka: rzu\u0107 okiem na rogi ekranu, to tam znajduj\u0105
-      si\u0119 przyciski. Pami\u0119taj te\u017C, \u017Ce ca\u0142\u0105 aplikacj\u0119
-      mo\u017Cna kontrolowa\u0107 za pomoc\u0105 klawiatury, je\u015Bli chcesz si\u0119
-      dowiedzie\u0107 co jaki klawisz robi, poszukaj przycisku info w prawym g\xF3rnym
-      rogu."
+      ma\u0142a wskaz\xF3wka: rzu\u0107 okiem na rogi ekranu, to tam znajduje si\u0119
+      wi\u0119kszo\u015B\u0107 przycisk\xF3w. Pami\u0119taj te\u017C, \u017Ce ca\u0142\u0105
+      aplikacj\u0119 mo\u017Cna kontrolowa\u0107 za pomoc\u0105 klawiatury, je\u015Bli
+      chcesz si\u0119 dowiedzie\u0107 co dany klawisz robi, poszukaj przycisku info
+      w prawym g\xF3rnym rogu."
   - key: WelcomeDialogBoxText3
     translations:
     - Secondly, I assume you downloaded this app from the source, so you might have
       already visited my repository. If you haven't, no worries - here's a <link
       href="https://unity.com/">link</link> for you.
     - "Druga rzecz, zak\u0142adam, \u017Ce pobra\u0142e\u015B/\u0142a\u015B aplikacj\u0119
-      ze \u017Ar\xF3d\u0142a, wi\u0119c pewnie moje repozytorium jest Ci ju\u017C
-      znane. Ale je\u015Bli tak nie jest, to tu masz <link href=\"https://unity.com/\">link</link>."
+      ze \u017Ar\xF3d\u0142a, wi\u0119c pewnie kojarzysz ju\u017C moje repozytorium.
+      Ale je\u015Bli z jakiego\u015B powodu tak si\u0119 nie sta\u0142o, to tu masz
+      <link href=\"https://unity.com/\">link</link>."
   - key: WelcomeDialogBoxText4
     translations:
     - 'Lastly, while this app showcases some of my projects, it''s also quite enjoyable
@@ -652,8 +652,8 @@ MonoBehaviour:
       can be bypassed by pressing any key on your keyboard.
     - "Prze\u0142\u0105czanie plansz jest zwi\u0105zane z odtworzeniem animacji,
       kt\xF3rych wielokrotne wy\u015Bwietlanie mo\u017Ce okaza\u0107 si\u0119 monotonnym
-      do\u015Bwiadczeniem, tote\u017C wiele z nich mo\u017Cna pomin\u0105\u0107 naciskaj\u0105c
-      dowolny przycisk na klawiaturze.        "
+      do\u015Bwiadczeniem, tote\u017C wiele z nich mo\u017Cna pomin\u0105\u0107,
+      naciskaj\u0105c dowolny przycisk na klawiaturze.        "
   - key: Shorcuts
     translations:
     - Shortcuts
@@ -704,9 +704,9 @@ MonoBehaviour:
     - "Koniec\r"
   - key: FinalDialogBoxText
     translations:
-    - You have reached the end of the application. Would you like to quit, or rather
+    - You have reached the end of the presentation. Would you like to quit, or rather
       prefer to stay?
-    - "Dotar\u0142e\u015B\\\u0142a\u015B do ko\u0144ca aplikacji. Chcesz j\u0105
+    - "Dotar\u0142e\u015B\\\u0142a\u015B do ko\u0144ca prezentacji. Chcesz j\u0105
       opu\u015Bci\u0107, czy mo\u017Ce wolisz jeszcze zosta\u0107?"
   - key: Quit
     translations:
@@ -720,4 +720,43 @@ MonoBehaviour:
     translations:
     - Do you want to close application?
     - "Czy chcesz zamkn\u0105\u0107 aplikacj\u0119?\r"
+  - key: Links
+    translations:
+    - Links
+    - "Linki\r"
+  - key: LinksText1
+    translations:
+    - I am providing a limited number of links to my repository, as many of my incomplete
+      projects are private and I prefer not to disclose them to the general public.
+      Nevertheless, if you have a genuine interest in these projects, please feel
+      free to <link href="mailto:mchkafka@gmail.com">reach out</link> to me for further
+      discussion.
+    - "Liczba zamieszczonych tutaj odno\u015Bnik\xF3w do mojego repozytorium jest
+      ograniczona. Wynika to z faktu, \u017Ce wi\u0119kszo\u015B\u0107 moich projekt\xF3w
+      to projekty prywatne, kt\xF3rymi nie chc\u0119 si\u0119 dzieli\u0107 z szersz\u0105
+      publiczno\u015Bci\u0105. Jednak\u017Ce, je\u015Bli rzeczywi\u015Bcie jeste\u015B
+      zainteresowany/na tymi projektami, mo\u017Cesz si\u0119 ze mn\u0105 <link href=\"mailto:mchkafka@gmail.com\">skontaktowa\u0107</link>."
+  - key: LinksText2
+    translations:
+    - It is important to recognize that the majority of projects do not possess a
+      "release" version, indicating that they are either still in development or
+      are no longer actively maintained. Consequently, utilizing these projects may
+      lead to errors or result in complete non-functionality.
+    - "Nale\u017Cy zauwa\u017Cy\u0107, \u017Ce wi\u0119kszo\u015B\u0107 moich projekt\xF3w
+      nie posiada wersji \"release\", oznacza to, \u017Ce s\u0105 w trakcie rozwoju
+      lub nie s\u0105 ju\u017C w \u017Caden spos\xF3b wspierane. Pr\xF3ba korzystania
+      z tych\u017Ce projekt\xF3w mo\u017Ce prowadzi\u0107 do wyst\u0105pienia licznych
+      b\u0142\u0119d\xF3w lub ca\u0142kowitej utraty funkcjonalno\u015Bci."
+  - key: ShowreelLink
+    translations:
+    - <link href="https://unity.com/">Showreel</link>
+    - <link href="https://unity.com/">Showreel</link>
+  - key: LocalizationPluginLink
+    translations:
+    - <link href="https://unity.com/">Localization Plugin</link>
+    - <link href="https://unity.com/">Dodatek Lokalizacji</link>
+  - key: AerobaticAircraftEngineLink
+    translations:
+    - <link href="https://unity.com/">Aerobatic Aircraft Game Engine</link>
+    - <link href="https://unity.com/">Samolot Akrobacyjny - Silnik Gry</link>
   m_CsvFile: {fileID: 4900000, guid: bebe169563b0c1d4dbdcf11c1e4ab6c0, type: 3}

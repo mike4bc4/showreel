@@ -10,7 +10,7 @@
                 <Controls.Raw.LinkLabel localization-address="Table:InfoDialogBoxGeneralText" text="The primary objective of this application is to showcase my software development capabilities. Although significant effort has been dedicated to ensuring it is free of bugs, there remains a possibility that you may experience errors or malfunctions while using the application. Should you encounter any issues, please feel free to send an email to &lt;link href=&quot;&quot;&gt;this address&lt;/link&gt;, detailing the problem you have faced." />
             </UI.Control>
         </UI.Control>
-        <UI.Control name="interface-label" class="info-dialog-box__header">
+        <UI.Control name="interface-header" class="info-dialog-box__header">
             <Localization.LocalizedLabel name="label" text="Interface" localization-address="Table:Interface" />
         </UI.Control>
         <UI.Control name="bullet-list" class="bullet-list">
@@ -27,7 +27,7 @@
                 <Localization.LocalizedLabel localization-address="Table:InfoDialogBoxInterfaceText3" text="Every board features animation, and I recognize that repeatedly viewing the same animation may become monotonous. Therefore, the majority of animations can be bypassed by pressing any key on your keyboard." />
             </UI.Control>
         </UI.Control>
-        <UI.Control name="shortcuts-label" class="info-dialog-box__header">
+        <UI.Control name="shortcuts-header" class="info-dialog-box__header">
             <Localization.LocalizedLabel name="label" text="Shortcuts" localization-address="Table:Shortcuts" />
         </UI.Control>
         <UI.Control name="table" class="info-dialog-box__table">
@@ -116,6 +116,25 @@
                         <Localization.LocalizedLabel localization-address="Null" name="label" text="I" />
                     </UI.Control>
                 </UI.Control>
+            </UI.Control>
+        </UI.Control>
+        <UI.Control name="links-header" class="info-dialog-box__header">
+            <Localization.LocalizedLabel name="label" text="Links" localization-address="Table:Links" />
+        </UI.Control>
+        <Controls.Raw.LinkLabel localization-address="Table:LinksText1" text="I am providing a limited number of links to my repository, as many of my incomplete projects are private and I prefer not to disclose them to the general public. Nevertheless, if you have a genuine interest in these projects, please feel free to &lt;link href=&quot;mailto:mchkafka@gmail.com&quot;&gt;reach out&lt;/link&gt; to me for further discussion." class="info-dialog-box__paragraph" />
+        <Localization.LocalizedLabel localization-address="Table:LinksText2" text="It is important to recognize that the majority of projects do not possess a &quot;release&quot; version, indicating that they are either still in development or are no longer actively maintained. Consequently, utilizing these projects may lead to errors or result in complete non-functionality." class="info-dialog-box__paragraph" />
+        <UI.Control name="bullet-list" class="bullet-list">
+            <UI.Control name="container">
+                <UI.Control name="icon" />
+                <Controls.Raw.LinkLabel localization-address="Table:ShowreelLink" text="&lt;link href=&quot;https://unity.com/&quot;&gt;Showreel&lt;/link&gt;" />
+            </UI.Control>
+            <UI.Control name="container">
+                <UI.Control name="icon" />
+                <Controls.Raw.LinkLabel localization-address="Table:LocalizationPluginLink" text="&lt;link href=&quot;https://unity.com/&quot;&gt;Localization Plugin&lt;/link&gt;" />
+            </UI.Control>
+            <UI.Control name="container">
+                <UI.Control name="icon" />
+                <Controls.Raw.LinkLabel localization-address="Table:AerobaticAircraftEngineLink" text="&lt;link href=&quot;https://unity.com/&quot;&gt;Aerobatic Aircraft Game Engine&lt;/link&gt;" />
             </UI.Control>
         </UI.Control>
     </UI.Control>
