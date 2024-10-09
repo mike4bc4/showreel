@@ -27,7 +27,7 @@ MonoBehaviour:
     - m_Name: Table:Off
       m_Value: 0
   m_BlurQualityOptions:
-    m_DefaultOptionIndex: 0
+    m_DefaultOptionIndex: 1
     m_Options:
     - m_Name: Table:Low
       m_Value: 1

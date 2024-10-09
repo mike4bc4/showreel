@@ -36,7 +36,7 @@ namespace Settings
                 }
 
                 options = options.Distinct().ToList();
-                var defaultResolution = new Vector2Int(Screen.width, Screen.height);
+                var defaultResolution = new Vector2Int(Display.main.systemWidth, Display.main.systemHeight);
                 var defaultOptionIndex = 0;
                 for (int i = 1; i < options.Count; i++)
                 {
@@ -64,18 +64,8 @@ namespace Settings
 
             options.Add(new Option<float>("Table:Unlimited", -1f));
             options = options.Distinct().ToList();
-            var defaultRefreshRate = 60f;
-            var defaultOptionIndex = 0;
-            for (int i = 1; i < options.Count; i++)
-            {
-                var opt = options[i];
-                if (Mathf.Abs(opt.value - defaultRefreshRate) < Mathf.Abs(options[defaultOptionIndex].value - defaultRefreshRate))
-                {
-                    defaultOptionIndex = i;
-                }
-            }
 
-            return new OptionSet<float>(defaultOptionIndex, options);
+            return new OptionSet<float>(options.Count - 1, options);
         }
     }
 }
