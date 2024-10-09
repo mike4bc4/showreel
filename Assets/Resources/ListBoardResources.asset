@@ -13,8 +13,6 @@ MonoBehaviour:
   m_Name: ListBoardResources
   m_EditorClassIdentifier: 
   m_VideoClips:
-  - {fileID: 32900000, guid: 10581a60dda40e9499ef47ceed6f0dad, type: 3}
-  - {fileID: 32900000, guid: c45300d0a88c13344ac887e0beb5d350, type: 3}
   - {fileID: 32900000, guid: 74667f876b7fb3041989b6f6d969e200, type: 3}
   - {fileID: 32900000, guid: ee4f6b49aac842e4894be9b0896c2fc2, type: 3}
   - {fileID: 32900000, guid: 5fb61e6ab7d4c4941af6c4853aa5b060, type: 3}
@@ -35,7 +33,6 @@ MonoBehaviour:
   - {fileID: 32900000, guid: 4b09e0a9989adfc4fbac3e540f86c2ed, type: 3}
   m_VisualTreeAssets:
   - {fileID: 9197481963319205126, guid: 10fd8ecd21465ba41b4256116e87551f, type: 3}
-  - {fileID: 9197481963319205126, guid: 2f6d3f4eb43e10b498a603f6a1ae3fb2, type: 3}
   - {fileID: 9197481963319205126, guid: 7c5a3279ae59d9441aa77ab57365d2d6, type: 3}
   - {fileID: 9197481963319205126, guid: 5315eb04d4eabc947bdf11bf3ce0cb27, type: 3}
   - {fileID: 9197481963319205126, guid: 7ea90d4b02d65e3499561879c9fb0bca, type: 3}
