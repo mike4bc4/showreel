@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ffa507f86b52ef41893e2bbf30f5212, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  m_IsEnabled: 1
+  m_IsEnabled: 0
   m_Interval: 0.5

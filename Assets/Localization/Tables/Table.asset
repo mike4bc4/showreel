@@ -525,41 +525,46 @@ MonoBehaviour:
       link\xF3w do interesuj\u0105cych cz\u0119\u015Bci programu:"
   - key: BoardsSystemLink
     translations:
-    - <link href="https://unity.com/">Boards System</link> - Boards are made up of
-      layers that work together like a composite, using a state pattern to ensure
-      smooth navigation.
-    - "<link href=\"https://unity.com/\">System Plansz</link> - Plansze to takie
-      kompozyty warstw, kt\xF3re wykorzystuj\u0105 wzorzec \"state\", \u017Ceby prze\u0142\u0105cza\u0107
-      si\u0119 mi\u0119dzy sob\u0105."
+    - <link href="https://github.com/mike4bc4/showreel/tree/master/Assets/Scripts/Boards">Boards
+      System</link> - Boards are made up of layers that work together like a composite,
+      using a state pattern to ensure smooth navigation.
+    - "<link href=\"https://github.com/mike4bc4/showreel/tree/master/Assets/Scripts/Boards\">System
+      Plansz</link> - Plansze to takie kompozyty warstw, kt\xF3re wykorzystuj\u0105
+      wzorzec \"state\", \u017Ceby prze\u0142\u0105cza\u0107 si\u0119 mi\u0119dzy
+      sob\u0105."
   - key: ControlsLink
     translations:
-    - <link href="https://unity.com/">Controls</link> - If you know your way around
-      Unity Toolkit, you should definitely take a look at those custom controls.
-    - "<link href=\"https://unity.com/\">Kontrolki</link> - Je\u015Bli znasz si\u0119
-      na UI Toolkicie, to by\u0107 mo\u017Ce zainteresuj\u0105 ci\u0119 niestandardowe
-      kontrolki."
+    - <link href="https://github.com/mike4bc4/showreel/tree/master/Assets/Scripts/Controls/Raw">Controls</link>
+      - If you know your way around Unity Toolkit, you should definitely take a look
+      at those custom controls.
+    - "<link href=\"https://github.com/mike4bc4/showreel/tree/master/Assets/Scripts/Controls/Raw\">Kontrolki</link>
+      - Je\u015Bli znasz si\u0119 na UI Toolkicie, to by\u0107 mo\u017Ce zainteresuj\u0105
+      ci\u0119 niestandardowe kontrolki."
   - key: KeyframeSystemLink
     translations:
-    - <link href="https://unity.com/">Keyframe System</link> - This is a better animation
-      component that lets you animate more than just serialized properties.
-    - "<link href=\"https://unity.com/\">System Klatek</link> - To jest w zasadzie
-      ulepszony komponent Animation, jednak w przeciwie\u0144stwie do niego, obs\u0142uguje
-      nie tylko w\u0142a\u015Bciwo\u015Bci serializowane."
+    - <link href="https://github.com/mike4bc4/showreel/tree/master/Assets/Scripts/KeyframeSystem">Keyframe
+      System</link> - This is a better animation component that lets you animate
+      more than just serialized properties.
+    - "<link href=\"https://github.com/mike4bc4/showreel/tree/master/Assets/Scripts/KeyframeSystem\">System
+      Klatek</link> - To jest w zasadzie ulepszony komponent Animation, jednak w
+      przeciwie\u0144stwie do niego, obs\u0142uguje nie tylko w\u0142a\u015Bciwo\u015Bci
+      serializowane."
   - key: LayerManagementLink
     translations:
-    - <link href="https://unity.com/">Layer Management</link> - This app has multiple
-      UI layers that are displayed through a custom rendering pipeline!
-    - "<link href=\"https://unity.com/\">Zarz\u0105dzanie Warstwami</link> - Aplikacja
-      zawiera interfejs zbudowany z wielu warstw, kt\xF3ry jest generowany przez
-      dedykowany system renderowania."
+    - <link href="https://github.com/mike4bc4/showreel/tree/master/Assets/Scripts/Layers">Layer
+      Management</link> - This app has multiple UI layers that are displayed through
+      a custom rendering pipeline!
+    - "<link href=\"https://github.com/mike4bc4/showreel/tree/master/Assets/Scripts/Layers\">Zarz\u0105dzanie
+      Warstwami</link> - Aplikacja zawiera interfejs zbudowany z wielu warstw, kt\xF3ry
+      jest generowany przez dedykowany system renderowania."
   - key: LocalizationLink
     translations:
-    - <link href="https://unity.com/">Localization</link> - Even though the localization
-      system is included in this presentation (spoiler alert), I'm just using a simplified
-      version here.
-    - "<link href=\"https://unity.com/\">Lokalizacja</link> - Niniejsza prezentacja
-      co prawda zawiera system lokalizacji (spoiler), ale tutaj r\xF3wnie\u017C takowa
-      jest wykorzystywana - w uproszczonej formie."
+    - <link href="https://github.com/mike4bc4/showreel/tree/master/Assets/Scripts/Localization">Localization</link>
+      - Even though the localization system is included in this presentation (spoiler
+      alert), I'm just using a simplified version here.
+    - "<link href=\"https://github.com/mike4bc4/showreel/tree/master/Assets/Scripts/Localization\">Lokalizacja</link>
+      - Niniejsza prezentacja co prawda zawiera system lokalizacji (spoiler), ale
+      tutaj r\xF3wnie\u017C takowa jest wykorzystywana - w uproszczonej formie."
   - key: WelcomeDialogBoxText1
     translations:
     - Hello and welcome to my little showreel application! I'm really happy you made
@@ -585,11 +590,11 @@ MonoBehaviour:
     translations:
     - Secondly, I assume you downloaded this app from the source, so you might have
       already visited my repository. If you haven't, no worries - here's a <link
-      href="https://unity.com/">link</link> for you.
+      href="https://github.com/mike4bc4/showreel">link</link> for you.
     - "Druga rzecz, zak\u0142adam, \u017Ce pobra\u0142e\u015B/\u0142a\u015B aplikacj\u0119
       ze \u017Ar\xF3d\u0142a, wi\u0119c pewnie kojarzysz ju\u017C moje repozytorium.
       Ale je\u015Bli z jakiego\u015B powodu tak si\u0119 nie sta\u0142o, to tu masz
-      <link href=\"https://unity.com/\">link</link>."
+      <link href=\"https://github.com/mike4bc4/showreel\">link</link>."
   - key: WelcomeDialogBoxText4
     translations:
     - 'Lastly, while this app showcases some of my projects, it''s also quite enjoyable
@@ -749,14 +754,18 @@ MonoBehaviour:
       b\u0142\u0119d\xF3w lub ca\u0142kowitej utraty funkcjonalno\u015Bci."
   - key: ShowreelLink
     translations:
-    - <link href="https://unity.com/">Showreel</link>
-    - <link href="https://unity.com/">Showreel</link>
+    - <link href="https://github.com/mike4bc4/showreel">Showreel</link>
+    - <link href="https://github.com/mike4bc4/showreel">Showreel</link>
   - key: LocalizationPluginLink
     translations:
-    - <link href="https://unity.com/">Localization Plugin</link>
-    - <link href="https://unity.com/">Dodatek Lokalizacji</link>
+    - <link href="https://github.com/mike4bc4/com.dartworks.uidocumentlocalization">Localization
+      Plugin</link>
+    - <link href="https://github.com/mike4bc4/com.dartworks.uidocumentlocalization">Dodatek
+      Lokalizacji</link>
   - key: AerobaticAircraftEngineLink
     translations:
-    - <link href="https://unity.com/">Aerobatic Aircraft Game Engine</link>
-    - <link href="https://unity.com/">Samolot Akrobacyjny - Silnik Gry</link>
+    - <link href="https://github.com/mike4bc4/pwag_game">Aerobatic Aircraft Game
+      Engine</link>
+    - <link href="https://github.com/mike4bc4/pwag_game">Samolot Akrobacyjny - Silnik
+      Gry</link>
   m_CsvFile: {fileID: 4900000, guid: bebe169563b0c1d4dbdcf11c1e4ab6c0, type: 3}
